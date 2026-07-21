@@ -1,0 +1,978 @@
+@if (!isAdmin) {
+<div class="min-h-screen bg-slate-50 text-slate-900 relative overflow-hidden font-sans flex flex-col">
+
+  <!-- Grid Background -->
+  <div
+    class="absolute inset-0 bg-[linear-gradient(to_right,var(--grid-color)_1px,transparent_1px),linear-gradient(to_bottom,var(--grid-color)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-35 pointer-events-none -z-10">
+  </div>
+
+  <!-- Ambient Blobs -->
+  <div
+    class="absolute top-[-10%] left-[-10%] w-[45rem] h-[45rem] rounded-full bg-blue-500/10 blur-[120px] animate-pulse-slow pointer-events-none -z-10">
+  </div>
+  <div
+    class="absolute bottom-[-10%] right-[-10%] w-[35rem] h-[35rem] rounded-full bg-indigo-500/8 blur-[100px] animate-pulse-slow-reverse pointer-events-none -z-10">
+  </div>
+  <div
+    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[25rem] h-[25rem] rounded-full bg-cyan-500/5 blur-[80px] pointer-events-none -z-10">
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- Top Navigation                                                   -->
+  <!-- ================================================================ -->
+  <header class="relative z-20 border-b border-slate-200/60 bg-white/70 backdrop-blur-md shadow-sm">
+    <div class="max-w-7xl mx-auto px-6 py-3.5 flex justify-between items-center gap-4">
+
+      <!-- Brand -->
+      <div class="flex items-center gap-3.5 group cursor-pointer shrink-0" (click)="goToHome()">
+        <div
+          class="relative overflow-hidden flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/35 group-hover:scale-105 transition-all duration-300">
+          <span
+            class="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none"></span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <ellipse cx="12" cy="5" rx="9" ry="3" />
+            <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+            <path d="M3 12A9 3 0 0 0 21 12" />
+          </svg>
+        </div>
+        <div>
+          <h1
+            class="text-lg font-black tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors duration-200 flex items-center gap-2 leading-tight">
+            AskDB
+            <span *ngIf="isMockMode" (click)="openMockConsole(); $event.stopPropagation()"
+              class="inline-flex items-center px-2 py-0.5 rounded-md text-[8px] font-extrabold bg-amber-100 text-amber-700 border border-amber-200 uppercase tracking-widest leading-none cursor-pointer hover:bg-amber-200 transition-colors duration-150 select-none">
+              Mock Mode
+            </span>
+          </h1>
+          <div class="flex items-center gap-1.5 mt-0.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-slate-400 shrink-0"></span>
+            <span
+              class="text-[9px] text-slate-500 font-bold tracking-widest uppercase select-none group-hover:text-slate-600 transition-colors duration-200">
+              Enterprise Dashboard
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Controls -->
+      <div class="flex items-center gap-2.5">
+
+        <!-- User Identity Pill -->
+        <div
+          class="hidden sm:flex items-center gap-3 pl-3 pr-4 py-2 rounded-xl bg-slate-50/80 border border-slate-200/80 hover:border-slate-300 hover:bg-slate-50 transition-all duration-200 cursor-default">
+          <div
+            class="relative w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center font-black text-xs shadow-sm select-none shrink-0">
+            {{ userName.substring(0, 2).toUpperCase() }}
+            <span
+              class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-white shadow-sm">
+            </span>
+          </div>
+          <div class="flex flex-col text-right">
+            <span class="text-xs font-bold text-slate-800 leading-tight">{{ userName }}</span>
+            <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider leading-tight">
+              Active Session
+            </span>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="hidden sm:block w-px h-7 bg-slate-200 rounded-full mx-0.5"></div>
+
+        <!-- Theme Toggle -->
+        <button
+          (click)="themeService.toggleTheme()"
+          [title]="themeService.currentTheme() === 'light' ? 'Switch to Cyber Obsidian Dark' : 'Switch to Corporate Light'"
+          class="group p-2.5 rounded-xl border border-slate-200 bg-white/70 hover:bg-white hover:border-slate-300 hover:shadow-md text-slate-400 hover:text-blue-600 transition-all duration-200 cursor-pointer shadow-sm flex items-center justify-center shrink-0">
+          <svg *ngIf="themeService.currentTheme() === 'light'" xmlns="http://www.w3.org/2000/svg" width="15"
+            height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round"
+            class="transition-transform duration-300 group-hover:rotate-12">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+          <svg *ngIf="themeService.currentTheme() === 'dark'" xmlns="http://www.w3.org/2000/svg" width="15"
+            height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round"
+            class="transition-transform duration-500 group-hover:rotate-45">
+            <circle cx="12" cy="12" r="5" />
+            <line x1="12" y1="1" x2="12" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="23" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+            <line x1="1" y1="12" x2="3" y2="12" />
+            <line x1="21" y1="12" x2="23" y2="12" />
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+          </svg>
+        </button>
+
+        <!-- Logout -->
+        <button
+          (click)="logout()"
+          title="Logout of Console"
+          class="group p-2.5 rounded-xl border border-slate-200 bg-white/70 hover:bg-red-50 hover:border-red-200 text-slate-400 hover:text-red-600 transition-all duration-200 cursor-pointer shadow-sm flex items-center justify-center shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+            class="transition-transform duration-200 group-hover:translate-x-0.5">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================================================================ -->
+  <!-- Main Content                                                     -->
+  <!-- ================================================================ -->
+  <main class="relative z-10 max-w-7xl mx-auto px-6 py-8 w-full flex-grow flex flex-col gap-8">
+
+    <!-- Page Title -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2.5 mb-1.5">
+          <div
+            class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center shadow-sm shadow-blue-500/20 shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              class="text-white">
+              <ellipse cx="12" cy="5" rx="9" ry="3" />
+              <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+              <path d="M3 12A9 3 0 0 0 21 12" />
+            </svg>
+          </div>
+          <h2 class="text-2xl font-black tracking-tight text-slate-900 font-display">Console Workspace Hub</h2>
+        </div>
+        <p class="text-xs text-slate-500 ml-10 leading-relaxed">
+          Select an active workspace database to map connections, generate secure queries, and analyze schemas.
+        </p>
+      </div>
+      <!-- Live pulse indicator -->
+      <div
+        class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-white border border-slate-200 shadow-sm text-[10px] font-bold text-slate-500 select-none shrink-0">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
+        {{ totalCount }} workspace{{ totalCount !== 1 ? 's' : '' }} assigned
+      </div>
+    </div>
+
+    <!-- ── Stats Panel ──────────────────────────────────────────── -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+
+      <!-- Total -->
+      <div
+        class="glass-panel border border-slate-200/70 rounded-2xl p-5 hover-lift relative overflow-hidden cursor-default group transition-all duration-300 hover:border-slate-300 hover:shadow-lg">
+        <div
+          class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500">
+        </div>
+        <div class="flex items-start justify-between mb-3">
+          <span class="text-[9px] text-slate-400 font-black uppercase tracking-wider select-none">Total
+            Workspaces</span>
+          <div
+            class="w-7 h-7 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              class="text-slate-500">
+              <ellipse cx="12" cy="5" rx="9" ry="3" />
+              <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+              <path d="M3 12A9 3 0 0 0 21 12" />
+            </svg>
+          </div>
+        </div>
+        <div class="flex items-baseline gap-1.5">
+          <span class="text-2xl font-black tracking-tight text-slate-900">{{ totalCount }}</span>
+          <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">assigned</span>
+        </div>
+      </div>
+
+      <!-- Production -->
+      <div
+        class="glass-panel border border-slate-200/70 rounded-2xl p-5 hover-lift relative overflow-hidden cursor-default group transition-all duration-300 hover:border-emerald-200 hover:shadow-lg hover:shadow-emerald-500/5">
+        <div class="absolute top-0 left-0 right-0 h-0.5 bg-emerald-400"></div>
+        <div class="flex items-start justify-between mb-3">
+          <span class="text-[9px] text-slate-400 font-black uppercase tracking-wider select-none">Production
+            Nodes</span>
+          <div
+            class="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          </div>
+        </div>
+        <div class="flex items-baseline gap-1.5">
+          <span class="text-2xl font-black tracking-tight text-emerald-600">{{ prodCount }}</span>
+          <span class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">live</span>
+        </div>
+      </div>
+
+      <!-- UAT -->
+      <div
+        class="glass-panel border border-slate-200/70 rounded-2xl p-5 hover-lift relative overflow-hidden cursor-default group transition-all duration-300 hover:border-amber-200 hover:shadow-lg hover:shadow-amber-500/5">
+        <div class="absolute top-0 left-0 right-0 h-0.5 bg-amber-400"></div>
+        <div class="flex items-start justify-between mb-3">
+          <span class="text-[9px] text-slate-400 font-black uppercase tracking-wider select-none">UAT
+            Environments</span>
+          <div
+            class="w-7 h-7 rounded-lg bg-amber-50 border border-amber-100 flex items-center justify-center shrink-0">
+            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+          </div>
+        </div>
+        <div class="flex items-baseline gap-1.5">
+          <span class="text-2xl font-black tracking-tight text-amber-600">{{ uatCount }}</span>
+          <span class="text-[10px] text-amber-600 font-bold uppercase tracking-wider">staging</span>
+        </div>
+      </div>
+
+      <!-- Development -->
+      <div
+        class="glass-panel border border-slate-200/70 rounded-2xl p-5 hover-lift relative overflow-hidden cursor-default group transition-all duration-300 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-500/5">
+        <div class="absolute top-0 left-0 right-0 h-0.5 bg-blue-400"></div>
+        <div class="flex items-start justify-between mb-3">
+          <span class="text-[9px] text-slate-400 font-black uppercase tracking-wider select-none">Dev
+            Sandboxes</span>
+          <div
+            class="w-7 h-7 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+          </div>
+        </div>
+        <div class="flex items-baseline gap-1.5">
+          <span class="text-2xl font-black tracking-tight text-blue-600">{{ devCount }}</span>
+          <span class="text-[10px] text-blue-600 font-bold uppercase tracking-wider">test</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Recently Accessed Banner ─────────────────────────────── -->
+    <div *ngIf="recentWorkspace"
+      class="rounded-3xl border border-blue-100/70 bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-cyan-500/5 p-6 shadow-md relative overflow-hidden group hover:shadow-lg hover:border-blue-200/60 transition-all duration-300">
+
+      <!-- Subtle inner grid -->
+      <div
+        class="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.015)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none">
+      </div>
+
+      <!-- Left accent line -->
+      <div class="absolute left-0 top-4 bottom-4 w-0.5 bg-gradient-to-b from-blue-400 via-indigo-400 to-cyan-400 rounded-full"></div>
+
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10 pl-4">
+        <div>
+          <span
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black bg-blue-50 text-blue-700 border border-blue-100 mb-3 uppercase tracking-wider select-none">
+            <span class="relative flex h-1.5 w-1.5">
+              <span
+                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-500"></span>
+            </span>
+            Recently Accessed Workspace
+          </span>
+
+          <h3 class="text-xl font-black text-slate-900 tracking-tight leading-tight">
+            {{ recentWorkspace.name }}
+          </h3>
+
+          <div class="flex flex-wrap items-center gap-3 mt-2">
+            <p class="text-xs text-slate-500 font-medium leading-relaxed">
+              Active workspace ready to resume{{ recentWorkspace.provider ? (' · ' + recentWorkspace.provider) :
+              '' }}.
+            </p>
+            <span *ngIf="recentWorkspace.env"
+              class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-bold border uppercase tracking-wider"
+              [ngClass]="{
+                'bg-emerald-50 text-emerald-700 border-emerald-200': recentWorkspace.env === 'Production',
+                'bg-amber-50 text-amber-700 border-amber-200': recentWorkspace.env === 'UAT',
+                'bg-blue-50 text-blue-700 border-blue-200': recentWorkspace.env === 'Development'
+              }">
+              <span class="w-1 h-1 rounded-full shrink-0"
+                [class.bg-emerald-500]="recentWorkspace.env === 'Production'"
+                [class.bg-amber-500]="recentWorkspace.env === 'UAT'"
+                [class.bg-blue-500]="recentWorkspace.env === 'Development'">
+              </span>
+              {{ recentWorkspace.env }}
+            </span>
+          </div>
+        </div>
+
+        <button
+          (click)="openWorkspace(recentWorkspace.id)"
+          class="group/btn relative overflow-hidden shrink-0 flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 text-white font-bold text-xs rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer">
+          <span
+            class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none">
+          </span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+            class="shrink-0">
+            <polygon points="5 3 19 12 5 21 5 3" />
+          </svg>
+          Continue Session
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+            class="transition-transform duration-300 group-hover/btn:translate-x-1 shrink-0">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Search & Filter ──────────────────────────────────────── -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+
+      <!-- Search -->
+      <div class="relative flex-grow max-w-md w-full">
+        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+          <svg class="h-3.5 w-3.5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </span>
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          placeholder="Search by name or provider (e.g. Postgres)..."
+          class="w-full pl-10 pr-4 py-3 border border-slate-200 bg-white rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200" />
+      </div>
+
+      <!-- Environment Filter Tabs -->
+      <div
+        class="flex flex-wrap items-center gap-1 bg-slate-100/70 p-1 rounded-xl border border-slate-200/70 backdrop-blur-md select-none shadow-inner">
+
+        <button
+          (click)="selectEnv('All')"
+          class="relative px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer focus:outline-none"
+          [class.bg-white]="selectedEnv === 'All'"
+          [class.text-slate-700]="selectedEnv === 'All'"
+          [class.shadow-sm]="selectedEnv === 'All'"
+          [class.border]="selectedEnv === 'All'"
+          [class.border-slate-200]="selectedEnv === 'All'"
+          [class.text-slate-500]="selectedEnv !== 'All'"
+          [class.hover:text-slate-700]="selectedEnv !== 'All'"
+          [class.hover:bg-white/60]="selectedEnv !== 'All'">
+          All
+          <span class="ml-1 text-[9px] font-black opacity-60">({{ totalCount }})</span>
+        </button>
+
+        <button
+          (click)="selectEnv('Production')"
+          class="relative px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer focus:outline-none"
+          [class.bg-white]="selectedEnv === 'Production'"
+          [class.text-emerald-700]="selectedEnv === 'Production'"
+          [class.shadow-sm]="selectedEnv === 'Production'"
+          [class.border]="selectedEnv === 'Production'"
+          [class.border-slate-200]="selectedEnv === 'Production'"
+          [class.text-slate-500]="selectedEnv !== 'Production'"
+          [class.hover:text-slate-700]="selectedEnv !== 'Production'"
+          [class.hover:bg-white/60]="selectedEnv !== 'Production'">
+          Production
+          <span class="ml-1 text-[9px] font-black opacity-60">({{ prodCount }})</span>
+        </button>
+
+        <button
+          (click)="selectEnv('UAT')"
+          class="relative px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer focus:outline-none"
+          [class.bg-white]="selectedEnv === 'UAT'"
+          [class.text-amber-700]="selectedEnv === 'UAT'"
+          [class.shadow-sm]="selectedEnv === 'UAT'"
+          [class.border]="selectedEnv === 'UAT'"
+          [class.border-slate-200]="selectedEnv === 'UAT'"
+          [class.text-slate-500]="selectedEnv !== 'UAT'"
+          [class.hover:text-slate-700]="selectedEnv !== 'UAT'"
+          [class.hover:bg-white/60]="selectedEnv !== 'UAT'">
+          UAT
+          <span class="ml-1 text-[9px] font-black opacity-60">({{ uatCount }})</span>
+        </button>
+
+        <button
+          (click)="selectEnv('Development')"
+          class="relative px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer focus:outline-none"
+          [class.bg-white]="selectedEnv === 'Development'"
+          [class.text-blue-700]="selectedEnv === 'Development'"
+          [class.shadow-sm]="selectedEnv === 'Development'"
+          [class.border]="selectedEnv === 'Development'"
+          [class.border-slate-200]="selectedEnv === 'Development'"
+          [class.text-slate-500]="selectedEnv !== 'Development'"
+          [class.hover:text-slate-700]="selectedEnv !== 'Development'"
+          [class.hover:bg-white/60]="selectedEnv !== 'Development'">
+          Development
+          <span class="ml-1 text-[9px] font-black opacity-60">({{ devCount }})</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Grid header row -->
+    <div class="flex items-center justify-between -mb-4">
+      <div class="flex items-center gap-2">
+        <h3 class="text-xs font-black uppercase tracking-wider text-slate-500">Available Workspaces</h3>
+        <span
+          class="inline-flex items-center justify-center h-4 px-2 rounded-full text-[8px] font-black bg-slate-100 text-slate-600 border border-slate-200 select-none">
+          {{ filteredWorkspaces.length }}
+        </span>
+      </div>
+      <span *ngIf="searchQuery || selectedEnv !== 'All'"
+        class="text-[10px] font-bold text-blue-600 cursor-pointer hover:underline underline-offset-2 select-none"
+        (click)="searchQuery = ''; selectEnv('All')">
+        Clear filters
+      </span>
+    </div>
+
+    <!-- ── Workspace Grid ────────────────────────────────────────── -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5" *ngIf="filteredWorkspaces.length > 0">
+
+      <div
+        *ngFor="let ws of filteredWorkspaces"
+        class="glass-panel hover-lift border border-slate-200/70 flex flex-col justify-between rounded-3xl relative overflow-hidden group transition-all duration-300 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-200/60">
+
+        <!-- Env top stripe -->
+        <div class="absolute top-0 left-0 right-0 h-1 transition-all duration-300"
+          [ngClass]="{
+            'bg-emerald-500': ws.env === 'Production',
+            'bg-amber-500': ws.env === 'UAT',
+            'bg-blue-500': ws.env === 'Development'
+          }">
+        </div>
+
+        <div class="p-6">
+
+          <!-- Name + env badge -->
+          <div class="flex justify-between items-start gap-4 mb-5">
+            <div class="min-w-0">
+              <h4
+                class="text-base font-extrabold text-slate-900 tracking-tight group-hover:text-blue-600 transition-colors duration-200 leading-tight truncate"
+                [title]="ws.name">
+                {{ ws.name }}
+              </h4>
+              <span *ngIf="ws.provider"
+                class="text-[9px] text-slate-400 font-black uppercase tracking-widest mt-1 block">
+                {{ ws.provider }}
+              </span>
+            </div>
+
+            <span *ngIf="ws.env"
+              class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[9px] font-black border leading-none uppercase tracking-wider select-none"
+              [ngClass]="{
+                'bg-emerald-50 text-emerald-700 border-emerald-200': ws.env === 'Production',
+                'bg-amber-50 text-amber-700 border-amber-200': ws.env === 'UAT',
+                'bg-blue-50 text-blue-700 border-blue-200': ws.env === 'Development'
+              }">
+              <span class="w-1.5 h-1.5 rounded-full shrink-0"
+                [class.bg-emerald-500]="ws.env === 'Production'"
+                [class.bg-amber-500]="ws.env === 'UAT'"
+                [class.bg-blue-500]="ws.env === 'Development'">
+              </span>
+              {{ ws.env }}
+            </span>
+          </div>
+
+          <!-- Access level chip -->
+          <div class="flex items-center gap-2">
+            <span
+              class="inline-flex items-center gap-1.5 text-[9px] font-bold text-slate-500 bg-slate-50 border border-slate-200 px-2 py-1 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                class="text-slate-400">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              {{ ws.accessLevel || 'User' }} Access
+            </span>
+          </div>
+        </div>
+
+        <!-- Card Footer -->
+        <div class="px-6 pb-6 pt-4 border-t border-slate-100 flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] text-slate-400 font-semibold flex items-center gap-1.5 select-none">
+              <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="text-slate-300">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              {{ ws.lastAccessed }}
+            </span>
+          </div>
+
+          <button
+            (click)="openWorkspace(ws.id)"
+            class="group/btn relative overflow-hidden w-full py-2.5 bg-slate-50 border border-slate-200 hover:border-transparent text-slate-600 hover:text-white hover:bg-gradient-to-r hover:from-blue-600 hover:via-indigo-600 hover:to-cyan-600 font-bold text-xs rounded-xl active:scale-[0.98] transition-all duration-200 cursor-pointer shadow-sm hover:shadow-lg hover:shadow-blue-500/15 flex items-center justify-center gap-2">
+            <span
+              class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none">
+            </span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              class="shrink-0">
+              <path
+                d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
+            </svg>
+            Establish Connection
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              class="shrink-0 transition-transform duration-200 group-hover/btn:translate-x-0.5">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Empty State ───────────────────────────────────────────── -->
+    <div
+      *ngIf="filteredWorkspaces.length === 0"
+      class="flex flex-col items-center justify-center text-center py-16 bg-white/70 border border-dashed border-slate-200 rounded-3xl shadow-sm">
+
+      <div class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-300 flex items-center justify-center mb-5 border border-slate-200 shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="12" cy="5" rx="9" ry="3" />
+          <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+          <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
+        </svg>
+      </div>
+
+      <!-- Decorative dots -->
+      <div class="flex items-center gap-1.5 mb-4">
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-200"></span>
+        <span class="w-8 h-px bg-slate-200"></span>
+        <span class="w-2 h-2 rounded-full border-2 border-slate-200"></span>
+        <span class="w-8 h-px bg-slate-200"></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-200"></span>
+      </div>
+
+      <h4 class="text-sm font-black text-slate-700">No workspaces match your query</h4>
+      <p class="text-xs text-slate-500 mt-2 max-w-sm leading-relaxed">
+        No databases were found matching
+        <span *ngIf="searchQuery" class="font-bold text-slate-700">"{{ searchQuery }}"</span>
+        <span *ngIf="selectedEnv !== 'All'"> in the <span class="font-bold text-slate-700">{{ selectedEnv
+            }}</span> filter</span>.
+        Try adjusting your search or filter.
+      </p>
+
+      <button
+        (click)="searchQuery = ''; selectEnv('All')"
+        class="mt-5 flex items-center gap-2 px-4 py-2.5 border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700 font-bold text-xs rounded-xl transition-all duration-150 cursor-pointer shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+          class="text-slate-400">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38" />
+        </svg>
+        Reset All Filters
+      </button>
+    </div>
+
+  </main>
+
+  <!-- ================================================================ -->
+  <!-- Footer                                                           -->
+  <!-- ================================================================ -->
+  <footer
+    class="relative z-10 border-t border-slate-200/50 bg-white/80 backdrop-blur-sm py-5 w-full mt-auto select-none">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+        © 2026 AskDB · Internal Enterprise Console
+      </span>
+      <div class="flex items-center gap-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+        <div class="flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          Secure API: Active
+        </div>
+        <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+        <span>Session Encrypted</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================================================================ -->
+  <!-- Connection Toast                                                 -->
+  <!-- ================================================================ -->
+  <div
+    *ngIf="toastMessage !== null"
+    class="fixed bottom-6 right-6 z-50 max-w-sm w-full bg-white/95 backdrop-blur-md border shadow-2xl rounded-2xl p-4 flex items-center justify-between gap-4 animate-fade-in transition-all duration-300"
+    [ngClass]="{
+      'border-blue-200 shadow-blue-500/10': toastState === 'loading',
+      'border-emerald-200 shadow-emerald-500/10': toastState === 'success'
+    }">
+
+    <!-- Top stripe -->
+    <div class="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl"
+      [ngClass]="{
+        'bg-blue-500': toastState === 'loading',
+        'bg-emerald-500': toastState === 'success'
+      }">
+    </div>
+
+    <div class="flex items-center gap-3.5">
+
+      <!-- Icon -->
+      <div class="shrink-0">
+        <!-- Loading spinner -->
+        <div
+          *ngIf="toastState === 'loading'"
+          class="w-9 h-9 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+          <svg class="animate-spin h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+            </circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+        </div>
+
+        <!-- Success check -->
+        <div
+          *ngIf="toastState === 'success'"
+          class="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+            class="text-emerald-600">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </div>
+      </div>
+
+      <div>
+        <p class="text-xs font-black text-slate-900 leading-tight">
+          {{ toastState === 'loading' ? 'Session Handshake' : 'Secure Session Initiated' }}
+        </p>
+        <p class="text-[10px] text-slate-500 mt-1 font-semibold leading-snug">{{ toastMessage }}</p>
+      </div>
+    </div>
+
+    <!-- Dismiss -->
+    <button
+      (click)="toastMessage = null; toastState = null"
+      class="w-6 h-6 rounded-lg border border-slate-200 bg-white/80 hover:bg-slate-50 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-all duration-150 cursor-pointer shrink-0">
+      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- Workspace Password Connect Modal                                 -->
+  <!-- ================================================================ -->
+  <div
+    *ngIf="showConnectModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm px-4 py-6 select-none animate-fade-in"
+    (click)="closeConnectModal()">
+
+    <section
+      class="relative bg-white border border-slate-200 shadow-2xl rounded-3xl max-w-md w-full max-h-[90vh] overflow-hidden flex flex-col"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="connect-modal-title"
+      (click)="$event.stopPropagation()">
+
+      <!-- Top Gradient Accent -->
+      <div
+        class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 rounded-t-3xl">
+      </div>
+
+      <!-- Modal Header -->
+      <header class="shrink-0 px-6 py-5 border-b border-slate-100 bg-slate-50/60">
+        <div class="flex items-start justify-between gap-4">
+
+          <div class="flex items-start gap-3">
+            <div
+              class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center shadow-md shadow-blue-500/20 shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </div>
+            <div>
+              <h3 id="connect-modal-title" class="text-base font-black text-slate-900 tracking-tight">
+                Connect to Workspace
+              </h3>
+              <p class="text-[10px] text-slate-500 mt-0.5 leading-relaxed">
+                Authenticate database handshake to open a secure analytical sandbox.
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            (click)="closeConnectModal()"
+            [disabled]="isVerifyingConnection"
+            aria-label="Close connect dialog"
+            class="w-8 h-8 rounded-lg border border-slate-200 bg-white text-slate-400 hover:text-slate-700 hover:bg-slate-50 hover:border-slate-300 flex items-center justify-center transition-all duration-200 cursor-pointer disabled:opacity-50 shrink-0 mt-0.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Modal Body -->
+      <div class="flex-1 overflow-y-auto custom-scrollbar p-6 flex flex-col gap-5">
+
+        <!-- Loading State -->
+        <div
+          *ngIf="isVerifyingConnection && !connectingWorkspace && !connectError"
+          class="flex flex-col items-center justify-center py-10">
+          <div
+            class="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center mb-4">
+            <svg class="animate-spin h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+              </circle>
+              <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+              </path>
+            </svg>
+          </div>
+          <p class="text-xs font-bold text-slate-700">Retrieving credentials...</p>
+          <p class="text-[10px] text-slate-400 mt-1">Establishing secure channel</p>
+        </div>
+
+        <!-- Main Content -->
+        <ng-container *ngIf="connectingWorkspace || connectError">
+
+          <!-- Error Alert -->
+          <div
+            *ngIf="connectError"
+            class="flex items-start gap-3 p-3.5 rounded-xl border border-red-200 bg-red-50/70 animate-fade-in"
+            role="alert">
+            <div
+              class="w-7 h-7 rounded-lg bg-red-100 border border-red-200 flex items-center justify-center shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                class="text-red-600">
+                <circle cx="12" cy="12" r="9" />
+                <line x1="9" y1="9" x2="15" y2="15" />
+                <line x1="15" y1="9" x2="9" y2="15" />
+              </svg>
+            </div>
+            <p class="text-xs text-red-800 font-semibold leading-relaxed pt-0.5">{{ connectError }}</p>
+          </div>
+
+          <!-- Success Alert -->
+          <div
+            *ngIf="connectSuccess"
+            class="flex items-start gap-3 p-3.5 rounded-xl border border-emerald-200 bg-emerald-50/70 animate-fade-in">
+            <div
+              class="w-7 h-7 rounded-lg bg-emerald-100 border border-emerald-200 flex items-center justify-center shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                class="text-emerald-600">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-[10px] font-black text-emerald-800 uppercase tracking-wider mb-0.5">
+                Authenticated
+              </p>
+              <p class="text-xs text-emerald-700 font-semibold leading-relaxed">
+                Secure session established. Redirecting to workspace...
+              </p>
+            </div>
+          </div>
+
+          <ng-container *ngIf="connectingWorkspace">
+
+            <!-- Workspace Details Card -->
+            <div class="rounded-2xl border border-slate-200 bg-slate-50/60 overflow-hidden">
+
+              <!-- Card Header -->
+              <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-white/80">
+                <div>
+                  <h4 class="text-xs font-black text-slate-900 leading-tight">
+                    {{ connectingWorkspace.name }}
+                  </h4>
+                  <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">
+                    {{ connectingWorkspace.provider }}
+                  </span>
+                </div>
+                <span
+                  class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[8px] font-black border uppercase tracking-wider"
+                  [ngClass]="{
+                    'bg-emerald-50 text-emerald-700 border-emerald-200': connectingWorkspace.env === 'Production',
+                    'bg-amber-50 text-amber-700 border-amber-200': connectingWorkspace.env === 'UAT',
+                    'bg-blue-50 text-blue-700 border-blue-200': connectingWorkspace.env === 'Development'
+                  }">
+                  <span class="w-1 h-1 rounded-full shrink-0"
+                    [class.bg-emerald-500]="connectingWorkspace.env === 'Production'"
+                    [class.bg-amber-500]="connectingWorkspace.env === 'UAT'"
+                    [class.bg-blue-500]="connectingWorkspace.env === 'Development'">
+                  </span>
+                  {{ connectingWorkspace.env }}
+                </span>
+              </div>
+
+              <!-- Connection Details Grid -->
+              <div class="grid grid-cols-3 gap-0 divide-x divide-slate-200 p-0">
+                <div class="px-4 py-3 flex flex-col">
+                  <span class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-1">Engine</span>
+                  <span class="text-[10px] text-slate-800 font-bold uppercase tracking-wide">
+                    {{ connectingWorkspace.provider }}
+                  </span>
+                </div>
+                <div class="px-4 py-3 flex flex-col">
+                  <span class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-1">Host</span>
+                  <span class="text-[10px] text-slate-800 font-mono font-bold truncate">
+                    {{ connectingWorkspace.host || 'localhost' }}
+                  </span>
+                </div>
+                <div class="px-4 py-3 flex flex-col">
+                  <span class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-1">Port</span>
+                  <span class="text-[10px] text-slate-800 font-mono font-bold">
+                    {{ connectingWorkspace.port || '1433' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Password Entry -->
+            <div *ngIf="!connectSuccess" class="flex flex-col gap-3">
+
+              <div>
+                <label
+                  for="db-password-input"
+                  class="flex items-center gap-1 text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                    stroke-linejoin="round" class="text-slate-400">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                  Database Password
+                </label>
+
+                <div class="relative">
+                  <input
+                    id="db-password-input"
+                    [type]="showPasswordText ? 'text' : 'password'"
+                    [(ngModel)]="dbPasswordInput"
+                    placeholder="Enter secure database credential"
+                    [disabled]="isVerifyingConnection"
+                    (keydown.enter)="submitConnect()"
+                    class="w-full pl-4 pr-11 py-3 rounded-xl text-xs font-semibold text-slate-900 placeholder-slate-400 outline-none modern-input shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all duration-200 disabled:opacity-60" />
+
+                  <!-- Toggle visibility -->
+                  <button
+                    type="button"
+                    (click)="showPasswordText = !showPasswordText"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-white/80 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-all duration-150 cursor-pointer focus:outline-none">
+                    <!-- Eye -->
+                    <svg *ngIf="!showPasswordText" xmlns="http://www.w3.org/2000/svg" width="13"
+                      height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                    <!-- Eye Off -->
+                    <svg *ngIf="showPasswordText" xmlns="http://www.w3.org/2000/svg" width="13"
+                      height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <path
+                        d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                      <line x1="1" y1="1" x2="23" y2="23" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Remember password checkbox -->
+              <label
+                class="flex items-center gap-2.5 cursor-pointer select-none group/check">
+                <div
+                  class="relative w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-all duration-200"
+                  [class.bg-blue-600]="rememberPassword"
+                  [class.border-blue-600]="rememberPassword"
+                  [class.border-slate-300]="!rememberPassword"
+                  [class.bg-white]="!rememberPassword">
+                  <input
+                    type="checkbox"
+                    id="rememberPassword"
+                    [(ngModel)]="rememberPassword"
+                    [disabled]="isVerifyingConnection"
+                    class="absolute inset-0 opacity-0 w-full h-full cursor-pointer" />
+                  <svg *ngIf="rememberPassword" xmlns="http://www.w3.org/2000/svg" width="9" height="9"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"
+                    stroke-linecap="round" stroke-linejoin="round" class="text-white pointer-events-none">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </div>
+                <span
+                  class="text-[10px] font-bold text-slate-500 uppercase tracking-wider group-hover/check:text-slate-700 transition-colors duration-150">
+                  Remember for future sessions
+                </span>
+              </label>
+
+              <!-- Compliance note -->
+              <div class="flex items-start gap-1.5 pt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                  stroke-linejoin="round" class="text-emerald-500 shrink-0 mt-0.5">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                <p class="text-[9px] text-slate-400 font-medium leading-relaxed">
+                  Passwords are validated via secure REST layers and never stored locally.
+                </p>
+              </div>
+            </div>
+
+          </ng-container>
+        </ng-container>
+      </div>
+
+      <!-- Modal Footer -->
+      <footer
+        *ngIf="!connectSuccess"
+        class="shrink-0 px-6 py-4 border-t border-slate-100 bg-slate-50/60">
+        <div class="flex items-center justify-end gap-2.5">
+
+          <button
+            type="button"
+            (click)="closeConnectModal()"
+            [disabled]="isVerifyingConnection"
+            class="px-4 py-2.5 border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-600 text-xs font-bold rounded-xl cursor-pointer disabled:opacity-50 transition-all duration-200">
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            (click)="submitConnect()"
+            [disabled]="isVerifyingConnection"
+            class="group/sub relative overflow-hidden flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 text-white text-xs font-bold rounded-xl cursor-pointer transition-all duration-200">
+            <span
+              class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/sub:translate-x-full transition-transform duration-700 pointer-events-none">
+            </span>
+
+            <svg *ngIf="isVerifyingConnection" class="animate-spin h-3.5 w-3.5 text-white shrink-0"
+              fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+              </circle>
+              <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+              </path>
+            </svg>
+
+            <svg *ngIf="!isVerifyingConnection" xmlns="http://www.w3.org/2000/svg" width="13" height="13"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+
+            <span>{{ isVerifyingConnection ? 'Verifying...' : 'Establish Session' }}</span>
+          </button>
+        </div>
+      </footer>
+
+    </section>
+  </div>
+
+</div>
+} @else {
+<app-admin-workspace></app-admin-workspace>
+}

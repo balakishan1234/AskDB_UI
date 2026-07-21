@@ -1,0 +1,39 @@
+{
+  "admin": {
+    "email": "admin@cgi.com",
+    "password": "admin",
+    "name": "System Administrator",
+    "role": "admin"
+  },
+  "users": [
+    {
+      "id": "u1",
+      "name": "John Doe",
+      "email": "john.doe@cgi.com",
+      "role": "user",
+      "workspaces": [
+        { "id": "w1", "name": "Sales Analytics", "provider": "SQL Server", "env": "Production", "accessLevel": "User", "tables": 183, "schemas": 42 },
+        { "id": "w2", "name": "Customer Feedback", "provider": "PostgreSQL", "env": "UAT", "accessLevel": "User", "tables": 48, "schemas": 8 }
+      ]
+    },
+    {
+      "id": "u2",
+      "name": "Jane Smith",
+      "email": "jane.smith@cgi.com",
+      "role": "user",
+      "workspaces": [
+        { "id": "w3", "name": "Marketing Campaign", "provider": "MySQL", "env": "Development", "accessLevel": "Admin", "tables": 35, "schemas": 6 }
+      ]
+    },
+    {
+      "id": "u3",
+      "name": "Alex Johnson",
+      "email": "alex.johnson@cgi.com",
+      "role": "user",
+      "workspaces": [
+        { "id": "w4", "name": "Billing Sandbox", "provider": "PostgreSQL", "env": "Development", "accessLevel": "Admin", "tables": 43, "schemas": 9 },
+        { "id": "w2", "name": "Customer Feedback", "provider": "PostgreSQL", "env": "UAT", "accessLevel": "User", "tables": 48, "schemas": 8 }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,439 @@
+<div
+  class="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between items-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans">
+
+  <!-- Grid Overlay -->
+  <div
+    class="absolute inset-0 bg-[linear-gradient(to_right,var(--grid-color)_1.5px,transparent_1.5px),linear-gradient(to_bottom,var(--grid-color)_1.5px,transparent_1.5px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-40 pointer-events-none -z-10">
+  </div>
+
+  <!-- Glowing Blobs -->
+  <div
+    class="absolute top-[-10%] left-[-10%] w-[45rem] h-[45rem] rounded-full bg-blue-500/10 blur-[120px] animate-pulse-slow pointer-events-none -z-10">
+  </div>
+  <div
+    class="absolute bottom-[-10%] right-[-10%] w-[35rem] h-[35rem] rounded-full bg-indigo-500/8 blur-[100px] animate-pulse-slow-reverse pointer-events-none -z-10">
+  </div>
+  <div
+    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[25rem] h-[25rem] rounded-full bg-cyan-500/5 blur-[80px] pointer-events-none -z-10">
+  </div>
+
+  <!-- Theme Toggle -->
+  <div class="absolute top-6 right-6 z-50">
+    <button (click)="themeService.toggleTheme()"
+      [title]="themeService.currentTheme() === 'light' ? 'Switch to Cyber Obsidian Dark' : 'Switch to Corporate Light'"
+      class="group p-2.5 rounded-xl border border-slate-200 bg-white/70 hover:bg-white hover:border-slate-300 hover:shadow-md text-slate-400 hover:text-blue-600 transition-all duration-200 cursor-pointer shadow-sm flex items-center justify-center">
+      <svg *ngIf="themeService.currentTheme() === 'light'" xmlns="http://www.w3.org/2000/svg" width="16"
+        height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-300 group-hover:rotate-12">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+      </svg>
+      <svg *ngIf="themeService.currentTheme() === 'dark'" xmlns="http://www.w3.org/2000/svg" width="16"
+        height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round"
+        class="transition-transform duration-500 group-hover:rotate-45">
+        <circle cx="12" cy="12" r="5" />
+        <line x1="12" y1="1" x2="12" y2="3" />
+        <line x1="12" y1="21" x2="12" y2="23" />
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+        <line x1="1" y1="12" x2="3" y2="12" />
+        <line x1="21" y1="12" x2="23" y2="12" />
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Header / Brand -->
+  <header class="relative z-10 w-full max-w-md flex justify-center mb-8">
+    <div class="flex items-center gap-3.5 group cursor-pointer" (click)="goToHome()">
+      <!-- Logo Icon -->
+      <div
+        class="relative flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white shadow-lg shadow-blue-500/25 group-hover:shadow-blue-500/40 group-hover:scale-105 transition-all duration-300">
+        <!-- Shimmer on hover -->
+        <span
+          class="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none overflow-hidden"></span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="12" cy="5" rx="9" ry="3" />
+          <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+          <path d="M3 12A9 3 0 0 0 21 12" />
+        </svg>
+      </div>
+      <!-- Brand Text -->
+      <div>
+        <h1
+          class="text-xl font-black tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors duration-200 flex items-center gap-2">
+          AskDB
+          <span *ngIf="isMockMode" (click)="openMockConsole()"
+            class="inline-flex items-center px-2 py-0.5 rounded-md text-[8px] font-extrabold bg-amber-100 text-amber-700 border border-amber-200 uppercase tracking-widest leading-none cursor-pointer hover:bg-amber-200 transition-colors duration-150">
+            Mock Mode
+          </span>
+        </h1>
+        <span
+          class="block text-[10px] text-slate-400 font-bold tracking-widest uppercase mt-0.5 group-hover:text-slate-500 transition-colors duration-200">
+          AI Database Assistant
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Card -->
+  <main class="relative z-10 w-full max-w-md my-auto">
+    <div
+      class="glass-panel border border-white/50 shadow-2xl shadow-slate-200/60 rounded-3xl p-8 sm:p-10 hover-lift transition-all duration-300">
+
+      <!-- Card Header -->
+      <div class="text-center mb-8">
+        <!-- Icon above title -->
+        <div
+          class="mx-auto w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/20 mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+            class="text-white">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+        </div>
+        <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight font-display">Internal Portal Access</h2>
+        <p class="text-slate-500 text-xs mt-2 leading-relaxed max-w-xs mx-auto">
+          Sign in using your corporate email address to access workspace databases.
+        </p>
+      </div>
+
+      <!-- Access Notice -->
+      <div
+        class="mb-6 rounded-2xl border border-amber-200/70 bg-amber-50/60 p-4 flex items-start gap-3 shadow-sm">
+        <div
+          class="w-7 h-7 rounded-lg bg-amber-100 border border-amber-200 flex items-center justify-center shrink-0 mt-0.5">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-amber-600" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-[10px] font-black text-amber-800 uppercase tracking-wider mb-0.5">Authorized Personnel Only</p>
+          <p class="text-[11px] text-amber-700 font-medium leading-relaxed">
+            All access, operations, and queries are audited and logged under compliance regulations.
+          </p>
+        </div>
+      </div>
+
+      <!-- Login Form -->
+      <form class="space-y-5" (ngSubmit)="onLogin()">
+
+        <!-- Warning Alert -->
+        <div *ngIf="warningMessage"
+          class="rounded-2xl border border-amber-200 bg-amber-50/60 p-3.5 flex items-start gap-2.5 shadow-sm animate-fade-in">
+          <div
+            class="w-6 h-6 rounded-lg bg-amber-100 border border-amber-200 flex items-center justify-center shrink-0 mt-0.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-amber-600" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <p class="text-xs text-amber-900 font-semibold leading-relaxed">{{ warningMessage }}</p>
+        </div>
+
+        <!-- Error Alert -->
+        <div *ngIf="errorMessage"
+          class="rounded-2xl border border-red-200 bg-red-50/60 p-3.5 flex items-start gap-2.5 shadow-sm animate-fade-in">
+          <div
+            class="w-6 h-6 rounded-lg bg-red-100 border border-red-200 flex items-center justify-center shrink-0 mt-0.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-red-600" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p class="text-xs text-red-800 font-semibold leading-relaxed">{{ errorMessage }}</p>
+        </div>
+
+        <!-- Email Field -->
+        <div class="space-y-2">
+          <label class="flex items-center gap-1.5 text-[10px] font-black text-slate-500 uppercase tracking-wider select-none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              class="text-slate-400">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>
+            Corporate Email Address
+          </label>
+          <div class="relative">
+            <input type="text" [(ngModel)]="email" name="email" placeholder="e.g. john.doe@cgi.com"
+              class="w-full px-4 py-3 rounded-xl modern-input text-slate-900 placeholder-slate-400 text-xs font-semibold shadow-sm outline-none pr-10 transition-all duration-200" />
+            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="text-slate-300">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="space-y-2">
+          <label class="flex items-center gap-1.5 text-[10px] font-black text-slate-500 uppercase tracking-wider select-none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              class="text-slate-400">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            Password
+          </label>
+          <div class="relative">
+            <input type="password" [(ngModel)]="password" name="password" placeholder="••••••••"
+              class="w-full px-4 py-3 rounded-xl modern-input text-slate-900 placeholder-slate-400 text-xs font-semibold shadow-sm outline-none pr-10 transition-all duration-200" />
+            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="text-slate-300">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Remember Me + Forgot Password -->
+        <div class="flex items-center justify-between">
+          <label
+            class="flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-800 cursor-pointer select-none group transition-colors duration-150">
+            <div
+              class="relative w-4 h-4 rounded border border-slate-300 bg-white group-hover:border-blue-400 transition-colors duration-150 flex items-center justify-center shrink-0">
+              <input type="checkbox"
+                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+                class="text-blue-600 hidden peer-checked:block">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            Remember Me
+          </label>
+          <a href="#" (click)="openForgotModal($event)"
+            class="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline underline-offset-2 transition-colors duration-150 select-none">
+            Forgot Password?
+          </a>
+        </div>
+
+        <!-- Divider -->
+        <div class="relative flex items-center gap-3 py-1">
+          <div class="flex-1 h-px bg-slate-100"></div>
+          <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest select-none">Secure Sign-In</span>
+          <div class="flex-1 h-px bg-slate-100"></div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit"
+          class="group relative w-full py-3.5 btn-gradient text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 hover:scale-[1.01] hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300 text-xs cursor-pointer flex items-center justify-center gap-2 overflow-hidden">
+          <!-- Shimmer -->
+          <span
+            class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none"></span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+            class="shrink-0 opacity-90">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+            <polyline points="10 17 15 12 10 7" />
+            <line x1="15" y1="12" x2="3" y2="12" />
+          </svg>
+          <span>Sign In to Console</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+            class="shrink-0 transition-transform duration-300 group-hover:translate-x-1">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        </button>
+
+        <!-- Security Note -->
+        <div class="flex items-center justify-center gap-1.5 text-[10px] text-slate-400 font-medium select-none">
+          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+            class="text-emerald-400 shrink-0">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+          · Zero data retention · SOC 2 compliant
+        </div>
+
+      </form>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer
+    class="relative z-10 text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-8 w-full select-none flex flex-col items-center gap-2">
+    <div class="flex items-center gap-3">
+      <span>© 2026 AskDB</span>
+      <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+      <span>Internal Enterprise Platform</span>
+      <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+      <span class="text-blue-400 hover:text-blue-500 cursor-pointer transition-colors duration-150">Privacy
+        Policy</span>
+    </div>
+    <div class="flex items-center gap-1.5 text-[9px] text-slate-300">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+      All systems operational
+    </div>
+  </footer>
+
+  <!-- ============================================================ -->
+  <!-- Forgot Password Modal                                        -->
+  <!-- ============================================================ -->
+  <div *ngIf="showForgotModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm px-4 select-none animate-fade-in"
+    (click)="closeForgotModal()">
+
+    <div
+      class="glass-panel border border-white/50 shadow-2xl shadow-slate-300/40 rounded-3xl max-w-md w-full p-6 sm:p-8 transition-all duration-300 relative"
+      (click)="$event.stopPropagation()">
+
+      <!-- Decorative gradient top bar -->
+      <div
+        class="absolute top-0 left-0 right-0 h-1 rounded-t-3xl bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500">
+      </div>
+
+      <!-- Modal Header -->
+      <div class="flex justify-between items-start border-b border-slate-200/60 pb-4 mb-5">
+        <div class="flex items-start gap-3">
+          <div
+            class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              class="text-white">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900 tracking-tight">Reset Password</h3>
+            <p class="text-[10px] text-slate-500 mt-0.5 font-semibold leading-relaxed max-w-[260px]">
+              Enter your corporate email to receive reset instructions.
+            </p>
+          </div>
+        </div>
+        <button (click)="closeForgotModal()" [disabled]="isSendingReset"
+          class="w-7 h-7 rounded-lg border border-slate-200 bg-white/80 hover:bg-slate-100 hover:border-slate-300 flex items-center justify-center text-slate-400 hover:text-slate-600 cursor-pointer disabled:opacity-50 transition-all duration-150 shrink-0 ml-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="space-y-4">
+
+        <!-- Error Alert -->
+        <div *ngIf="forgotError"
+          class="rounded-xl border border-red-200 bg-red-50/60 p-3.5 flex items-start gap-2.5 animate-fade-in">
+          <div
+            class="w-6 h-6 rounded-lg bg-red-100 border border-red-200 flex items-center justify-center shrink-0 mt-0.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-red-600" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p class="text-xs text-red-800 font-semibold leading-relaxed">{{ forgotError }}</p>
+        </div>
+
+        <!-- Success Alert -->
+        <div *ngIf="forgotSuccess"
+          class="rounded-xl border border-emerald-200 bg-emerald-50/60 p-4 flex items-start gap-3 animate-fade-in">
+          <div
+            class="w-7 h-7 rounded-lg bg-emerald-100 border border-emerald-200 flex items-center justify-center shrink-0 mt-0.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-emerald-600" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-[10px] font-black text-emerald-800 uppercase tracking-wider mb-1">Email Dispatched</p>
+            <p class="text-xs text-emerald-700 font-medium leading-relaxed">
+              A reset link has been sent to <strong>{{ forgotEmail }}</strong>. Check your inbox or contact
+              <strong>admin&#64;cgi.com</strong> for further assistance.
+            </p>
+          </div>
+        </div>
+
+        <!-- Email Input (hidden on success) -->
+        <div *ngIf="!forgotSuccess" class="space-y-2">
+          <label
+            class="flex items-center gap-1.5 text-[10px] font-black text-slate-500 uppercase tracking-wider select-none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              class="text-slate-400">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>
+            Corporate Email Address
+          </label>
+          <div class="relative">
+            <input type="text" [(ngModel)]="forgotEmail" placeholder="e.g. john.doe@cgi.com"
+              [disabled]="isSendingReset" (keydown.enter)="submitForgot()"
+              class="w-full px-4 py-3 rounded-xl modern-input text-slate-900 placeholder-slate-400 text-xs font-semibold shadow-sm outline-none pr-10 disabled:opacity-60 transition-all duration-200" />
+            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="text-slate-300">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+            </div>
+          </div>
+          <p class="text-[10px] text-slate-400 font-medium flex items-center gap-1.5 mt-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              class="text-slate-300 shrink-0">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            Must match your registered corporate email address
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex justify-end gap-2.5 mt-6 pt-4 border-t border-slate-200/60">
+        <button (click)="closeForgotModal()" [disabled]="isSendingReset"
+          class="px-4 py-2.5 border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-600 text-xs font-bold rounded-xl cursor-pointer disabled:opacity-50 transition-all duration-150 select-none">
+          {{ forgotSuccess ? 'Close' : 'Cancel' }}
+        </button>
+
+        <button *ngIf="!forgotSuccess" (click)="submitForgot()" [disabled]="isSendingReset"
+          class="group relative px-5 py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 text-white font-bold text-xs rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed overflow-hidden select-none">
+          <!-- Shimmer -->
+          <span
+            class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none"></span>
+          <svg *ngIf="isSendingReset" class="animate-spin h-3.5 w-3.5 text-white shrink-0" fill="none"
+            viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+          <svg *ngIf="!isSendingReset" xmlns="http://www.w3.org/2000/svg" width="13" height="13"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round" class="shrink-0">
+            <line x1="22" y1="2" x2="11" y2="13" />
+            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+          </svg>
+          <span>{{ isSendingReset ? 'Sending...' : 'Send Reset Link' }}</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

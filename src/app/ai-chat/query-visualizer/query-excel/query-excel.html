@@ -1,0 +1,219 @@
+<div class="space-y-5">
+  <!-- Excel Toolbar Controls -->
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-white/50 border border-slate-200/60 backdrop-blur-md px-4 py-3 rounded-2xl shadow-sm select-none">
+    <div class="flex items-center gap-3">
+      <div class="relative flex items-center justify-center">
+        <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+        <div class="absolute w-4 h-4 rounded-full bg-emerald-500/15 animate-ping"></div>
+      </div>
+      <div class="flex flex-col">
+        <span class="text-xs font-extrabold text-slate-700 uppercase tracking-[0.14em]">
+          Interactive Excel Workbook
+        </span>
+        <span class="text-[10px] font-semibold text-slate-400 tracking-wide">
+          {{ editableResults.length }} rows · {{ columns.length }} columns · Editable
+        </span>
+      </div>
+    </div>
+
+    <button
+      (click)="exportToExcel()"
+      class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white font-bold text-xs tracking-wide hover:scale-[1.02] active:scale-[0.97] transition-all duration-200 shadow-md shadow-emerald-600/15 hover:shadow-lg hover:shadow-emerald-600/25 cursor-pointer group"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="13"
+        height="13"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="transition-transform duration-200 group-hover:translate-y-0.5"
+      >
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" y2="3" />
+      </svg>
+      <span>Export to Excel</span>
+    </button>
+  </div>
+
+  <!-- Spreadsheet Grid -->
+  <div class="border border-slate-200/60 bg-slate-100/40 rounded-2xl overflow-hidden shadow-inner flex flex-col">
+    <div class="overflow-x-auto w-full light-scrollbar">
+      <table class="w-full text-left border-collapse min-w-[540px]">
+        <thead class="sticky top-0 z-10">
+          <!-- Alphabetical Column Coordinates -->
+          <tr class="bg-slate-200/50 border-b border-slate-300/70 select-none">
+            <th class="px-2 py-1.5 bg-slate-200/80 border-r border-slate-300/60 w-11 min-w-[44px]">
+              <span class="text-[9px] font-mono font-bold text-slate-400 block text-center">№</span>
+            </th>
+            <th
+              *ngFor="let col of columns; let i = index"
+              class="px-3 py-1.5 border-r border-slate-300/50 text-center"
+            >
+              <span class="text-[10px] font-bold font-mono text-slate-500 tracking-wide">
+                {{ getColumnLabel(i) }}
+              </span>
+            </th>
+          </tr>
+
+          <!-- Database Column Names -->
+          <tr class="bg-slate-50/80 border-b border-slate-200/60 select-none">
+            <th class="px-2 py-3 bg-slate-100/90 border-r border-slate-200/60 text-center w-11 min-w-[44px]">
+              <span class="text-[9px] font-extrabold font-mono text-slate-400 uppercase">#</span>
+            </th>
+            <th
+              *ngFor="let col of columns"
+              class="px-3 py-3 border-r border-slate-200/50"
+            >
+              <span class="text-[9px] font-extrabold text-slate-500 uppercase tracking-[0.12em]">
+                {{ col }}
+              </span>
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <!-- Editable Rows -->
+          <tr
+            *ngFor="let row of editableResults; let rowIndex = index"
+            class="border-b border-slate-200/50 hover:bg-emerald-50/20 transition-colors duration-150 group/row"
+            [class.bg-white/60]="rowIndex % 2 === 0"
+            [class.bg-slate-50/40]="rowIndex % 2 !== 0"
+          >
+            <!-- Row Numbers -->
+            <td class="px-2 py-2 bg-slate-100/70 border-r border-slate-200/50 text-center font-mono text-[10px] text-slate-400 font-bold select-none w-11 min-w-[44px] group-hover/row:text-slate-600 transition-colors">
+              {{ rowIndex + 1 }}
+            </td>
+
+            <!-- Editable Cell Inputs -->
+            <td
+              *ngFor="let col of columns"
+              class="px-1 py-1 border-r border-slate-200/40 bg-white/80"
+            >
+              <input
+                type="text"
+                [value]="row[col]"
+                (change)="onCellChanged(rowIndex, col, $event)"
+                class="w-full px-2.5 py-2 bg-transparent border border-transparent rounded-lg text-xs font-semibold text-slate-700 font-mono placeholder-slate-300 transition-all duration-150 outline-none hover:border-slate-200 hover:bg-slate-50/50 focus:border-emerald-500/60 focus:ring-2 focus:ring-emerald-500/10 focus:bg-white focus:shadow-sm focus:shadow-emerald-500/5"
+                placeholder="—"
+              />
+            </td>
+          </tr>
+
+          <!-- Empty State -->
+          <tr *ngIf="editableResults.length === 0">
+            <td
+              [attr.colspan]="columns.length + 1"
+              class="px-6 py-14 text-center"
+            >
+              <div class="flex flex-col items-center justify-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200/60 flex items-center justify-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-slate-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="1.75"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                </div>
+                <span class="text-xs font-bold text-slate-500">No data loaded</span>
+                <span class="text-[11px] font-medium text-slate-400">
+                  Import or connect a dataset to begin editing.
+                </span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Spreadsheet Footer -->
+    <div class="flex items-center justify-between px-4 py-2.5 bg-slate-100/60 border-t border-slate-200/50 select-none">
+      <span class="text-[10px] font-semibold text-slate-400 tracking-wide">
+        Ready · Cells are editable inline
+      </span>
+      <span class="text-[10px] font-bold text-slate-400 font-mono">
+        {{ editableResults.length }}R × {{ columns.length }}C
+      </span>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div
+    *ngIf="toastMessage !== null"
+    class="fixed bottom-6 right-6 z-50 max-w-sm w-full animate-fade-in"
+  >
+    <div class="flex items-center justify-between gap-4 bg-slate-900/95 backdrop-blur-lg border border-emerald-500/20 shadow-2xl shadow-slate-900/20 rounded-2xl px-4 py-3.5">
+      <div class="flex items-center gap-3 min-w-0">
+        <!-- Icon -->
+        <div class="shrink-0 w-7 h-7 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+          <!-- Spinner for generating -->
+          <svg
+            *ngIf="toastMessage.includes('Generating'); else checkIcon"
+            class="animate-spin h-3.5 w-3.5 text-emerald-400"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+
+          <!-- Checkmark for success -->
+          <ng-template #checkIcon>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="text-emerald-400"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </ng-template>
+        </div>
+
+        <!-- Text -->
+        <div class="min-w-0">
+          <p class="text-[11px] font-extrabold text-white uppercase tracking-[0.12em] leading-none">
+            Excel Workbook
+          </p>
+          <p class="text-[10px] text-slate-400 mt-1 font-semibold truncate">
+            {{ toastMessage }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Dismiss Button -->
+      <button
+        (click)="toastMessage = null"
+        class="shrink-0 w-6 h-6 rounded-lg flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Auto-dismiss progress bar -->
+    <div class="mt-1 h-0.5 rounded-full bg-slate-700/50 overflow-hidden">
+      <div class="h-full bg-emerald-500/60 rounded-full animate-shrink"></div>
+    </div>
+  </div>
+</div>

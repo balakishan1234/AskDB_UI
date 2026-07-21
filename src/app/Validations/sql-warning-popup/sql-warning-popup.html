@@ -1,0 +1,204 @@
+<!-- sql-warning-popup/sql-warning-popup.html -->
+
+<!-- Backdrop -->
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
+  (click)="onClose.emit()">
+
+  <!-- Panel -->
+  <div
+    class="relative w-full max-w-md rounded-3xl bg-white border shadow-2xl overflow-hidden animate-slide-up"
+    (click)="$event.stopPropagation()"
+    [ngClass]="{
+      'border-red-200 shadow-red-500/20':    validation.severity === 'critical',
+      'border-orange-200 shadow-orange-500/20': validation.severity === 'high',
+      'border-amber-200 shadow-amber-500/20':   validation.severity === 'medium',
+      'border-blue-200 shadow-blue-500/20':     validation.severity === 'low'
+    }">
+
+    <!-- Top stripe -->
+    <div
+      class="h-1 w-full"
+      [ngClass]="{
+        'bg-gradient-to-r from-red-500 to-rose-600':       validation.severity === 'critical',
+        'bg-gradient-to-r from-orange-500 to-amber-500':   validation.severity === 'high',
+        'bg-gradient-to-r from-amber-400 to-yellow-500':   validation.severity === 'medium',
+        'bg-gradient-to-r from-blue-400 to-indigo-500':    validation.severity === 'low'
+      }">
+    </div>
+
+    <div class="p-6 space-y-5">
+
+      <!-- Header -->
+      <div class="flex items-start gap-4">
+
+        <!-- Icon -->
+        <div
+          class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm"
+          [ngClass]="{
+            'bg-red-50 border border-red-200':    validation.severity === 'critical',
+            'bg-orange-50 border border-orange-200': validation.severity === 'high',
+            'bg-amber-50 border border-amber-200':   validation.severity === 'medium',
+            'bg-blue-50 border border-blue-200':     validation.severity === 'low'
+          }">
+
+          <!-- Critical / High icon -->
+          <svg
+            *ngIf="validation.severity === 'critical' || validation.severity === 'high'"
+            xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round"
+            [class.text-red-600]="validation.severity === 'critical'"
+            [class.text-orange-600]="validation.severity === 'high'">
+            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+
+          <!-- Medium icon -->
+          <svg
+            *ngIf="validation.severity === 'medium'"
+            xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round"
+            class="text-amber-600">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+
+          <!-- Low icon -->
+          <svg
+            *ngIf="validation.severity === 'low'"
+            xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round"
+            class="text-blue-600">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+
+        </div>
+
+        <!-- Title + badge -->
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h3 class="font-black text-slate-900 text-base tracking-tight">
+              {{ validation.severity === 'critical' ? 'Operation Blocked'
+               : validation.severity === 'high'     ? 'High Risk Detected'
+               : validation.severity === 'medium'   ? 'Restricted Command'
+               :                                       'Command Notice' }}
+            </h3>
+            <!-- Severity badge -->
+            <span
+              class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border"
+              [ngClass]="{
+                'bg-red-50 text-red-700 border-red-200':       validation.severity === 'critical',
+                'bg-orange-50 text-orange-700 border-orange-200': validation.severity === 'high',
+                'bg-amber-50 text-amber-700 border-amber-200':    validation.severity === 'medium',
+                'bg-blue-50 text-blue-700 border-blue-200':       validation.severity === 'low'
+              }">
+              <span
+                class="w-1.5 h-1.5 rounded-full mr-1 animate-pulse"
+                [ngClass]="{
+                  'bg-red-500':    validation.severity === 'critical',
+                  'bg-orange-500': validation.severity === 'high',
+                  'bg-amber-500':  validation.severity === 'medium',
+                  'bg-blue-500':   validation.severity === 'low'
+                }">
+              </span>
+              {{ validation.severity }}
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-500 font-semibold mt-1">
+            SQL Safety Compliance Violation
+          </p>
+        </div>
+      </div>
+
+      <!-- Message -->
+      <div
+        class="rounded-2xl p-4 border text-[12px] font-medium leading-relaxed"
+        [ngClass]="{
+          'bg-red-50/60 border-red-100 text-red-800':       validation.severity === 'critical',
+          'bg-orange-50/60 border-orange-100 text-orange-800': validation.severity === 'high',
+          'bg-amber-50/60 border-amber-100 text-amber-800':    validation.severity === 'medium',
+          'bg-blue-50/60 border-blue-100 text-blue-800':       validation.severity === 'low'
+        }">
+        {{ validation.message }}
+      </div>
+
+      <!-- Detected commands chips -->
+      <div *ngIf="validation.detectedCommands.length > 0" class="space-y-2">
+        <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest">
+          Detected Restricted Commands
+        </p>
+        <div class="flex flex-wrap gap-1.5">
+          <span
+            *ngFor="let cmd of validation.detectedCommands"
+            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-950 text-red-400 font-mono text-[10px] font-bold border border-slate-800 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="3"
+              stroke-linecap="round" stroke-linejoin="round"
+              class="text-red-500 shrink-0">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+            {{ cmd }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Allowed reminder -->
+      <div
+        class="flex items-start gap-2.5 rounded-xl bg-emerald-50/60 border border-emerald-100 p-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round"
+          class="text-emerald-600 shrink-0 mt-0.5">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <p class="text-[11px] text-emerald-800 font-semibold leading-relaxed">
+          Only <span class="font-black">SELECT</span> and <span class="font-black">WITH</span>
+          (CTE) statements are permitted. All data modification and schema operations are
+          restricted for compliance and safety.
+        </p>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="flex items-center gap-2 pt-1">
+
+        <!-- Close / Got it -->
+        <button
+          (click)="onClose.emit()"
+          class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-[11px] transition-all duration-150 cursor-pointer border"
+          [ngClass]="{
+            'bg-red-600 hover:bg-red-700 text-white border-red-700 shadow-md shadow-red-500/20':
+              validation.severity === 'critical' || validation.severity === 'high',
+            'bg-amber-500 hover:bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-500/20':
+              validation.severity === 'medium',
+            'bg-blue-600 hover:bg-blue-700 text-white border-blue-700 shadow-md shadow-blue-500/20':
+              validation.severity === 'low'
+          }">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          {{ validation.severity === 'critical' || validation.severity === 'high'
+             ? 'Understood — Clear Query'
+             : 'Got It' }}
+        </button>
+
+        <!-- Edit query (keep the text, just close popup) -->
+        <button
+          (click)="onConfirm.emit()"
+          class="px-4 py-2.5 rounded-xl font-bold text-[11px] border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition-all duration-150 cursor-pointer">
+          Edit Query
+        </button>
+
+      </div>
+    </div>
+  </div>
+</div>

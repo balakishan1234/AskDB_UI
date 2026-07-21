@@ -1,0 +1,1145 @@
+<div class="h-screen bg-gradient-to-tr from-slate-50 via-slate-100/70 to-blue-50/50 text-slate-900 flex overflow-hidden font-sans relative">
+
+  <!-- Grid Background -->
+  <div
+    class="absolute inset-0 bg-[linear-gradient(to_right,var(--grid-color)_1px,transparent_1px),linear-gradient(to_bottom,var(--grid-color)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30 pointer-events-none -z-10">
+  </div>
+
+  <!-- Ambient Blobs -->
+  <div
+    class="absolute top-[-20%] left-[-20%] w-[50rem] h-[50rem] rounded-full bg-blue-500/10 blur-[120px] pointer-events-none -z-10 animate-pulse-slow">
+  </div>
+  <div
+    class="absolute bottom-[-10%] right-[-10%] w-[40rem] h-[40rem] rounded-full bg-indigo-500/8 blur-[100px] pointer-events-none -z-10 animate-pulse-slow-reverse">
+  </div>
+  <div
+    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[30rem] h-[30rem] rounded-full bg-cyan-500/5 blur-[80px] pointer-events-none -z-10">
+  </div>
+
+  <!-- Mobile Backdrop -->
+  <div
+    *ngIf="isSidebarOpen"
+    (click)="isSidebarOpen = false"
+    class="fixed inset-0 bg-slate-900/40 z-40 md:hidden backdrop-blur-sm transition-all duration-300">
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SIDEBAR                                                      -->
+  <!-- ============================================================ -->
+  <aside
+    [class]="isSidebarOpen
+      ? 'fixed inset-y-0 left-0 z-50 w-72 border-r border-slate-200/50 bg-white/70 backdrop-blur-xl flex flex-col transition-transform duration-300 translate-x-0 shadow-2xl shadow-slate-900/10'
+      : 'fixed inset-y-0 left-0 z-50 w-72 border-r border-slate-200/50 bg-white/70 backdrop-blur-xl flex flex-col transition-transform duration-300 -translate-x-full md:relative md:translate-x-0 md:bg-white/30 md:shadow-none'">
+
+    <!-- Gradient top accent -->
+    <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500"></div>
+
+    <!-- ── Sidebar Brand Header ──────────────────────────────── -->
+    <div class="px-5 py-4 border-b border-slate-200/50 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-3 cursor-pointer group" (click)="goToHome()">
+
+        <!-- Logo -->
+        <div
+          class="relative overflow-hidden flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white shadow-md shadow-blue-500/25 group-hover:scale-105 transition-all duration-300">
+          <span
+            class="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none">
+          </span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <ellipse cx="12" cy="5" rx="9" ry="3" />
+            <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+            <path d="M3 12A9 3 0 0 0 21 12" />
+          </svg>
+        </div>
+
+        <div>
+          <h1
+            class="text-base font-black tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors duration-200 leading-none flex items-center gap-1.5">
+            AskDB
+            <span
+              *ngIf="isMockMode"
+              (click)="openMockConsole(); $event.stopPropagation()"
+              class="inline-flex items-center px-1.5 py-0.5 rounded text-[7px] font-black bg-amber-100 text-amber-700 border border-amber-200 uppercase tracking-widest leading-none cursor-pointer hover:bg-amber-200 transition-colors select-none">
+              Mock
+            </span>
+          </h1>
+          <div class="flex items-center gap-1 mt-0.5">
+            <span class="w-1 h-1 rounded-full bg-slate-400"></span>
+            <span class="text-[8px] text-slate-400 font-black tracking-widest uppercase select-none">
+              Console AI
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile close -->
+      <button
+        (click)="isSidebarOpen = false"
+        class="md:hidden w-7 h-7 rounded-lg border border-slate-200 bg-white/80 text-slate-400 hover:text-slate-700 hover:bg-slate-50 flex items-center justify-center transition-all duration-150 cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- ── Workspace Details ──────────────────────────────────── -->
+    <div class="flex-grow overflow-y-auto px-4 py-4 light-scrollbar">
+      <div *ngIf="selectedWorkspace; else noWorkspaceTemplate" class="space-y-4">
+
+        <!-- Section Label -->
+        <div class="flex items-center justify-between px-1 select-none">
+          <div class="flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider">
+              Active Workspace
+            </span>
+          </div>
+          <span
+            *ngIf="selectedWorkspace.env"
+            class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[7.5px] font-black border uppercase tracking-wider"
+            [ngClass]="{
+              'bg-emerald-50 text-emerald-700 border-emerald-200': selectedWorkspace.env === 'Production',
+              'bg-amber-50 text-amber-700 border-amber-200': selectedWorkspace.env === 'UAT',
+              'bg-blue-50 text-blue-700 border-blue-200': selectedWorkspace.env === 'Development'
+            }">
+            <span class="w-1 h-1 rounded-full shrink-0"
+              [class.bg-emerald-500]="selectedWorkspace.env === 'Production'"
+              [class.bg-amber-500]="selectedWorkspace.env === 'UAT'"
+              [class.bg-blue-500]="selectedWorkspace.env === 'Development'">
+            </span>
+            {{ selectedWorkspace.env }}
+          </span>
+        </div>
+
+        <!-- Connection Card -->
+        <div class="rounded-2xl bg-white/60 border border-slate-200/70 shadow-sm overflow-hidden">
+
+          <!-- Card top stripe -->
+          <div class="h-0.5"
+            [class.bg-emerald-400]="selectedWorkspace.env === 'Production'"
+            [class.bg-amber-400]="selectedWorkspace.env === 'UAT'"
+            [class.bg-blue-400]="selectedWorkspace.env === 'Development'">
+          </div>
+
+          <div class="p-4 space-y-4">
+            <div>
+              <h4
+                class="font-black text-xs text-slate-900 leading-tight truncate"
+                [title]="selectedWorkspace.name">
+                {{ selectedWorkspace.name }}
+              </h4>
+              <span
+                *ngIf="selectedWorkspace.provider"
+                class="inline-flex items-center gap-1.5 text-[9px] text-slate-400 font-black uppercase tracking-wider mt-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></span>
+                {{ selectedWorkspace.provider }}
+              </span>
+            </div>
+
+            <!-- Connection Details -->
+            <div class="space-y-2 pt-3 border-t border-slate-100">
+              <div class="flex justify-between items-center gap-2">
+                <span class="text-[9px] text-slate-400 font-black uppercase tracking-wider shrink-0">Host</span>
+                <span
+                  class="font-mono font-bold text-[10px] text-slate-800 truncate max-w-[140px]"
+                  [title]="selectedWorkspace.host || 'localhost'">
+                  {{ selectedWorkspace.host || 'localhost' }}
+                </span>
+              </div>
+              <div class="h-px bg-slate-100"></div>
+              <div class="flex justify-between items-center gap-2">
+                <span class="text-[9px] text-slate-400 font-black uppercase tracking-wider shrink-0">Port</span>
+                <span class="font-mono font-bold text-[10px] text-slate-800">
+                  {{ selectedWorkspace.port || '—' }}
+                </span>
+              </div>
+              <div class="h-px bg-slate-100"></div>
+              <div class="flex justify-between items-center gap-2">
+                <span class="text-[9px] text-slate-400 font-black uppercase tracking-wider shrink-0">Role</span>
+                <span
+                  class="font-black px-2 py-0.5 rounded-lg text-[8px] uppercase tracking-wider border leading-none"
+                  [ngClass]="{
+                    'bg-indigo-50 text-indigo-700 border-indigo-200': selectedWorkspace.accessLevel === 'Admin',
+                    'bg-slate-100 text-slate-600 border-slate-200': selectedWorkspace.accessLevel === 'User' || !selectedWorkspace.accessLevel
+                  }">
+                  {{ selectedWorkspace.accessLevel || 'User' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick status strip -->
+        <div
+          class="flex items-center justify-between px-3 py-2 rounded-xl bg-emerald-50/70 border border-emerald-100 text-[9px] font-bold text-emerald-700 select-none">
+          <div class="flex items-center gap-1.5">
+            <span class="relative flex h-2 w-2">
+              <span
+                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75">
+              </span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            Session Active
+          </div>
+          <span class="text-emerald-600 font-black uppercase tracking-wider">Secure</span>
+        </div>
+
+      </div>
+
+      <!-- No workspace template -->
+      <ng-template #noWorkspaceTemplate>
+        <div class="h-48 flex flex-col items-center justify-center text-center px-4">
+          <div
+            class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 text-slate-300 flex items-center justify-center mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <ellipse cx="12" cy="5" rx="9" ry="3" />
+              <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+              <path d="M3 12A9 3 0 0 0 21 12" />
+            </svg>
+          </div>
+          <p class="text-[10px] text-slate-400 font-bold leading-relaxed">No connection active.</p>
+          <p class="text-[9px] text-slate-300 mt-1">Select a workspace to begin.</p>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- ── User Drawer ───────────────────────────────────────── -->
+    <div class="shrink-0 border-t border-slate-200/50 p-4 bg-white/30">
+      <div class="rounded-2xl bg-white/70 border border-slate-200/60 p-3.5 flex flex-col gap-3 shadow-sm">
+
+        <!-- User info -->
+        <div class="flex items-center gap-3">
+          <div
+            class="relative w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center font-black text-xs text-white shadow-md shadow-blue-500/15 shrink-0 select-none">
+            {{ userInitials }}
+            <span
+              class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-white shadow-sm">
+            </span>
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="font-black text-xs text-slate-900 truncate leading-tight">{{ userName }}</p>
+            <p class="text-[8px] text-slate-400 font-black uppercase tracking-widest truncate mt-0.5">
+              Corporate User
+            </p>
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="flex items-center gap-2">
+          <button
+            routerLink="/work-space"
+            class="group flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-[10px] font-bold text-slate-600 transition-all duration-150 shadow-sm cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+              stroke-linejoin="round" class="text-slate-400 group-hover:text-slate-600 transition-colors">
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+            </svg>
+            Dashboard
+          </button>
+          <button
+            (click)="logout()"
+            class="group flex items-center justify-center gap-1.5 py-2 px-3.5 rounded-xl bg-red-50 hover:bg-red-100/80 text-[10px] font-bold text-red-600 transition-all duration-150 border border-transparent hover:border-red-200 cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+              stroke-linejoin="round"
+              class="transition-transform duration-150 group-hover:translate-x-0.5">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================================================ -->
+  <!-- MAIN VIEWPORT                                                -->
+  <!-- ============================================================ -->
+  <main class="flex-1 flex flex-col min-w-0 z-10 bg-transparent relative overflow-hidden">
+
+    <!-- ── Top Status Bar ───────────────────────────────────── -->
+    <header
+      class="shrink-0 h-14 border-b border-slate-200/50 bg-white/50 backdrop-blur-md flex items-center justify-between px-5 z-10 select-none">
+
+      <div class="flex items-center gap-3 min-w-0">
+
+        <!-- Mobile hamburger -->
+        <button
+          (click)="isSidebarOpen = true"
+          class="md:hidden p-2 -ml-1 text-slate-500 hover:text-slate-800 hover:bg-slate-100/60 flex items-center justify-center rounded-xl cursor-pointer transition-colors duration-150 shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+
+        <!-- Workspace name + env -->
+        <div
+          *ngIf="activeView === 'chat' && selectedWorkspace"
+          class="flex items-center gap-3 min-w-0">
+          <div class="hidden sm:flex w-2 h-2 rounded-full shrink-0"
+            [class.bg-emerald-500]="selectedWorkspace.env === 'Production'"
+            [class.bg-amber-500]="selectedWorkspace.env === 'UAT'"
+            [class.bg-blue-500]="selectedWorkspace.env === 'Development'">
+          </div>
+          <div class="min-w-0">
+            <h2
+              class="font-black text-sm text-slate-900 tracking-tight leading-none truncate flex items-center gap-2">
+              {{ selectedWorkspace.name }}
+              <span
+                *ngIf="selectedWorkspace.env"
+                class="hidden sm:inline-flex items-center gap-1 text-[7.5px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md border shrink-0"
+                [ngClass]="{
+                  'bg-emerald-50 text-emerald-700 border-emerald-200': selectedWorkspace.env === 'Production',
+                  'bg-amber-50 text-amber-700 border-amber-200': selectedWorkspace.env === 'UAT',
+                  'bg-blue-50 text-blue-700 border-blue-200': selectedWorkspace.env === 'Development'
+                }">
+                {{ selectedWorkspace.env }}
+              </span>
+            </h2>
+            <p
+              *ngIf="selectedWorkspace.provider"
+              class="text-[9px] text-slate-500 mt-1 font-bold flex items-center gap-1.5 leading-none">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></span>
+              {{ selectedWorkspace.provider }} Engine Active
+            </p>
+          </div>
+        </div>
+
+        <!-- No workspace header -->
+        <div *ngIf="activeView === 'chat' && !selectedWorkspace">
+          <h2 class="font-black text-sm text-slate-700 tracking-tight leading-none">
+            No Workspace Selected
+          </h2>
+          <p class="text-[9px] text-slate-400 mt-1 font-semibold">
+            Select a database connection to begin
+          </p>
+        </div>
+      </div>
+
+      <!-- Header Right Controls -->
+      <div class="flex items-center gap-2 shrink-0">
+
+        <!-- Theme Toggle -->
+        <button
+          (click)="themeService.toggleTheme()"
+          class="group p-2 rounded-xl border border-slate-200 bg-white/70 hover:bg-white hover:border-slate-300 hover:shadow-md text-slate-400 hover:text-blue-600 transition-all duration-200 cursor-pointer shadow-sm flex items-center justify-center shrink-0">
+          <svg *ngIf="themeService.currentTheme() === 'light'" xmlns="http://www.w3.org/2000/svg"
+            width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+            class="transition-transform duration-300 group-hover:rotate-12">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+          <svg *ngIf="themeService.currentTheme() === 'dark'" xmlns="http://www.w3.org/2000/svg"
+            width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+            class="transition-transform duration-500 group-hover:rotate-45">
+            <circle cx="12" cy="12" r="5" />
+            <line x1="12" y1="1" x2="12" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="23" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+            <line x1="1" y1="12" x2="3" y2="12" />
+            <line x1="21" y1="12" x2="23" y2="12" />
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+          </svg>
+        </button>
+
+        <!-- Reset Chat -->
+        <button
+          *ngIf="activeView === 'chat' && selectedWorkspace"
+          (click)="resetChat()"
+          class="group flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white/70 hover:bg-white hover:border-slate-300 hover:shadow-md text-slate-600 font-bold text-[9px] uppercase tracking-wider transition-all duration-200 shadow-sm cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round"
+            class="text-slate-400 transition-transform duration-300 group-hover:-rotate-45">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+            <path d="M3 3v5h5" />
+          </svg>
+          Reset
+        </button>
+      </div>
+    </header>
+
+    <!-- ── Chat + Views Container ────────────────────────────── -->
+    <div class="flex-1 flex flex-col overflow-hidden relative">
+
+      <!-- ── CHAT VIEW ──────────────────────────────────────── -->
+      <div
+        *ngIf="activeView === 'chat' && selectedWorkspace"
+        class="flex-1 flex flex-col overflow-hidden animate-fade-in">
+
+        <!-- Chat Scroll Area -->
+        <div
+          id="chat-scroll-area"
+          class="flex-1 overflow-y-auto px-4 md:px-6 py-6 light-scrollbar">
+          <div class="max-w-4xl mx-auto space-y-4">
+
+            <ng-container *ngFor="let msg of chatMessages[selectedWorkspace.id]">
+
+              <!-- ✅ 1. Welcome Message -->
+              <div
+                *ngIf="msg.type === 'welcome'"
+                class="flex justify-center animate-fade-in px-4 py-2">
+                <div
+                  class="relative w-full max-w-md rounded-2xl overflow-hidden
+                         bg-gradient-to-br from-blue-50 via-indigo-50 to-cyan-50
+                         border border-blue-100/80 shadow-sm p-5 text-center space-y-3">
+
+                  <!-- Decorative blobs -->
+                  <div class="absolute -top-6 -left-6 w-24 h-24 rounded-full
+                              bg-blue-300/20 blur-2xl pointer-events-none"></div>
+                  <div class="absolute -bottom-6 -right-6 w-24 h-24 rounded-full
+                              bg-indigo-300/20 blur-2xl pointer-events-none"></div>
+
+                  <!-- Emoji + heading -->
+                  <div class="relative space-y-1">
+                    <div class="text-3xl animate-bounce">👋</div>
+                    <h3 class="text-sm font-black text-slate-800 tracking-tight">
+                      Welcome to AskDB!
+                    </h3>
+                    <p class="text-[11px] text-slate-500 font-medium leading-relaxed">
+                      {{ msg.text }}
+                    </p>
+                  </div>
+
+                  <!-- Divider -->
+                  <div class="border-t border-slate-200/70"></div>
+
+                  <!-- Tip chips -->
+                  <div class="relative flex flex-wrap justify-center gap-1.5">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full
+                                 bg-white border border-slate-200 text-[9px] font-bold
+                                 text-slate-600 shadow-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                        class="text-blue-500">
+                        <polyline points="16 18 22 12 16 6"/>
+                        <polyline points="8 6 2 12 8 18"/>
+                      </svg>
+                      Ask in plain English
+                    </span>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full
+                                 bg-white border border-slate-200 text-[9px] font-bold
+                                 text-slate-600 shadow-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                        class="text-indigo-500">
+                        <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                        <path d="M3 5V19A9 3 0 0 0 21 19V5"/>
+                        <path d="M3 12A9 3 0 0 0 21 12"/>
+                      </svg>
+                      Auto SQL generation
+                    </span>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full
+                                 bg-white border border-slate-200 text-[9px] font-bold
+                                 text-slate-600 shadow-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                        class="text-cyan-500">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <path d="M3 9h18M9 21V9"/>
+                      </svg>
+                      Visualize results
+                    </span>
+                  </div>
+
+                  <!-- CTA -->
+                  <p class="relative text-[9px] text-slate-400 font-semibold tracking-wide uppercase">
+                    ✦ Type a question below to get started ✦
+                  </p>
+
+                </div>
+              </div>
+
+              <!-- ✅ 2. Workspace Greeting (simple AI bubble, no SQL) -->
+              <div
+                *ngIf="msg.sender === 'ai' && msg.type === 'workspace'"
+                class="flex items-start gap-3 max-w-3xl animate-fade-in">
+
+                <!-- AI Avatar -->
+                <div
+                  class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600
+                         to-cyan-500 text-white flex items-center justify-center shrink-0
+                         select-none shadow-md shadow-blue-500/15 ai-avatar-float mt-0.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                    class="ai-spark-spin">
+                    <path
+                      d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1
+                         1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813
+                         -1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                  </svg>
+                </div>
+
+                <!-- Greeting bubble -->
+                <div
+                  class="rounded-3xl rounded-tl-sm bg-white border border-slate-200
+                         px-5 py-3.5 shadow-sm shadow-slate-100/50">
+                  <p class="text-[13px] text-slate-700 leading-relaxed whitespace-pre-line font-medium">
+                    {{ msg.text }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- ✅ 3. User Message -->
+              <div
+                *ngIf="msg.sender === 'user'"
+                class="flex justify-end animate-fade-in">
+                <div class="flex items-end gap-2.5 max-w-xl">
+
+                  <!-- Message bubble -->
+                  <div
+                    class="rounded-3xl rounded-tr-sm bg-gradient-to-r from-blue-600
+                           via-indigo-600 to-cyan-600 text-white px-5 py-3.5 text-sm
+                           font-semibold shadow-lg shadow-blue-500/15 leading-relaxed">
+                    {{ msg.text }}
+                  </div>
+
+                  <!-- User avatar -->
+                  <div
+                    class="w-7 h-7 rounded-lg bg-gradient-to-tr from-blue-600
+                           via-indigo-600 to-cyan-500 text-white flex items-center
+                           justify-center text-[9px] font-black shrink-0 mb-0.5
+                           shadow-sm select-none">
+                    {{ userInitials }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- ✅ 4. AI Message with SQL + Results -->
+              <div
+                *ngIf="msg.sender === 'ai' && msg.type !== 'welcome' && msg.type !== 'workspace'"
+                class="flex items-start gap-3 max-w-3xl animate-fade-in">
+
+                <!-- AI Avatar -->
+                <div
+                  class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600
+                         to-cyan-500 text-white flex items-center justify-center shrink-0
+                         select-none shadow-md shadow-blue-500/15 ai-avatar-float mt-0.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                    class="ai-spark-spin">
+                    <path
+                      d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1
+                         1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813
+                         -1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                  </svg>
+                </div>
+
+                <div class="flex-1 min-w-0 space-y-2.5">
+
+                  <!-- Confirmation bubble -->
+                  <div
+                    class="rounded-3xl rounded-tl-sm bg-white border border-slate-200
+                           px-5 py-3.5 shadow-sm shadow-slate-100/50">
+                    <p class="text-[13px] text-slate-700 leading-relaxed whitespace-pre-line font-medium">
+                      ✦ Got it! I've generated a secure SQL query based on your question:
+                      <strong>"{{ msg.input || msg.text }}"</strong>
+                      You can review and run it below.
+                    </p>
+                  </div>
+
+                  <!-- ✅ SQL Console Card (only when SQL exists) -->
+                  <div
+                    *ngIf="msg.sql"
+                    class="w-full rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden animate-slide-up">
+
+                    <!-- Console Header -->
+                    <div
+                      class="flex items-center justify-between px-5 py-3 border-b border-slate-100 bg-slate-50/60 select-none">
+                      <div class="flex items-center gap-2.5">
+                        <div
+                          class="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center font-black text-[9px]">
+                          SQL
+                        </div>
+                        <span class="text-xs font-black text-slate-800">Query SQL Console</span>
+                      </div>
+
+                      <span
+                        *ngIf="msg.isEdited"
+                        class="inline-flex items-center gap-1 text-[8px] font-black bg-amber-50 text-amber-600 border border-amber-200 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                        <span class="w-1 h-1 rounded-full bg-amber-500 animate-pulse"></span>
+                        Edited
+                      </span>
+                      <span
+                        *ngIf="!msg.isEdited"
+                        class="inline-flex items-center gap-1 text-[8px] font-black bg-emerald-50 text-emerald-600 border border-emerald-200 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                        <span class="w-1 h-1 rounded-full bg-emerald-500"></span>
+                        Original AI Query
+                      </span>
+                    </div>
+
+                    <div class="p-4 space-y-4">
+
+                      <!-- Code Editor -->
+                      <div
+                        class="rounded-2xl border border-slate-800 bg-slate-950 overflow-hidden shadow-inner">
+
+                        <!-- Editor toolbar -->
+                        <div
+                          class="flex items-center justify-between px-4 py-2 bg-slate-900 border-b border-slate-800">
+                          <div class="flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-red-500/70"></span>
+                            <span class="w-2 h-2 rounded-full bg-yellow-500/70"></span>
+                            <span class="w-2 h-2 rounded-full bg-green-500/70"></span>
+                            <span
+                              class="text-[8px] text-slate-500 font-black uppercase tracking-widest ml-2 select-none">
+                              Editable Query
+                            </span>
+                          </div>
+                          <button
+                            (click)="copySql(msg.sql)"
+                            class="flex items-center gap-1 text-[8px] font-black text-slate-400 hover:text-white uppercase tracking-wider transition-colors duration-150 cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"
+                              viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                            </svg>
+                            Copy
+                          </button>
+                        </div>
+
+                        <!-- SQL Textarea -->
+                        <textarea
+                          [ngModel]="msg.sql"
+                          (ngModelChange)="onMessageSqlChanged(msg, $event)"
+                          rows="5"
+                          placeholder="-- Type or edit SQL statements here..."
+                          class="w-full bg-transparent p-4 font-mono text-xs text-slate-200 focus:outline-none resize-y custom-scrollbar leading-relaxed outline-none min-h-[100px]">
+                        </textarea>
+                      </div>
+
+                      <!-- Execute Row -->
+                      <div class="flex items-center justify-between gap-4">
+                        <span
+                          class="text-[9px] text-slate-400 font-semibold flex items-center gap-1.5 select-none leading-tight">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="text-indigo-400 shrink-0">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 16 16 12 12 8" />
+                            <line x1="8" y1="12" x2="16" y2="12" />
+                          </svg>
+                          Edit if needed, then execute securely
+                        </span>
+
+                        <div class="flex items-center gap-2 shrink-0">
+
+                          <!-- Stop button -->
+                          <button
+                            *ngIf="msg.isExecuting"
+                            (click)="stopQuery(msg)"
+                            class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 font-bold text-[10px] transition-all duration-150 cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9"
+                              viewBox="0 0 24 24" fill="currentColor">
+                              <rect x="4" y="4" width="16" height="16" rx="2" />
+                            </svg>
+                            Stop
+                          </button>
+
+                          <!-- Execute button -->
+                          <button
+                            (click)="runQueryOnMessage(msg)"
+                            [disabled]="msg.isExecuting || !msg.sql.trim()"
+                            class="group/exec relative overflow-hidden flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 text-white font-bold text-[10px] shadow-md shadow-blue-500/15 hover:shadow-blue-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:scale-100">
+                            <span
+                              class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/exec:translate-x-full transition-transform duration-700 pointer-events-none">
+                            </span>
+                            <svg
+                              *ngIf="msg.isExecuting"
+                              class="animate-spin h-3 w-3 text-white shrink-0"
+                              fill="none" viewBox="0 0 24 24">
+                              <circle class="opacity-25" cx="12" cy="12" r="10"
+                                stroke="currentColor" stroke-width="4"></circle>
+                              <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                              </path>
+                            </svg>
+                            <svg
+                              *ngIf="!msg.isExecuting"
+                              xmlns="http://www.w3.org/2000/svg" width="10" height="10"
+                              viewBox="0 0 24 24" fill="currentColor" class="shrink-0">
+                              <polygon points="5 3 19 12 5 21 5 3" />
+                            </svg>
+                            {{ msg.isExecuting ? 'Executing...' : 'Execute Query' }}
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- ✅ Results Panel -->
+                      <div
+                        *ngIf="msg.showResults && msg.results && msg.results.length > 0"
+                        class="space-y-3 pt-4 border-t border-slate-100 animate-fade-in">
+
+                        <!-- Results Header -->
+                        <div class="flex flex-wrap items-center justify-between gap-4 py-1 select-none">
+  <!-- Left Side: Title & Badge -->
+  <div class="flex items-center gap-2.5">
+    <div class="flex items-center gap-2">
+      <div class="flex items-center justify-center w-5 h-5 rounded-md bg-indigo-50/50">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+          class="text-indigo-500">
+          <ellipse cx="12" cy="5" rx="9" ry="3" />
+          <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+          <path d="M3 12A9 3 0 0 0 21 12" />
+        </svg>
+      </div>
+      <h4 class="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+        Query Results
+      </h4>
+    </div>
+    
+    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-indigo-50 text-indigo-600 border border-indigo-100/50 transition-colors">
+      {{ msg.results.length }} rows
+    </span>
+  </div>
+
+  <!-- Right Side: Mode Toggle (Segmented Control) -->
+  <div class="flex items-center p-1 bg-slate-100/80 rounded-lg border border-slate-200/60 shadow-inner">
+    <button
+      (click)="toggleMessageResultMode(msg, 'normal')"
+      class="relative px-3 py-1 rounded-md text-[9px] font-bold transition-all duration-200 cursor-pointer"
+      [class.bg-white]="msg.activeResultMode === 'normal'"
+      [class.text-blue-600]="msg.activeResultMode === 'normal'"
+      [class.shadow-sm]="msg.activeResultMode === 'normal'"
+      [class.ring-1]="msg.activeResultMode === 'normal'"
+      [class.ring-slate-200/50]="msg.activeResultMode === 'normal'"
+      [class.text-slate-500]="msg.activeResultMode !== 'normal'"
+      [class.hover:text-slate-700]="msg.activeResultMode !== 'normal'">
+      Normal
+    </button>
+    <button
+      (click)="toggleMessageResultMode(msg, 'advanced')"
+      class="relative px-3 py-1 rounded-md text-[9px] font-bold transition-all duration-200 cursor-pointer"
+      [class.bg-white]="msg.activeResultMode === 'advanced'"
+      [class.text-blue-600]="msg.activeResultMode === 'advanced'"
+      [class.shadow-sm]="msg.activeResultMode === 'advanced'"
+      [class.ring-1]="msg.activeResultMode === 'advanced'"
+      [class.ring-slate-200/50]="msg.activeResultMode === 'advanced'"
+      [class.text-slate-500]="msg.activeResultMode !== 'advanced'"
+      [class.hover:text-slate-700]="msg.activeResultMode !== 'advanced'">
+      Advanced
+    </button>
+  </div>
+                        </div>
+
+                       <!-- Advanced sub-tabs -->
+<div
+  *ngIf="msg.activeResultMode === 'advanced'"
+  class="flex items-center border-b border-slate-200/60 select-none px-1 mt-2">
+  <button
+    *ngFor="let tab of visualizerTabs"
+    (click)="toggleMessageVisualizerTab(msg, tab.key)"
+    class="group relative flex items-center gap-1.5 py-2.5 px-4 text-[9px] font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer"
+    [class.text-blue-600]="msg.visualizerTab === tab.key"
+    [class.text-slate-500]="msg.visualizerTab !== tab.key">
+    
+    <!-- Tab Label -->
+    <span class="relative z-10">{{ tab.label }}</span>
+
+    <!-- Active Indicator (Bottom Line) -->
+    <div 
+      class="absolute bottom-0 left-0 right-0 h-0.5 transition-transform duration-200"
+      [class.bg-blue-600]="msg.visualizerTab === tab.key"
+      [class.scale-x-100]="msg.visualizerTab === tab.key"
+      [class.scale-x-0]="msg.visualizerTab !== tab.key">
+    </div>
+
+    <!-- Hover Background Effect -->
+    <div 
+      class="absolute inset-0 mx-1 my-1 rounded-md bg-slate-100 opacity-0 transition-opacity duration-200 group-hover:opacity-100 -z-0"
+      [class.hidden]="msg.visualizerTab === tab.key">
+    </div>
+  </button>
+</div>
+
+                       <!-- Scrollable Content Wrapper -->
+<div class="relative rounded-xl border border-slate-200/70 bg-white shadow-sm overflow-hidden ring-1 ring-slate-100/50">
+
+  <!-- Top Gradient Overlay (Scroll Hint) -->
+  <div
+    *ngIf="msg.results.length > 10"
+    class="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-3 py-2 
+           bg-gradient-to-b from-white via-white/90 to-transparent pointer-events-none">
+    
+    <!-- Left: Row count context -->
+    <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">
+      Showing {{ msg.results.length }} rows
+    </span>
+
+    <!-- Right: Scroll hint pill -->
+    <div class="flex items-center gap-1 bg-slate-800/75 backdrop-blur-md text-white 
+                text-[8px] font-bold px-2.5 py-1 rounded-full shadow-lg pointer-events-none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"
+        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+        class="animate-bounce">
+        <path d="M12 5v14M5 12l7 7 7-7"/>
+      </svg>
+      Scroll for more
+    </div>
+  </div>
+
+  <!-- Scrollable Area -->
+  <div 
+    class="overflow-auto max-h-[380px] scroll-smooth
+           scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300
+           hover:scrollbar-thumb-slate-400">
+
+    <!-- Normal View -->
+    <ng-container *ngIf="msg.activeResultMode === 'normal'">
+      <div class="animate-fade-in">
+        <app-query-table
+          [columns]="msg.columns || []"
+          [results]="msg.results || []">
+        </app-query-table>
+      </div>
+    </ng-container>
+
+    <!-- Advanced Views -->
+    <ng-container *ngIf="msg.activeResultMode === 'advanced'">
+      <div class="animate-fade-in">
+
+        <ng-container [ngSwitch]="msg.visualizerTab">
+
+          <!-- Table -->
+          <app-query-table
+            *ngSwitchCase="'table'"
+            [columns]="msg.columns || []"
+            [results]="msg.results || []">
+          </app-query-table>
+
+          <!-- Charts -->
+          <app-query-charts
+            *ngSwitchCase="'charts'"
+            [columns]="msg.columns || []"
+            [results]="msg.results || []">
+          </app-query-charts>
+
+          <!-- Excel -->
+          <app-query-excel
+            *ngSwitchCase="'excel'"
+            [columns]="msg.columns || []"
+            [results]="msg.results || []"
+            (onDataChanged)="handleMessageDataChanged(msg, $event)">
+          </app-query-excel>
+
+          <!-- Summary -->
+          <app-query-summary
+            *ngSwitchCase="'Summary'"
+            [columns]="msg.columns || []"
+            [results]="msg.results || []"
+            [explanation]="msg.explanation || ''"
+            [userQuestion]="msg.input || msg.text || ''">
+          </app-query-summary>
+
+        </ng-container>
+
+      </div>
+    </ng-container>
+
+  </div>
+
+  <!-- Bottom Fade (Scroll Continuation Hint) -->
+  <div
+    *ngIf="msg.results.length > 8"
+    class="absolute bottom-0 left-0 right-0 h-10 pointer-events-none rounded-b-xl
+           bg-gradient-to-t from-white via-white/60 to-transparent">
+    
+    <!-- Subtle bottom center indicator -->
+    <div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 flex gap-0.5">
+      <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+      <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+      <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+    </div>
+  </div>
+
+</div>
+                      </div>
+                      <!-- END Results Panel -->
+
+                    </div>
+                    <!-- END SQL card body -->
+
+                  </div>
+                  <!-- END SQL Console Card -->
+
+                </div>
+                <!-- END AI flex-1 content -->
+
+              </div>
+              <!-- END AI Message -->
+
+            </ng-container>
+            <!-- END *ngFor -->
+
+            <!-- ✅ AI Thinking State -->
+            <div
+              *ngIf="isGeneratingSql"
+              class="flex items-start gap-3 max-w-3xl animate-fade-in">
+
+              <div
+                class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600
+                       to-cyan-500 text-white flex items-center justify-center shrink-0
+                       select-none shadow-md shadow-blue-500/15 ai-avatar-float mt-0.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                  class="ai-spark-spin">
+                  <path
+                    d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1
+                       1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813
+                       -1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                </svg>
+              </div>
+
+              <div
+                class="flex items-center justify-between gap-4 rounded-3xl rounded-tl-sm
+                       bg-white border border-slate-200 px-5 py-3.5 shadow-sm min-w-[260px]">
+                <div class="flex items-center gap-3">
+                  <div class="flex gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-600 bounce-dot"
+                      style="animation-delay: 0ms"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-600 bounce-dot"
+                      style="animation-delay: 150ms"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-cyan-500 bounce-dot"
+                      style="animation-delay: 300ms"></span>
+                  </div>
+                  <span class="text-xs font-semibold text-slate-500">
+                    Compiling secure statement...
+                  </span>
+                </div>
+
+                <button
+                  (click)="stopGeneratingSql()"
+                  class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-red-50 border border-red-100 hover:bg-red-100 hover:border-red-200 text-[9px] font-bold text-red-600 transition-all duration-150 cursor-pointer shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9"
+                    viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="4" y="4" width="16" height="16" rx="2" />
+                  </svg>
+                  Stop
+                </button>
+              </div>
+            </div>
+
+          </div>
+          <!-- END max-w-4xl -->
+
+        </div>
+        <!-- END chat-scroll-area -->
+
+        <!-- ── Query Input Panel ────────────────────────────── -->
+        <div
+          class="shrink-0 border-t border-slate-200/50 px-4 md:px-6 py-4
+                 bg-white/50 backdrop-blur-md">
+          <div class="max-w-4xl mx-auto">
+
+            <div
+              class="flex items-end gap-2.5 rounded-2xl border border-slate-200 bg-white shadow-lg p-2.5 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-500/8 transition-all duration-200">
+
+              <!-- Left icon -->
+              <div class="shrink-0 self-center pl-1.5">
+                <div
+                  class="w-6 h-6 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                    class="text-indigo-500">
+                    <path
+                      d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1
+                         1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813
+                         -1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                  </svg>
+                </div>
+              </div>
+
+              <textarea
+                [(ngModel)]="newMessage"
+                (keydown.enter)="$event.preventDefault(); sendMessage()"
+                rows="1"
+                placeholder="Ask in plain English (e.g. 'Show top customers by revenue')..."
+                class="flex-1 bg-transparent outline-none resize-none px-2 py-2 text-sm font-medium placeholder-slate-400 text-slate-800 min-h-[36px] max-h-[120px] light-scrollbar leading-relaxed">
+              </textarea>
+
+              <!-- Send Button -->
+              <button
+                (click)="sendMessage()"
+                [disabled]="!newMessage.trim() || isGeneratingSql"
+                class="group/send w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center shadow-md shadow-blue-500/15 hover:shadow-blue-500/30 transition-all duration-300 hover:scale-105 active:scale-[0.96] disabled:opacity-30 disabled:scale-100 cursor-pointer shrink-0 relative overflow-hidden">
+                <span
+                  class="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover/send:translate-x-full transition-transform duration-700 pointer-events-none">
+                </span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+                  class="transform rotate-45 -translate-x-0.5 translate-y-0.5">
+                  <line x1="22" y1="2" x2="11" y2="13" />
+                  <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Disclaimer -->
+            <div class="flex items-center justify-center gap-1.5 mt-2.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                class="text-emerald-400 shrink-0">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+              <p
+                class="text-[8.5px] text-slate-400 font-black uppercase tracking-widest select-none text-center">
+                All interactions are logged and validated for SQL safety & compliance
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <!-- END CHAT VIEW -->
+
+      <!-- ── Empty State (no workspace) ────────────────────── -->
+      <div
+        *ngIf="activeView === 'chat' && !selectedWorkspace"
+        class="flex-1 flex flex-col items-center justify-center text-center p-8 select-none animate-fade-in">
+
+        <div
+          class="w-16 h-16 rounded-2xl bg-white border border-slate-200 shadow-md flex items-center justify-center text-slate-300 mb-5 transition-transform hover:scale-105 duration-300">
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <ellipse cx="12" cy="5" rx="9" ry="3" />
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+            <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
+          </svg>
+        </div>
+
+        <div class="flex items-center gap-1.5 mb-4">
+          <span class="w-1.5 h-1.5 rounded-full bg-slate-200"></span>
+          <span class="w-8 h-px bg-slate-200"></span>
+          <span class="w-2 h-2 rounded-full border-2 border-slate-200"></span>
+          <span class="w-8 h-px bg-slate-200"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-slate-200"></span>
+        </div>
+
+        <h3 class="font-black text-sm text-slate-700 tracking-tight">No Active Workspace</h3>
+        <p class="text-xs text-slate-500 max-w-xs mt-2 leading-relaxed">
+          Select an existing workspace from the sidebar or register a new one to connect database schemas.
+        </p>
+      </div>
+
+    </div>
+    <!-- END Chat + Views Container -->
+    <!-- ============================================================ -->
+    <!-- Global Toast                                                 -->
+    <!-- ============================================================ -->
+    <div
+      *ngIf="toastMessage !== null"
+      class="fixed bottom-6 right-6 z-50 max-w-sm w-full bg-white/95 backdrop-blur-md border shadow-2xl rounded-2xl overflow-hidden flex items-stretch animate-fade-in transition-all duration-300"
+      [ngClass]="{
+        'border-blue-200 shadow-blue-500/10':   toastState === null,
+        'border-emerald-200 shadow-emerald-500/10': toastState === 'success',
+        'border-red-200 shadow-red-500/10':     toastState === 'error'
+      }">
+
+      <div class="w-1 shrink-0"
+        [class.bg-blue-500]="toastState === null"
+        [class.bg-emerald-500]="toastState === 'success'"
+        [class.bg-red-500]="toastState === 'error'">
+      </div>
+
+      <div class="flex items-center justify-between gap-3 flex-1 p-4">
+        <div class="flex items-center gap-3">
+
+          <div class="shrink-0">
+            <div *ngIf="toastState === 'success'"
+              class="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                stroke-linejoin="round" class="text-emerald-600">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div *ngIf="toastState === 'error'"
+              class="w-8 h-8 rounded-lg bg-red-50 border border-red-100 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                stroke-linejoin="round" class="text-red-600">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </div>
+            <div *ngIf="toastState === null"
+              class="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
+              <svg class="animate-spin h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div>
+            <p class="text-[10px] font-black text-slate-800 uppercase tracking-wider leading-none">
+              Console Notification
+            </p>
+            <p class="text-[10px] text-slate-500 mt-1.5 font-semibold leading-snug">
+              {{ toastMessage }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Dismiss -->
+        <button
+          (click)="toastMessage = null; toastState = null"
+          class="w-6 h-6 rounded-lg border border-slate-200 bg-white/80 hover:bg-slate-50 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-all duration-150 cursor-pointer shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <!-- END Toast -->
+
+    <!-- ============================================================ -->
+    <!-- ✅ SQL WARNING POPUP — OUTSIDE TOAST, INSIDE <main>          -->
+    <!-- ============================================================ -->
+    <app-sql-warning-popup
+      *ngIf="showSqlWarning && sqlValidation"
+      [validation]="sqlValidation!"
+      [originalQuery]="pendingMsg?.sql || ''"
+      (onClose)="onWarningClose()"
+      (onConfirm)="onWarningConfirm()">
+    </app-sql-warning-popup>
+
+  </main>
+</div>
+  

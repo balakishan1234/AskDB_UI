@@ -1,0 +1,10 @@
+<!-- ✅ Router outlet first -->
+<router-outlet></router-outlet>
+
+<!-- ✅ Mock console -->
+@if (mockConsoleService.isOpen()) {
+  <app-mock-console></app-mock-console>
+}
+
+<!-- ✅ Session warning LAST - renders above everything -->
+<app-session-warning></app-session-warning>

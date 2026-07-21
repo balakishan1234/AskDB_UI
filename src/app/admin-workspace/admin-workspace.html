@@ -1,0 +1,2868 @@
+<div class="min-h-screen bg-slate-50 text-slate-900 relative overflow-hidden font-sans flex flex-col">
+
+  <!-- Grid overlay -->
+  <div class="absolute inset-0 bg-[linear-gradient(to_right,var(--grid-color)_1px,transparent_1px),linear-gradient(to_bottom,var(--grid-color)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-35 pointer-events-none -z-10"></div>
+
+  <!-- Glow blobs -->
+  <div class="absolute top-[-10%] left-[-10%] w-[45rem] h-[45rem] rounded-full bg-blue-500/5 blur-[100px] animate-pulse-slow pointer-events-none -z-10"></div>
+  <div class="absolute bottom-[-10%] right-[-10%] w-[35rem] h-[35rem] rounded-full bg-indigo-500/5 blur-[100px] animate-pulse-slow-reverse pointer-events-none -z-10"></div>
+
+  <!-- Top Navigation Bar -->
+  <header class="relative z-20 border-b border-slate-200/80 bg-white/70 backdrop-blur-md shadow-sm">
+  <div class="max-w-7xl mx-auto px-6 py-3.5 flex justify-between items-center gap-4">
+
+    <!-- Brand Logo -->
+    <div class="flex items-center gap-3.5 group cursor-pointer shrink-0" (click)="goToHome()">
+
+      <!-- Icon -->
+      <div
+        class="relative overflow-hidden flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/35 group-hover:scale-105 transition-all duration-300">
+        <!-- Shimmer -->
+        <span
+          class="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none"></span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="12" cy="5" rx="9" ry="3" />
+          <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+          <path d="M3 12A9 3 0 0 0 21 12" />
+        </svg>
+      </div>
+
+      <!-- Brand Text -->
+      <div>
+        <h1
+          class="text-lg font-black tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors duration-200 flex items-center gap-2 leading-tight">
+          AskDB
+          <span *ngIf="isMockMode" (click)="openMockConsole(); $event.stopPropagation()"
+            class="inline-flex items-center px-2 py-0.5 rounded-md text-[8px] font-extrabold bg-amber-100 text-amber-700 border border-amber-200 uppercase tracking-widest leading-none cursor-pointer hover:bg-amber-200 transition-colors duration-150 select-none">
+            Mock Mode
+          </span>
+        </h1>
+        <div class="flex items-center gap-1.5 mt-0.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></span>
+          <span class="text-[9px] text-blue-600 font-extrabold tracking-wider uppercase select-none">
+            Admin Console Portal
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side Controls -->
+    <div class="flex items-center gap-2.5">
+
+      <!-- Admin Info Block -->
+      <div
+        class="hidden sm:flex items-center gap-3 pl-3 pr-4 py-2 rounded-xl bg-slate-50/80 border border-slate-200/80 hover:border-slate-300 hover:bg-slate-50 transition-all duration-200 cursor-default">
+        <!-- Avatar -->
+        <div
+          class="relative w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-black text-xs shadow-sm select-none shrink-0">
+          {{ userName ? userName.slice(0,2).toUpperCase() : 'AD' }}
+          <!-- Online indicator -->
+          <span
+            class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-white shadow-sm"></span>
+        </div>
+        <!-- Text -->
+        <div class="flex flex-col text-right">
+          <span class="text-xs font-bold text-slate-800 leading-tight">{{ userName }}</span>
+          <span class="text-[9px] text-blue-600 font-bold uppercase tracking-wider leading-tight">Super
+            Administrator</span>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="hidden sm:block w-px h-7 bg-slate-200 rounded-full mx-0.5"></div>
+
+      <!-- Theme Toggle -->
+      <button (click)="themeService.toggleTheme()"
+        [title]="themeService.currentTheme() === 'light' ? 'Switch to Cyber Obsidian Dark' : 'Switch to Corporate Light'"
+        class="group p-2.5 rounded-xl border border-slate-200 bg-white/70 hover:bg-white hover:border-slate-300 hover:shadow-md text-slate-400 hover:text-blue-600 transition-all duration-200 cursor-pointer shadow-sm flex items-center justify-center shrink-0">
+        <svg *ngIf="themeService.currentTheme() === 'light'" xmlns="http://www.w3.org/2000/svg" width="15"
+          height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round"
+          class="transition-transform duration-300 group-hover:rotate-12">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+        <svg *ngIf="themeService.currentTheme() === 'dark'" xmlns="http://www.w3.org/2000/svg" width="15"
+          height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round"
+          class="transition-transform duration-500 group-hover:rotate-45">
+          <circle cx="12" cy="12" r="5" />
+          <line x1="12" y1="1" x2="12" y2="3" />
+          <line x1="12" y1="21" x2="12" y2="23" />
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+          <line x1="1" y1="12" x2="3" y2="12" />
+          <line x1="21" y1="12" x2="23" y2="12" />
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg>
+      </button>
+
+      <!-- Single Device Logout -->
+      <button (click)="logout()" title="Logout of Admin Session"
+        class="group p-2.5 rounded-xl border border-slate-200 bg-white/70 hover:bg-red-50 hover:border-red-200 text-slate-400 hover:text-red-600 transition-all duration-200 cursor-pointer shadow-sm flex items-center justify-center shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+          class="transition-transform duration-200 group-hover:translate-x-0.5">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+      </button>
+
+      <!-- Logout All Devices -->
+      <button (click)="logoutFromAllDevices()" [disabled]="isLogoutAllLoading"
+        class="group relative overflow-hidden flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-[10px] font-bold transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md hover:shadow-red-500/20 active:scale-[0.97] select-none shrink-0">
+        <!-- Shimmer -->
+        <span
+          class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none"></span>
+
+        <!-- Spinner when loading -->
+        <svg *ngIf="isLogoutAllLoading" class="animate-spin h-3 w-3 text-white shrink-0" fill="none"
+          viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+          </path>
+        </svg>
+
+        <!-- Icon when idle -->
+        <svg *ngIf="!isLogoutAllLoading" xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+          stroke-linejoin="round" class="shrink-0">
+          <rect x="2" y="3" width="20" height="14" rx="2" />
+          <path d="M8 21h8" />
+          <path d="M12 17v4" />
+          <path d="M9 10l3-3 3 3" />
+          <path d="M12 7v6" />
+        </svg>
+
+        <span class="hidden sm:inline">
+          {{ isLogoutAllLoading ? 'Logging out...' : 'Logout All Devices' }}
+        </span>
+        <span class="sm:hidden">
+          {{ isLogoutAllLoading ? '...' : 'All' }}
+        </span>
+      </button>
+
+    </div>
+  </div>
+</header>
+  <!-- Admin Body Container -->
+  <main class="relative z-10 max-w-7xl mx-auto px-6 py-8 w-full flex-grow flex flex-col gap-6">
+
+  <!-- ================================================================ -->
+  <!-- Page Title & Stats Summary                                        -->
+  <!-- ================================================================ -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-5 border-b border-slate-200 pb-5">
+    <div>
+      <div class="flex items-center gap-2.5 mb-1.5">
+        <div
+          class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center shadow-sm shadow-blue-500/20 shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+            class="text-white">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+        </div>
+        <h2 class="text-2xl font-black tracking-tight text-slate-900">Workspace &amp; Access Control</h2>
+      </div>
+      <p class="text-xs text-slate-500 ml-10 leading-relaxed">
+        Manage enterprise users and customize their database sandbox workspace associations.
+      </p>
+    </div>
+
+    <!-- Quick Metrics -->
+    <div
+      class="flex items-center gap-0 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden shrink-0 divide-x divide-slate-200">
+      <div class="flex flex-col items-center px-6 py-3.5 hover:bg-slate-50 transition-colors duration-150 cursor-default">
+        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1 select-none whitespace-nowrap">Total
+          Users</span>
+        <span class="text-xl font-black text-slate-800 leading-tight">{{ users.length }}</span>
+        <span class="text-[9px] font-semibold text-slate-400 mt-0.5">registered</span>
+      </div>
+      <div class="flex flex-col items-center px-6 py-3.5 hover:bg-slate-50 transition-colors duration-150 cursor-default">
+        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1 select-none whitespace-nowrap">Active
+          Assignments</span>
+        <span class="text-xl font-black text-blue-600 leading-tight">{{ totalActiveAssignments }}</span>
+        <span class="text-[9px] font-semibold text-slate-400 mt-0.5">workspaces</span>
+      </div>
+      <div class="flex flex-col items-center px-6 py-3.5 hover:bg-slate-50 transition-colors duration-150 cursor-default">
+        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1 select-none whitespace-nowrap">Audit
+          Status</span>
+        <div class="flex items-center gap-1.5 leading-tight">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+          <span class="text-sm font-black text-emerald-600">Verified</span>
+        </div>
+        <span class="text-[9px] font-semibold text-slate-400 mt-0.5">compliant</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- Admin View Tab Selectors                                          -->
+  <!-- ================================================================ -->
+  <div class="flex items-end border-b border-slate-200 select-none gap-1 relative z-20">
+    <!-- Workspace Registry Tab -->
+    <button (click)="setActiveAdminView('workspaces')"
+      class="relative group flex items-center gap-2 py-3 px-5 text-xs font-bold cursor-pointer transition-all duration-200 rounded-t-xl"
+      [class.text-blue-600]="activeAdminView === 'workspaces'"
+      [class.bg-white]="activeAdminView === 'workspaces'"
+      [class.border]="activeAdminView === 'workspaces'"
+      [class.border-b-white]="activeAdminView === 'workspaces'"
+      [class.border-slate-200]="activeAdminView === 'workspaces'"
+      [class.-mb-px]="activeAdminView === 'workspaces'"
+      [class.shadow-sm]="activeAdminView === 'workspaces'"
+      [class.text-slate-500]="activeAdminView !== 'workspaces'"
+      [class.hover:text-slate-700]="activeAdminView !== 'workspaces'"
+      [class.hover:bg-slate-50]="activeAdminView !== 'workspaces'">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <ellipse cx="12" cy="5" rx="9" ry="3" />
+        <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+        <path d="M3 12A9 3 0 0 0 21 12" />
+      </svg>
+      Workspace Registry
+      <span *ngIf="activeAdminView === 'workspaces'"
+        class="ml-1 inline-flex items-center justify-center h-4 px-1.5 rounded-full text-[8px] font-black bg-blue-100 text-blue-700">
+        {{ assignableWorkspaces.length }}
+      </span>
+    </button>
+
+    <!-- User Registry Tab -->
+    <button (click)="setActiveAdminView('users')"
+      class="relative group flex items-center gap-2 py-3 px-5 text-xs font-bold cursor-pointer transition-all duration-200 rounded-t-xl"
+      [class.text-blue-600]="activeAdminView === 'users'"
+      [class.bg-white]="activeAdminView === 'users'"
+      [class.border]="activeAdminView === 'users'"
+      [class.border-b-white]="activeAdminView === 'users'"
+      [class.border-slate-200]="activeAdminView === 'users'"
+      [class.-mb-px]="activeAdminView === 'users'"
+      [class.shadow-sm]="activeAdminView === 'users'"
+      [class.text-slate-500]="activeAdminView !== 'users'"
+      [class.hover:text-slate-700]="activeAdminView !== 'users'"
+      [class.hover:bg-slate-50]="activeAdminView !== 'users'">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+      User Registry
+      <span *ngIf="activeAdminView === 'users'"
+        class="ml-1 inline-flex items-center justify-center h-4 px-1.5 rounded-full text-[8px] font-black bg-blue-100 text-blue-700">
+        {{ users.length }}
+      </span>
+    </button>
+
+    <!-- My Workspaces Tab -->
+    <button (click)="setActiveAdminView('my-workspaces')"
+      class="relative group flex items-center gap-2 py-3 px-5 text-xs font-bold cursor-pointer transition-all duration-200 rounded-t-xl"
+      [class.text-blue-600]="activeAdminView === 'my-workspaces'"
+      [class.bg-white]="activeAdminView === 'my-workspaces'"
+      [class.border]="activeAdminView === 'my-workspaces'"
+      [class.border-b-white]="activeAdminView === 'my-workspaces'"
+      [class.border-slate-200]="activeAdminView === 'my-workspaces'"
+      [class.-mb-px]="activeAdminView === 'my-workspaces'"
+      [class.shadow-sm]="activeAdminView === 'my-workspaces'"
+      [class.text-slate-500]="activeAdminView !== 'my-workspaces'"
+      [class.hover:text-slate-700]="activeAdminView !== 'my-workspaces'"
+      [class.hover:bg-slate-50]="activeAdminView !== 'my-workspaces'">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <ellipse cx="12" cy="5" rx="9" ry="3" />
+        <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+        <path d="M3 12A9 3 0 0 0 21 12" />
+      </svg>
+      My Workspaces
+      <span *ngIf="activeAdminView === 'my-workspaces'"
+        class="ml-1 inline-flex items-center justify-center h-4 px-1.5 rounded-full text-[8px] font-black bg-blue-100 text-blue-700">
+        {{ myWorkspaces.length }}
+      </span>
+    </button>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- USER REGISTRY VIEW                                               -->
+  <!-- ================================================================ -->
+  <div class="grid lg:grid-cols-12 gap-6 items-start" *ngIf="activeAdminView === 'users'">
+
+    <!-- ── LEFT: Registered Users List ───────────────────────────── -->
+    <div class="lg:col-span-5 flex flex-col gap-4">
+      <div class="bg-white border border-slate-200/80 shadow-md shadow-slate-100/50 rounded-2xl overflow-hidden">
+
+        <!-- Card Header -->
+        <div class="flex items-center justify-between gap-4 px-5 py-4 border-b border-slate-100">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+            <h3 class="text-xs font-black text-slate-700 uppercase tracking-wider">Active Employees</h3>
+            <span
+              class="inline-flex items-center justify-center h-4 px-1.5 rounded-full text-[8px] font-black bg-slate-100 text-slate-600 border border-slate-200">
+              {{ filteredUsers.length }}
+            </span>
+          </div>
+          <button (click)="showAddUserModal = true"
+            class="group relative overflow-hidden flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-sm shadow-blue-500/20 transition-all duration-200 cursor-pointer active:scale-[0.97]">
+            <span
+              class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none"></span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Register User
+          </button>
+        </div>
+
+        <div class="p-4 flex flex-col gap-3">
+          <!-- Search Bar -->
+          <div class="relative w-full">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-3.5 w-3.5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </span>
+            <input type="text" [(ngModel)]="adminUserSearch" placeholder="Search by name or email..."
+              class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-400 focus:bg-white shadow-sm transition-all outline-none" />
+          </div>
+
+          <!-- User List -->
+          <div class="flex flex-col gap-1.5 max-h-[380px] overflow-y-auto pr-0.5">
+
+            <div *ngFor="let u of filteredUsers" (click)="selectUser(u)"
+              class="group flex items-center justify-between p-3.5 rounded-xl border cursor-pointer transition-all duration-200"
+              [class.border-blue-200]="selectedUser?.id === u.id"
+              [class.bg-blue-50]="selectedUser?.id === u.id"
+              [class.shadow-sm]="selectedUser?.id === u.id"
+              [class.border-slate-100]="selectedUser?.id !== u.id"
+              [class.bg-white]="selectedUser?.id !== u.id"
+              [class.hover:border-slate-200]="selectedUser?.id !== u.id"
+              [class.hover:bg-slate-50]="selectedUser?.id !== u.id">
+
+              <div class="flex items-center gap-3 min-w-0">
+                <!-- Avatar -->
+                <div class="relative shrink-0">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs shadow-sm select-none transition-all duration-200"
+                    [class.bg-blue-600]="selectedUser?.id === u.id"
+                    [class.text-white]="selectedUser?.id === u.id"
+                    [class.bg-slate-100]="selectedUser?.id !== u.id"
+                    [class.text-slate-500]="selectedUser?.id !== u.id">
+                    {{ u.name.substring(0,2).toUpperCase() }}
+                  </div>
+                </div>
+                <!-- Info -->
+                <div class="min-w-0">
+                  <h4 class="text-xs font-bold text-slate-800 leading-tight truncate">{{ u.name }}</h4>
+                  <span
+                    class="text-[10px] text-slate-400 font-medium font-mono block mt-0.5 truncate">{{ u.email }}</span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 shrink-0 ml-2">
+                <!-- DB count badge -->
+                <span
+                  class="text-[9px] font-bold px-2 py-0.5 rounded-full border select-none transition-colors duration-200"
+                  [class.bg-blue-100]="selectedUser?.id === u.id"
+                  [class.text-blue-700]="selectedUser?.id === u.id"
+                  [class.border-blue-200]="selectedUser?.id === u.id"
+                  [class.bg-slate-100]="selectedUser?.id !== u.id"
+                  [class.text-slate-600]="selectedUser?.id !== u.id"
+                  [class.border-slate-200]="selectedUser?.id !== u.id">
+                  {{ u.workspaces.length }} DB{{ u.workspaces.length !== 1 ? 's' : '' }}
+                </span>
+                <!-- Delete -->
+                <button (click)="deleteUser(u.id); $event.stopPropagation()" title="Remove User Profile"
+                  class="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all duration-150 cursor-pointer border border-transparent hover:border-red-100">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                    <line x1="10" y1="11" x2="10" y2="17" />
+                    <line x1="14" y1="11" x2="14" y2="17" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Empty Search State -->
+            <div *ngIf="filteredUsers.length === 0"
+              class="flex flex-col items-center justify-center text-center py-10 border border-dashed border-slate-200 rounded-xl bg-slate-50">
+              <div
+                class="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center mb-3 text-slate-300">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </div>
+              <p class="text-xs font-bold text-slate-500">No results found</p>
+              <p class="text-[10px] text-slate-400 mt-1">Try a different name or email address</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RIGHT: Selected User's Workspaces & Access ─────────────── -->
+    <div class="lg:col-span-7 flex flex-col gap-4">
+
+      <!-- Selected User Details Panel -->
+      <div *ngIf="selectedUser"
+        class="bg-white border border-slate-200/80 shadow-md shadow-slate-100/50 rounded-2xl overflow-hidden flex flex-col min-h-[460px]">
+
+        <!-- Panel Header -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+          <div>
+            <h3 class="text-xs font-black text-slate-700 uppercase tracking-wider">Employee Workspace
+              Details</h3>
+            <p class="text-[10px] text-slate-500 mt-0.5">
+              Assigned configurations for
+              <span class="font-bold text-slate-800">{{ selectedUser.name }}</span>
+            </p>
+          </div>
+          <button (click)="openUserPermissionsModal()"
+            class="group relative overflow-hidden flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 text-white font-bold text-xs rounded-xl shadow-md shadow-blue-500/15 hover:shadow-blue-500/25 active:scale-[0.98] hover:scale-[1.02] transition-all duration-200 cursor-pointer shrink-0">
+            <span
+              class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none"></span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            Edit Permissions
+          </button>
+        </div>
+
+        <div class="p-6 flex flex-col gap-5 flex-1">
+
+          <!-- Employee Info Block -->
+          <div
+            class="grid grid-cols-3 gap-3 bg-slate-50 border border-slate-200/70 rounded-xl p-4">
+            <div class="flex flex-col">
+              <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1">Full Name</span>
+              <span class="text-xs font-extrabold text-slate-800 leading-tight">{{ selectedUser.name }}</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1">Company Email</span>
+              <span class="text-[10px] font-semibold text-slate-600 font-mono leading-tight truncate">{{ selectedUser.email }}</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1">Role</span>
+              <span class="inline-flex items-center gap-1 text-[10px] font-bold text-blue-600">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></span>
+                Regular Employee
+              </span>
+            </div>
+          </div>
+
+          <!-- Assigned Workspaces -->
+          <div class="flex flex-col flex-1">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                Assigned Database Environments
+              </h4>
+              <span
+                class="inline-flex items-center justify-center h-4 px-2 rounded-full text-[8px] font-black bg-slate-100 text-slate-600 border border-slate-200 select-none">
+                {{ selectedUser.workspaces.length }} total
+              </span>
+            </div>
+
+            <!-- Workspace Cards Grid -->
+            <div class="grid gap-3 sm:grid-cols-2" *ngIf="selectedUser.workspaces.length > 0">
+              <div *ngFor="let ws of selectedUser.workspaces"
+                class="group relative rounded-xl border border-slate-200 bg-white shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200 p-4 flex flex-col gap-3 overflow-hidden">
+
+                <!-- Top color stripe based on env -->
+                <div class="absolute top-0 left-0 right-0 h-0.5 rounded-t-xl transition-colors duration-200"
+                  [class.bg-emerald-400]="ws.env === 'Production'"
+                  [class.bg-amber-400]="ws.env === 'UAT'"
+                  [class.bg-blue-400]="ws.env === 'Development'">
+                </div>
+
+                <div class="flex justify-between items-start gap-2">
+                  <div class="min-w-0">
+                    <h5 class="text-xs font-bold text-slate-800 leading-snug truncate">{{ ws.name }}</h5>
+                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-0.5 block">{{ ws.provider }}</span>
+                  </div>
+                  <span class="shrink-0 inline-block px-2 py-0.5 rounded-full text-[8px] font-bold border uppercase tracking-wider leading-none"
+                    [ngClass]="{
+                      'bg-emerald-50 text-emerald-700 border-emerald-200': ws.env === 'Production',
+                      'bg-amber-50 text-amber-700 border-amber-200': ws.env === 'UAT',
+                      'bg-blue-50 text-blue-700 border-blue-200': ws.env === 'Development'
+                    }">
+                    {{ ws.env }}
+                  </span>
+                </div>
+
+                <div class="flex justify-between items-center border-t border-slate-100 pt-2.5 mt-auto">
+                  <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wide">Access Level</span>
+                  <span class="font-bold text-[9px] font-mono tracking-wider border leading-none uppercase px-2 py-0.5 rounded-lg"
+                    [ngClass]="{
+                      'bg-red-50 text-red-700 border-red-200': ws.accessLevel === 'Admin',
+                      'bg-slate-100 text-slate-700 border-slate-200': ws.accessLevel === 'User'
+                    }">
+                    {{ ws.accessLevel }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- No Workspaces Empty State -->
+            <div *ngIf="selectedUser.workspaces.length === 0"
+              class="flex flex-col items-center justify-center text-center py-12 border border-dashed border-slate-200 rounded-2xl bg-slate-50/60 flex-1">
+              <div
+                class="w-12 h-12 rounded-2xl bg-white border border-slate-200 text-slate-300 flex items-center justify-center mb-3 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <ellipse cx="12" cy="5" rx="9" ry="3" />
+                  <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+                  <path d="M3 12A9 3 0 0 0 21 12" />
+                </svg>
+              </div>
+              <h4 class="text-xs font-bold text-slate-800">No workspaces assigned</h4>
+              <p class="text-[10px] text-slate-500 mt-1.5 max-w-[220px] leading-relaxed">
+                Workspace sandbox access has not been mapped for this user profile.
+              </p>
+              <button (click)="openUserPermissionsModal()"
+                class="mt-4 px-4 py-2 border border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:border-blue-300 text-[10px] font-bold rounded-xl transition-all duration-150 cursor-pointer">
+                Manage Roles &amp; Assign
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel Footer -->
+        <div
+          class="px-6 py-3 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between text-[9px] text-slate-400 font-bold uppercase tracking-wider">
+          <div class="flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            CGI Workspace Manager Active
+          </div>
+          <div class="flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              class="text-emerald-400">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            Security Audit: Verified
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty Selection State -->
+      <div *ngIf="!selectedUser"
+        class="bg-white border border-slate-200/80 shadow-md shadow-slate-100/50 rounded-2xl flex flex-col items-center justify-center text-center p-10 min-h-[460px]">
+        <div
+          class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center border border-slate-200 text-slate-300 mb-5 shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+        </div>
+
+        <!-- Decorative dots -->
+        <div class="flex items-center gap-1.5 mb-5">
+          <span class="w-1.5 h-1.5 rounded-full bg-slate-200"></span>
+          <span class="w-8 h-px bg-slate-200"></span>
+          <span class="w-2 h-2 rounded-full border-2 border-slate-200"></span>
+          <span class="w-8 h-px bg-slate-200"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-slate-200"></span>
+        </div>
+
+        <h3 class="text-sm font-black text-slate-700">No Employee Selected</h3>
+        <p class="text-xs text-slate-500 mt-2 max-w-[260px] leading-relaxed">
+          Select an employee from the registry panel to view and configure their workspace access.
+        </p>
+
+        <div class="flex items-center gap-3 mt-6">
+          <button (click)="showAddUserModal = true"
+            class="group relative overflow-hidden flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-sm shadow-blue-500/20 transition-all duration-200 cursor-pointer active:scale-[0.97]">
+            <span
+              class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none"></span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Register New User
+          </button>
+          <span class="text-[10px] font-semibold text-slate-400 select-none">or select from the list</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- WORKSPACE REGISTRY VIEW                                          -->
+  <!-- ================================================================ -->
+  <div *ngIf="activeAdminView === 'workspaces'"
+    class="bg-white border border-slate-200/80 shadow-md shadow-slate-100/50 rounded-2xl overflow-hidden flex flex-col min-h-[460px]">
+
+    <!-- Panel Header -->
+    <div
+      class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+      <div>
+        <h3 class="text-xs font-black text-slate-700 uppercase tracking-wider">Workspace Database Registry</h3>
+        <p class="text-[10px] text-slate-500 mt-0.5 leading-relaxed">
+          Create and manage database workspaces that can be assigned to users.
+        </p>
+      </div>
+      <button (click)="resetCreateWsForm(); showCreateWsModal = true"
+        class="group relative overflow-hidden flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 text-white font-bold text-xs rounded-xl shadow-md shadow-blue-500/15 hover:shadow-blue-500/25 active:scale-[0.98] hover:scale-[1.02] transition-all duration-200 cursor-pointer shrink-0">
+        <span
+          class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none"></span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+        Create Workspace
+      </button>
+    </div>
+
+    <div class="p-6 flex flex-col flex-1">
+
+      <!-- Workspace Cards Grid -->
+      <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-5" *ngIf="assignableWorkspaces.length > 0">
+        <div *ngFor="let ws of assignableWorkspaces"
+          class="group relative rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-lg hover:shadow-blue-500/5 hover:border-blue-200 transition-all duration-300 p-5 flex flex-col justify-between overflow-hidden">
+
+          <!-- Top accent stripe -->
+          <div class="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl"
+            [class.bg-emerald-400]="ws.env === 'Production'"
+            [class.bg-amber-400]="ws.env === 'UAT'"
+            [class.bg-blue-400]="ws.env === 'Development'">
+          </div>
+
+          <div class="flex flex-col gap-4">
+            <!-- Name + env badge -->
+            <div class="flex justify-between items-start gap-3 pt-1">
+              <div class="min-w-0">
+                <h4 class="text-sm font-extrabold text-slate-900 tracking-tight leading-tight truncate">
+                  {{ ws.name }}
+                </h4>
+                <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wide mt-0.5 block">
+                  {{ ws.provider }}
+                </span>
+              </div>
+              <span class="shrink-0 px-2.5 py-1 rounded-lg text-[8px] font-bold border leading-none uppercase tracking-wider"
+                [ngClass]="{
+                  'bg-emerald-50 text-emerald-700 border-emerald-200': ws.env === 'Production',
+                  'bg-amber-50 text-amber-700 border-amber-200': ws.env === 'UAT',
+                  'bg-blue-50 text-blue-700 border-blue-200': ws.env === 'Development'
+                }">
+                {{ ws.env }}
+              </span>
+            </div>
+
+            <!-- Connection Details -->
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-3 space-y-2 select-none">
+              <div class="flex justify-between items-center">
+                <span class="text-[8px] font-black text-slate-400 uppercase tracking-wider">Database</span>
+                <span class="text-[10px] text-slate-700 font-bold font-mono">{{ ws.databaseName || '—' }}</span>
+              </div>
+              <div class="h-px bg-slate-100"></div>
+              <div class="flex justify-between items-center">
+                <span class="text-[8px] font-black text-slate-400 uppercase tracking-wider">Username</span>
+                <span class="text-[10px] text-slate-700 font-bold font-mono">{{ ws.username || '—' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions Footer -->
+          <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-2 mt-4">
+            <button (click)="updateGlobalWorkspace(ws)" title="Update Workspace"
+              class="flex items-center gap-1.5 px-3 py-1.5 border border-blue-200 bg-white text-blue-600 hover:bg-blue-50 hover:border-blue-300 text-[10px] font-bold rounded-lg transition-all duration-150 cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+              </svg>
+              Update
+            </button>
+            <button (click)="deleteGlobalWorkspace(ws.id)" title="Delete Global Workspace"
+              class="flex items-center gap-1.5 px-3 py-1.5 border border-red-200 bg-white text-red-600 hover:bg-red-50 hover:border-red-300 text-[10px] font-bold rounded-lg transition-all duration-150 cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6" />
+                <path
+                  d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              </svg>
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty Workspace State -->
+      <div *ngIf="assignableWorkspaces.length === 0"
+        class="flex flex-col items-center justify-center text-center py-16 border border-dashed border-slate-200 rounded-2xl bg-slate-50/60 flex-1">
+        <div
+          class="w-14 h-14 rounded-2xl bg-white border border-slate-200 text-slate-300 flex items-center justify-center mb-4 shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <ellipse cx="12" cy="5" rx="9" ry="3" />
+            <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+            <path d="M3 12A9 3 0 0 0 21 12" />
+          </svg>
+        </div>
+
+        <!-- Decorative dots -->
+        <div class="flex items-center gap-1.5 mb-4">
+          <span class="w-1.5 h-1.5 rounded-full bg-slate-200"></span>
+          <span class="w-8 h-px bg-slate-200"></span>
+          <span class="w-2 h-2 rounded-full border-2 border-slate-200"></span>
+          <span class="w-8 h-px bg-slate-200"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-slate-200"></span>
+        </div>
+
+        <h4 class="text-sm font-black text-slate-700">No Workspaces Registered</h4>
+        <p class="text-[10px] text-slate-500 mt-1.5 max-w-[260px] leading-relaxed">
+          Create a database workspace configuration that can then be assigned to corporate users.
+        </p>
+        <button (click)="resetCreateWsForm(); showCreateWsModal = true"
+          class="group relative overflow-hidden mt-5 flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-sm shadow-blue-500/20 transition-all duration-200 cursor-pointer active:scale-[0.97]">
+          <span
+            class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none"></span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Create First Workspace
+        </button>
+      </div>
+    </div>
+
+    <!-- Panel Footer -->
+    <div
+      class="px-6 py-3 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between text-[9px] text-slate-400 font-bold uppercase tracking-wider">
+      <div class="flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        CGI Workspace Manager Active
+      </div>
+      <div class="flex items-center gap-1.5">
+        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+          class="text-emerald-400">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+        Security Audit: Verified
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- MY WORKSPACES VIEW                                               -->
+  <!-- ================================================================ -->
+  <div *ngIf="activeAdminView === 'my-workspaces'" class="flex flex-col gap-6 w-full animate-fade-in">
+    <!-- ── Search & Filter ──────────────────────────────────────── -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <!-- Search -->
+      <div class="relative flex-grow max-w-md w-full">
+        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+          <svg class="h-3.5 w-3.5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </span>
+        <input
+          type="text"
+          [(ngModel)]="myWorkspacesSearchQuery"
+          placeholder="Search by name or provider (e.g. Postgres)..."
+          class="w-full pl-10 pr-4 py-3 border border-slate-200 bg-white rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200" />
+      </div>
+
+      <!-- Environment Filter Tabs -->
+      <div
+        class="flex flex-wrap items-center gap-1 bg-slate-100/70 p-1 rounded-xl border border-slate-200/70 backdrop-blur-md select-none shadow-inner">
+        <button
+          (click)="selectMyWorkspacesEnv('All')"
+          class="relative px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer focus:outline-none"
+          [class.bg-white]="myWorkspacesSelectedEnv === 'All'"
+          [class.text-slate-700]="myWorkspacesSelectedEnv === 'All'"
+          [class.shadow-sm]="myWorkspacesSelectedEnv === 'All'"
+          [class.border]="myWorkspacesSelectedEnv === 'All'"
+          [class.border-slate-200]="myWorkspacesSelectedEnv === 'All'"
+          [class.text-slate-500]="myWorkspacesSelectedEnv !== 'All'"
+          [class.hover:text-slate-700]="myWorkspacesSelectedEnv !== 'All'"
+          [class.hover:bg-white/60]="myWorkspacesSelectedEnv !== 'All'">
+          All
+          <span class="ml-1 text-[9px] font-black opacity-60">({{ myWorkspacesTotalCount }})</span>
+        </button>
+
+        <button
+          (click)="selectMyWorkspacesEnv('Production')"
+          class="relative px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer focus:outline-none"
+          [class.bg-white]="myWorkspacesSelectedEnv === 'Production'"
+          [class.text-emerald-700]="myWorkspacesSelectedEnv === 'Production'"
+          [class.shadow-sm]="myWorkspacesSelectedEnv === 'Production'"
+          [class.border]="myWorkspacesSelectedEnv === 'Production'"
+          [class.border-slate-200]="myWorkspacesSelectedEnv === 'Production'"
+          [class.text-slate-500]="myWorkspacesSelectedEnv !== 'Production'"
+          [class.hover:text-slate-700]="myWorkspacesSelectedEnv !== 'Production'"
+          [class.hover:bg-white/60]="myWorkspacesSelectedEnv !== 'Production'">
+          Production
+          <span class="ml-1 text-[9px] font-black opacity-60">({{ myWorkspacesProdCount }})</span>
+        </button>
+
+        <button
+          (click)="selectMyWorkspacesEnv('UAT')"
+          class="relative px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer focus:outline-none"
+          [class.bg-white]="myWorkspacesSelectedEnv === 'UAT'"
+          [class.text-amber-700]="myWorkspacesSelectedEnv === 'UAT'"
+          [class.shadow-sm]="myWorkspacesSelectedEnv === 'UAT'"
+          [class.border]="myWorkspacesSelectedEnv === 'UAT'"
+          [class.border-slate-200]="myWorkspacesSelectedEnv === 'UAT'"
+          [class.text-slate-500]="myWorkspacesSelectedEnv !== 'UAT'"
+          [class.hover:text-slate-700]="myWorkspacesSelectedEnv !== 'UAT'"
+          [class.hover:bg-white/60]="myWorkspacesSelectedEnv !== 'UAT'">
+          UAT
+          <span class="ml-1 text-[9px] font-black opacity-60">({{ myWorkspacesUatCount }})</span>
+        </button>
+
+        <button
+          (click)="selectMyWorkspacesEnv('Development')"
+          class="relative px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer focus:outline-none"
+          [class.bg-white]="myWorkspacesSelectedEnv === 'Development'"
+          [class.text-blue-700]="myWorkspacesSelectedEnv === 'Development'"
+          [class.shadow-sm]="myWorkspacesSelectedEnv === 'Development'"
+          [class.border]="myWorkspacesSelectedEnv === 'Development'"
+          [class.border-slate-200]="myWorkspacesSelectedEnv === 'Development'"
+          [class.text-slate-500]="myWorkspacesSelectedEnv !== 'Development'"
+          [class.hover:text-slate-700]="myWorkspacesSelectedEnv !== 'Development'"
+          [class.hover:bg-white/60]="myWorkspacesSelectedEnv !== 'Development'">
+          Development
+          <span class="ml-1 text-[9px] font-black opacity-60">({{ myWorkspacesDevCount }})</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Grid header row -->
+    <div class="flex items-center justify-between -mb-4">
+      <div class="flex items-center gap-2">
+        <h3 class="text-xs font-black uppercase tracking-wider text-slate-500">My Assigned Workspaces</h3>
+        <span
+          class="inline-flex items-center justify-center h-4 px-2 rounded-full text-[8px] font-black bg-slate-100 text-slate-600 border border-slate-200 select-none">
+          {{ filteredMyWorkspaces.length }}
+        </span>
+      </div>
+      <span *ngIf="myWorkspacesSearchQuery || myWorkspacesSelectedEnv !== 'All'"
+        class="text-[10px] font-bold text-blue-600 cursor-pointer hover:underline underline-offset-2 select-none"
+        (click)="myWorkspacesSearchQuery = ''; selectMyWorkspacesEnv('All')">
+        Clear filters
+      </span>
+    </div>
+
+    <!-- ── Workspace Grid ────────────────────────────────────────── -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5" *ngIf="filteredMyWorkspaces.length > 0">
+      <div
+        *ngFor="let ws of filteredMyWorkspaces"
+        class="group relative rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-lg hover:shadow-blue-500/5 hover:border-blue-200 transition-all duration-300 p-5 flex flex-col justify-between overflow-hidden">
+
+        <!-- Env top stripe -->
+        <div class="absolute top-0 left-0 right-0 h-1 transition-all duration-300"
+          [ngClass]="{
+            'bg-emerald-500': ws.env === 'Production',
+            'bg-amber-500': ws.env === 'UAT',
+            'bg-blue-500': ws.env === 'Development'
+          }">
+        </div>
+
+        <div class="p-1">
+          <!-- Name + env badge -->
+          <div class="flex justify-between items-start gap-4 mb-5">
+            <div class="min-w-0">
+              <h4
+                class="text-base font-extrabold text-slate-900 tracking-tight group-hover:text-blue-600 transition-colors duration-200 leading-tight truncate"
+                [title]="ws.name">
+                {{ ws.name }}
+              </h4>
+              <span *ngIf="ws.provider"
+                class="text-[9px] text-slate-400 font-black uppercase tracking-widest mt-1 block">
+                {{ ws.provider }}
+              </span>
+            </div>
+
+            <span *ngIf="ws.env"
+              class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[9px] font-black border leading-none uppercase tracking-wider select-none"
+              [ngClass]="{
+                'bg-emerald-50 text-emerald-700 border-emerald-200': ws.env === 'Production',
+                'bg-amber-50 text-amber-700 border-amber-200': ws.env === 'UAT',
+                'bg-blue-50 text-blue-700 border-blue-200': ws.env === 'Development'
+              }">
+              <span class="w-1.5 h-1.5 rounded-full shrink-0"
+                [class.bg-emerald-500]="ws.env === 'Production'"
+                [class.bg-amber-500]="ws.env === 'UAT'"
+                [class.bg-blue-500]="ws.env === 'Development'">
+              </span>
+              {{ ws.env }}
+            </span>
+          </div>
+
+          <!-- Access level chip -->
+          <div class="flex items-center gap-2">
+            <span
+              class="inline-flex items-center gap-1.5 text-[9px] font-bold text-slate-500 bg-slate-50 border border-slate-200 px-2 py-1 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                class="text-slate-400">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              {{ ws.accessLevel || 'User' }} Access
+            </span>
+          </div>
+        </div>
+
+        <!-- Card Footer -->
+        <div class="px-1 pb-1 pt-4 border-t border-slate-100 flex flex-col gap-3 mt-4">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] text-slate-400 font-semibold flex items-center gap-1.5 select-none">
+              <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                class="text-slate-300">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              {{ ws.lastAccessed }}
+            </span>
+          </div>
+
+          <button
+            (click)="openWorkspace(ws.id)"
+            class="group/btn relative overflow-hidden w-full py-2.5 bg-slate-50 border border-slate-200 hover:border-transparent text-slate-600 hover:text-white hover:bg-gradient-to-r hover:from-blue-600 hover:via-indigo-600 hover:to-cyan-600 font-bold text-xs rounded-xl active:scale-[0.98] transition-all duration-200 cursor-pointer shadow-sm hover:shadow-lg hover:shadow-blue-500/15 flex items-center justify-center gap-2">
+            <span
+              class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none">
+            </span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              class="shrink-0">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
+            </svg>
+            Establish Connection
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              class="shrink-0 transition-transform duration-200 group-hover/btn:translate-x-0.5">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Empty State ───────────────────────────────────────────── -->
+    <div
+      *ngIf="filteredMyWorkspaces.length === 0"
+      class="flex flex-col items-center justify-center text-center py-16 bg-white/70 border border-dashed border-slate-200 rounded-3xl shadow-sm">
+      <div class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-300 flex items-center justify-center mb-5 border border-slate-200 shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="12" cy="5" rx="9" ry="3" />
+          <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+          <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
+        </svg>
+      </div>
+
+      <div class="flex items-center gap-1.5 mb-4">
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-200"></span>
+        <span class="w-8 h-px bg-slate-200"></span>
+        <span class="w-2 h-2 rounded-full border-2 border-slate-200"></span>
+        <span class="w-8 h-px bg-slate-200"></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-200"></span>
+      </div>
+
+      <h4 class="text-sm font-black text-slate-700">No workspaces match your query</h4>
+      <p class="text-xs text-slate-500 mt-2 max-w-sm leading-relaxed">
+        No databases were found matching your search and filter criteria.
+      </p>
+      <button
+        (click)="myWorkspacesSearchQuery = ''; selectMyWorkspacesEnv('All')"
+        class="mt-5 flex items-center gap-2 px-4 py-2.5 border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700 font-bold text-xs rounded-xl transition-all duration-150 cursor-pointer shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+          class="text-slate-400">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38" />
+        </svg>
+        Reset All Filters
+      </button>
+    </div>
+  </div>
+
+</main>
+
+  <!-- Footer Section -->
+  <footer class="relative z-10 border-t border-slate-200/80 bg-white py-6 w-full text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-auto">
+    © 2026 AskDB • Admin Management Hub Portal • Secure Operations Active
+  </footer>
+
+  <!-- ========================================== -->
+  <!--             MODAL DIALOGS OVERLAYS          -->
+  <!-- ========================================== -->
+
+  <!-- Add User Modal Dialog -->
+<div
+  *ngIf="showAddUserModal"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4 py-6 animate-fade-in"
+  (click)="closeAllModals(); resetAddUserForm()">
+
+  <section
+    class="relative bg-white border border-slate-200 shadow-2xl rounded-3xl max-w-lg w-full max-h-[92vh] overflow-hidden flex flex-col"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="add-user-modal-title"
+    (click)="$event.stopPropagation()">
+
+    <!-- Top Gradient Accent -->
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 rounded-t-3xl pointer-events-none"></div>
+
+    <!-- ── Modal Header ─────────────────────────────────────────── -->
+    <header class="shrink-0 px-6 py-5 border-b border-slate-100 bg-slate-50/60">
+      <div class="flex items-start justify-between gap-4">
+
+        <div class="flex items-start gap-3">
+          <!-- Icon Badge -->
+          <div
+            class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center shadow-md shadow-blue-500/20 shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <line x1="19" y1="8" x2="19" y2="14" />
+              <line x1="22" y1="11" x2="16" y2="11" />
+            </svg>
+          </div>
+
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <h3
+                id="add-user-modal-title"
+                class="text-base font-black text-slate-900 tracking-tight">
+                Register User Profile
+              </h3>
+              <span
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-100">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                New Employee
+              </span>
+            </div>
+            <p class="text-[10px] text-slate-500 leading-relaxed">
+              Add employee registry details to configure workspace access control.
+            </p>
+          </div>
+        </div>
+
+        <!-- Close Button -->
+        <button
+          type="button"
+          (click)="closeAllModals(); resetAddUserForm()"
+          aria-label="Close add user dialog"
+          class="w-8 h-8 rounded-lg border border-slate-200 bg-white text-slate-400 hover:text-slate-700 hover:bg-slate-50 hover:border-slate-300 flex items-center justify-center transition-all duration-200 cursor-pointer shrink-0 mt-0.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ── Scrollable Body ──────────────────────────────────────── -->
+    <div class="flex-1 overflow-y-auto custom-scrollbar p-6 flex flex-col gap-6">
+
+      <!-- Error Alert -->
+      <div
+        *ngIf="newUserError"
+        class="flex items-start gap-3 p-3.5 rounded-xl border border-red-200 bg-red-50/70 animate-fade-in"
+        role="alert">
+        <div
+          class="w-7 h-7 rounded-lg bg-red-100 border border-red-200 flex items-center justify-center shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round" class="text-red-600">
+            <circle cx="12" cy="12" r="9" />
+            <line x1="9" y1="9" x2="15" y2="15" />
+            <line x1="15" y1="9" x2="9" y2="15" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-[10px] font-black text-red-800 uppercase tracking-wider mb-0.5">
+            Registration Error
+          </p>
+          <p class="text-xs text-red-800 font-semibold leading-relaxed">{{ newUserError }}</p>
+        </div>
+      </div>
+
+      <!-- ── Section 01: Employee Identity ─────────────────────── -->
+      <section>
+        <div class="flex items-center gap-2 mb-3">
+          <span
+            class="w-6 h-6 rounded-lg bg-blue-50 border border-blue-100 text-blue-600 flex items-center justify-center text-[10px] font-black shrink-0">
+            01
+          </span>
+          <div>
+            <h4 class="text-[11px] font-black text-slate-700 uppercase tracking-wider leading-tight">
+              Employee Identity
+            </h4>
+            <p class="text-[9px] text-slate-400 mt-0.5">
+              Enter the corporate name and email address.
+            </p>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 space-y-4">
+
+          <!-- Full Name -->
+          <div>
+            <label
+              for="new-user-name"
+              class="flex items-center gap-1 text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round" class="text-slate-400">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              Full Name
+              <span class="text-blue-500">*</span>
+            </label>
+            <input
+              id="new-user-name"
+              type="text"
+              [(ngModel)]="newUserName"
+              placeholder="e.g. Robert Martin"
+              autocomplete="name"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200" />
+          </div>
+
+          <!-- Company Email -->
+          <div>
+            <label
+              for="new-user-email"
+              class="flex items-center gap-1 text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round" class="text-slate-400">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+              Corporate Email Address
+              <span class="text-blue-500">*</span>
+            </label>
+            <div class="relative">
+              <input
+                id="new-user-email"
+                type="email"
+                [(ngModel)]="newUserEmail"
+                placeholder="e.g. robert.martin@cgi.com"
+                autocomplete="email"
+                class="w-full px-3.5 py-2.5 pr-10 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200" />
+              <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="text-slate-300">
+                  <path
+                    d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg>
+              </div>
+            </div>
+            <p class="mt-1.5 text-[9px] text-slate-400 leading-relaxed">
+              Must match a registered corporate domain address.
+            </p>
+          </div>
+
+          <!-- Role Preview Chip -->
+          <div class="flex items-center gap-2 pt-1 border-t border-slate-100">
+            <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Default Role:</span>
+            <span
+              class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
+              <span class="w-1 h-1 rounded-full bg-slate-400"></span>
+              Regular Employee
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 02: Assign Workspaces ─────────────────────── -->
+      <section>
+        <div class="flex items-center justify-between gap-3 mb-3">
+          <div class="flex items-center gap-2">
+            <span
+              class="w-6 h-6 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center text-[10px] font-black shrink-0">
+              02
+            </span>
+            <div>
+              <h4 class="text-[11px] font-black text-slate-700 uppercase tracking-wider leading-tight">
+                Assign Database Workspaces
+              </h4>
+              <p class="text-[9px] text-slate-400 mt-0.5">
+                Optional — can be configured after registration.
+              </p>
+            </div>
+          </div>
+
+          <!-- Select All / Clear controls -->
+          <div class="flex items-center gap-2 shrink-0" *ngIf="assignableWorkspaces.length > 0">
+            <button
+              type="button"
+              (click)="selectAllRegWs()"
+              class="text-[9px] font-bold text-blue-600 hover:text-blue-700 hover:underline underline-offset-2 uppercase tracking-wide cursor-pointer transition-colors duration-150 select-none">
+              All
+            </button>
+            <span class="w-px h-3 bg-slate-300 rounded-full"></span>
+            <button
+              type="button"
+              (click)="clearAllRegWs()"
+              class="text-[9px] font-bold text-slate-400 hover:text-slate-600 hover:underline underline-offset-2 uppercase tracking-wide cursor-pointer transition-colors duration-150 select-none">
+              Clear
+            </button>
+          </div>
+        </div>
+
+        <!-- No workspaces available -->
+        <div
+          *ngIf="assignableWorkspaces.length === 0"
+          class="flex flex-col items-center justify-center text-center py-8 border border-dashed border-slate-200 rounded-2xl bg-slate-50/60">
+          <div
+            class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-300 flex items-center justify-center mb-3 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <ellipse cx="12" cy="5" rx="9" ry="3" />
+              <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+              <path d="M3 12A9 3 0 0 0 21 12" />
+            </svg>
+          </div>
+          <p class="text-xs font-bold text-slate-500">No workspaces available</p>
+          <p class="text-[10px] text-slate-400 mt-1 max-w-[220px] leading-relaxed">
+            You can assign database workspaces to this user after registration.
+          </p>
+        </div>
+
+        <!-- Workspace Checklist -->
+        <div
+          *ngIf="assignableWorkspaces.length > 0"
+          class="rounded-2xl border border-slate-200 bg-slate-50/60 overflow-hidden">
+
+          <!-- Selection counter header -->
+          <div class="flex items-center justify-between px-3.5 py-2.5 border-b border-slate-200 bg-white/80">
+            <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider">
+              Available Workspaces
+            </span>
+            <span
+              class="inline-flex items-center justify-center h-4 px-2 rounded-full text-[8px] font-black border transition-colors duration-200"
+              [class.bg-blue-100]="selectedRegWsIds.length > 0"
+              [class.text-blue-700]="selectedRegWsIds.length > 0"
+              [class.border-blue-200]="selectedRegWsIds.length > 0"
+              [class.bg-slate-100]="selectedRegWsIds.length === 0"
+              [class.text-slate-500]="selectedRegWsIds.length === 0"
+              [class.border-slate-200]="selectedRegWsIds.length === 0">
+              {{ selectedRegWsIds.length }} / {{ assignableWorkspaces.length }} selected
+            </span>
+          </div>
+
+          <!-- Scrollable list -->
+          <div class="max-h-[180px] overflow-y-auto custom-scrollbar divide-y divide-slate-100 p-1.5 space-y-1">
+            <div
+              *ngFor="let ws of assignableWorkspaces"
+              (click)="toggleRegWs(ws.id)"
+              class="group flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all duration-200"
+              [class.border-blue-200]="isRegWsSelected(ws.id)"
+              [class.bg-blue-50]="isRegWsSelected(ws.id)"
+              [class.shadow-sm]="isRegWsSelected(ws.id)"
+              [class.border-transparent]="!isRegWsSelected(ws.id)"
+              [class.bg-white]="!isRegWsSelected(ws.id)"
+              [class.hover:border-slate-200]="!isRegWsSelected(ws.id)"
+              [class.hover:bg-slate-50]="!isRegWsSelected(ws.id)">
+
+              <div class="flex items-center gap-3 min-w-0">
+
+                <!-- Custom Checkbox -->
+                <div
+                  class="w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-all duration-200"
+                  [class.bg-blue-600]="isRegWsSelected(ws.id)"
+                  [class.border-blue-600]="isRegWsSelected(ws.id)"
+                  [class.border-slate-300]="!isRegWsSelected(ws.id)"
+                  [class.bg-white]="!isRegWsSelected(ws.id)">
+                  <svg
+                    *ngIf="isRegWsSelected(ws.id)"
+                    xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"
+                    stroke-linejoin="round" class="text-white">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </div>
+
+                <!-- Color stripe -->
+                <div class="w-0.5 h-7 rounded-full shrink-0"
+                  [class.bg-emerald-400]="ws.env === 'Production'"
+                  [class.bg-amber-400]="ws.env === 'UAT'"
+                  [class.bg-blue-400]="ws.env === 'Development'">
+                </div>
+
+                <div class="min-w-0">
+                  <h4
+                    class="text-[11px] font-bold leading-tight truncate transition-colors duration-200"
+                    [class.text-blue-800]="isRegWsSelected(ws.id)"
+                    [class.text-slate-800]="!isRegWsSelected(ws.id)">
+                    {{ ws.name }}
+                  </h4>
+                  <span class="text-[8px] text-slate-400 font-bold uppercase tracking-wider block mt-0.5">
+                    {{ ws.provider }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Environment Badge -->
+              <span
+                class="shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[7.5px] font-bold border uppercase tracking-wider leading-none"
+                [ngClass]="{
+                  'bg-emerald-50 text-emerald-700 border-emerald-200': ws.env === 'Production',
+                  'bg-amber-50 text-amber-700 border-amber-200': ws.env === 'UAT',
+                  'bg-blue-50 text-blue-700 border-blue-200': ws.env === 'Development'
+                }">
+                <span class="w-1 h-1 rounded-full shrink-0"
+                  [class.bg-emerald-500]="ws.env === 'Production'"
+                  [class.bg-amber-500]="ws.env === 'UAT'"
+                  [class.bg-blue-500]="ws.env === 'Development'">
+                </span>
+                {{ ws.env }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Role selector — only shown when at least one workspace is selected -->
+        <div
+          *ngIf="selectedRegWsIds.length > 0"
+          class="mt-3 rounded-2xl border border-slate-200 bg-white p-4 animate-slide-up">
+
+          <label
+            for="reg-access-level"
+            class="flex items-center gap-1 text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+            Access Role for Selected Workspaces
+            <span class="text-blue-500">*</span>
+          </label>
+
+          <div class="relative">
+            <select
+              id="reg-access-level"
+              [(ngModel)]="selectedRegAccess"
+              class="appearance-none w-full px-3.5 py-2.5 pr-9 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200 cursor-pointer">
+              <option value="User">User — Read-only access</option>
+              <option value="Admin">Admin — Full write access</option>
+            </select>
+            <svg
+              class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"
+              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
+            </svg>
+          </div>
+
+          <!-- Role descriptor chips -->
+          <div class="flex items-center gap-2 mt-2.5">
+            <span
+              class="inline-flex items-center gap-1 text-[8px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-full">
+              <span class="w-1 h-1 rounded-full bg-slate-400"></span>
+              User = Read-only
+            </span>
+            <span
+              class="inline-flex items-center gap-1 text-[8px] font-bold text-red-600 bg-red-50 border border-red-100 px-1.5 py-0.5 rounded-full">
+              <span class="w-1 h-1 rounded-full bg-red-500"></span>
+              Admin = Full access
+            </span>
+          </div>
+
+          <!-- Applied-to summary -->
+          <p class="mt-2 text-[9px] text-slate-400 leading-relaxed">
+            This role will apply to all
+            <strong class="text-slate-600">{{ selectedRegWsIds.length }}
+              workspace{{ selectedRegWsIds.length !== 1 ? 's' : '' }}</strong>
+            selected above.
+          </p>
+        </div>
+      </section>
+    </div>
+
+    <!-- ── Modal Footer ─────────────────────────────────────────── -->
+    <footer class="shrink-0 px-6 py-4 border-t border-slate-100 bg-slate-50/60">
+      <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3">
+
+        <!-- Hint -->
+        <div class="flex items-center gap-1.5 text-[9px] text-slate-400 font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round" class="text-emerald-500 shrink-0">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+          New registrations are logged under compliance audit
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-end gap-2.5">
+          <button
+            type="button"
+            (click)="closeAllModals(); resetAddUserForm()"
+            class="px-4 py-2.5 border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-600 text-xs font-bold rounded-xl cursor-pointer transition-all duration-200 select-none">
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            (click)="addUser()"
+            class="group relative overflow-hidden flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] text-white text-xs font-bold rounded-xl cursor-pointer transition-all duration-200 select-none">
+            <!-- Shimmer -->
+            <span
+              class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none">
+            </span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+              stroke-linejoin="round" class="shrink-0">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <line x1="19" y1="8" x2="19" y2="14" />
+              <line x1="22" y1="11" x2="16" y2="11" />
+            </svg>
+            <span>Register User</span>
+          </button>
+        </div>
+      </div>
+    </footer>
+
+  </section>
+</div>
+  <!-- Assign Workspace Modal Dialog -->
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4" *ngIf="showAddWsModal">
+    <div class="bg-white border border-slate-200 shadow-2xl rounded-2xl max-w-md w-full p-6 transform scale-100 transition-all duration-300">
+      
+      <div class="flex justify-between items-start border-b border-slate-100 pb-3 mb-4">
+        <div>
+          <h3 class="text-base font-extrabold text-slate-900">Assign Database Workspace</h3>
+          <p class="text-[10px] text-slate-500 mt-0.5">Map an existing global database access workspace to the selected employee.</p>
+        </div>
+        <button (click)="closeAllModals(); resetAddWsForm();" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- Warning Alert -->
+      <div *ngIf="assignWsError" class="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 flex items-start gap-2.5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <span class="text-xs text-red-800 font-semibold leading-relaxed">{{ assignWsError }}</span>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Select Workspace</label>
+          <select [(ngModel)]="assignSelectedWsId"
+            class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 shadow-sm bg-slate-50 animate-none">
+            <option *ngFor="let ws of assignableWorkspaces" [value]="ws.id">
+              {{ ws.name }} ({{ ws.provider }} - {{ ws.env }})
+            </option>
+          </select>
+          <p *ngIf="assignableWorkspaces.length === 0" class="text-[10px] text-red-500 mt-1">No workspaces available. Please create a workspace or map one to your admin account.</p>
+        </div>
+
+        <div>
+          <label class="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Role</label>
+          <select [(ngModel)]="assignAccessLevel"
+            class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 shadow-sm bg-slate-50 animate-none">
+            <option value="Admin">Admin</option>
+            <option value="User">User</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-6 pt-3 border-t border-slate-100">
+        <button (click)="closeAllModals(); resetAddWsForm();"
+          class="px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-bold rounded-xl cursor-pointer">
+          Cancel
+        </button>
+        <button (click)="addWorkspace()" [disabled]="assignableWorkspaces.length === 0"
+          class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-500/10 cursor-pointer border border-transparent disabled:opacity-55">
+          Assign Workspace
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+<!-- Create / Update Global Workspace Modal -->
+<div
+  *ngIf="showCreateWsModal"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4 py-6 animate-fade-in"
+  role="presentation"
+  (click)="closeAllModals(); resetCreateWsForm()">
+
+  <section
+    class="relative bg-white border border-slate-200 shadow-2xl rounded-3xl max-w-2xl w-full max-h-[92vh] overflow-hidden flex flex-col"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="editingWorkspaceId ? 'update-workspace-title' : 'create-workspace-title'"
+    (click)="$event.stopPropagation()">
+
+    <!-- Top Gradient Accent -->
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500"></div>
+
+    <!-- Modal Header -->
+    <header class="shrink-0 px-6 py-5 border-b border-slate-100 bg-slate-50/60">
+      <div class="flex items-start justify-between gap-4">
+
+        <div class="flex items-start gap-3">
+          <!-- Icon -->
+          <div
+            class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center shadow-md shadow-blue-500/20 shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <ellipse cx="12" cy="5" rx="9" ry="3" />
+              <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+              <path d="M3 12A9 3 0 0 0 21 12" />
+            </svg>
+          </div>
+
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+              <h3
+                [id]="editingWorkspaceId ? 'update-workspace-title' : 'create-workspace-title'"
+                class="text-base font-black text-slate-900 tracking-tight">
+                {{ editingWorkspaceId ? 'Update Workspace' : 'Create Global Workspace' }}
+              </h3>
+
+              <span
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider border"
+                [ngClass]="editingWorkspaceId
+                  ? 'bg-amber-50 text-amber-700 border-amber-200'
+                  : 'bg-blue-50 text-blue-700 border-blue-100'">
+                <span
+                  class="w-1.5 h-1.5 rounded-full"
+                  [ngClass]="editingWorkspaceId ? 'bg-amber-500' : 'bg-blue-500'">
+                </span>
+                {{ editingWorkspaceId ? 'Edit Mode' : 'New Configuration' }}
+              </span>
+            </div>
+
+            <p class="text-[10px] text-slate-500 mt-1 leading-relaxed">
+              {{
+                editingWorkspaceId
+                  ? 'Update the workspace database configuration and connection settings.'
+                  : 'Register a global database workspace configuration for employee assignment.'
+              }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Close Button -->
+        <button
+          type="button"
+          (click)="closeAllModals(); resetCreateWsForm()"
+          title="Close dialog"
+          aria-label="Close workspace dialog"
+          class="w-8 h-8 rounded-lg border border-slate-200 bg-white text-slate-400 hover:text-slate-700 hover:bg-slate-50 hover:border-slate-300 flex items-center justify-center transition-all duration-200 cursor-pointer shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Scrollable Modal Content -->
+    <div class="flex-1 overflow-y-auto custom-scrollbar p-6">
+
+      <!-- Error Alert -->
+      <div
+        *ngIf="createWsError"
+        class="mb-5 rounded-xl border border-red-200 bg-red-50/70 p-3.5 flex items-start gap-3 animate-fade-in"
+        role="alert">
+
+        <div
+          class="w-7 h-7 rounded-lg bg-red-100 border border-red-200 flex items-center justify-center shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+            class="text-red-600">
+            <circle cx="12" cy="12" r="9" />
+            <line x1="9" y1="9" x2="15" y2="15" />
+            <line x1="15" y1="9" x2="9" y2="15" />
+          </svg>
+        </div>
+
+        <div>
+          <p class="text-[10px] font-black text-red-800 uppercase tracking-wider mb-0.5">
+            Configuration Error
+          </p>
+          <p class="text-xs text-red-800 font-semibold leading-relaxed">
+            {{ createWsError }}
+          </p>
+        </div>
+      </div>
+
+      <!-- General Configuration -->
+      <section class="mb-6">
+        <div class="flex items-center justify-between gap-3 mb-3">
+          <div class="flex items-center gap-2">
+            <span
+              class="w-6 h-6 rounded-lg bg-blue-50 border border-blue-100 text-blue-600 flex items-center justify-center text-[10px] font-black">
+              01
+            </span>
+            <div>
+              <h4 class="text-[11px] font-black text-slate-700 uppercase tracking-wider">
+                General Configuration
+              </h4>
+              <p class="text-[9px] text-slate-400 mt-0.5">
+                Define the workspace identity and target environment.
+              </p>
+            </div>
+          </div>
+
+          <span
+            class="hidden sm:inline-flex items-center gap-1 text-[9px] font-bold text-slate-400 uppercase tracking-wider">
+            <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+            Required fields
+          </span>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 space-y-4">
+
+          <!-- Workspace Name -->
+          <div>
+            <label
+              for="workspace-name"
+              class="flex items-center gap-1 text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+              Workspace Name
+              <span class="text-blue-500">*</span>
+            </label>
+
+            <input
+              id="workspace-name"
+              type="text"
+              [(ngModel)]="createWsName"
+              placeholder="e.g. Sales Analytics or Finance Archive"
+              autocomplete="off"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200" />
+          </div>
+
+          <!-- Provider and Environment -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+            <div>
+              <label
+                for="workspace-provider"
+                class="flex items-center gap-1 text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+                Database Provider
+                <span class="text-blue-500">*</span>
+              </label>
+
+              <div class="relative">
+                <select
+                  id="workspace-provider"
+                  [(ngModel)]="createWsProvider"
+                  class="appearance-none w-full px-3.5 py-2.5 pr-9 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200 cursor-pointer">
+                  <option value="SQL Server">SQL Server</option>
+                  <option value="PostgreSQL">PostgreSQL</option>
+                  <option value="MySQL">MySQL</option>
+                  <option value="Oracle">Oracle</option>
+                  <option value="MongoDB">MongoDB</option>
+                  <option value="SQLite">SQLite</option>
+                </select>
+
+                <svg
+                  class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"
+                  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                  stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
+                </svg>
+              </div>
+            </div>
+
+            <div>
+              <label
+                for="workspace-environment"
+                class="flex items-center gap-1 text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+                Environment
+                <span class="text-blue-500">*</span>
+              </label>
+
+              <div class="relative">
+                <select
+                  id="workspace-environment"
+                  [(ngModel)]="createWsEnv"
+                  class="appearance-none w-full px-3.5 py-2.5 pr-9 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200 cursor-pointer">
+                  <option value="Production">Production</option>
+                  <option value="UAT">UAT</option>
+                  <option value="Development">Development</option>
+                </select>
+
+                <svg
+                  class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"
+                  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                  stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Connection Settings -->
+      <section>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+          <div class="flex items-center gap-2">
+            <span
+              class="w-6 h-6 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center text-[10px] font-black">
+              02
+            </span>
+            <div>
+              <h4 class="text-[11px] font-black text-slate-700 uppercase tracking-wider">
+                Connection Settings
+              </h4>
+              <p class="text-[9px] text-slate-400 mt-0.5">
+                Provide the connection details for the selected provider.
+              </p>
+            </div>
+          </div>
+
+          <span
+            class="inline-flex items-center gap-1.5 self-start sm:self-auto px-2 py-1 rounded-full bg-slate-100 border border-slate-200 text-[8px] font-black text-slate-500 uppercase tracking-wider">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              class="text-slate-400">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            No separate password field
+          </span>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-slate-50/60 p-4">
+
+          <!-- SQL Server / PostgreSQL / MySQL -->
+          <div
+            *ngIf="createWsProvider === 'SQL Server' || createWsProvider === 'PostgreSQL' || createWsProvider === 'MySQL'"
+            class="space-y-4">
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Host -->
+              <div>
+                <label
+                  for="workspace-host"
+                  class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+                  Host / Server
+                </label>
+                <input
+                  id="workspace-host"
+                  type="text"
+                  [(ngModel)]="createWsHost"
+                  placeholder="e.g. localhost or 10.0.0.5"
+                  autocomplete="off"
+                  class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200" />
+              </div>
+
+              <!-- Port -->
+              <div>
+                <label
+                  for="workspace-port"
+                  class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+                  Port
+                </label>
+                <input
+                  id="workspace-port"
+                  type="text"
+                  inputmode="numeric"
+                  [(ngModel)]="createWsPort"
+                  placeholder="e.g. 1433"
+                  autocomplete="off"
+                  class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Database Name -->
+              <div>
+                <label
+                  for="workspace-db-name"
+                  class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+                  Database Name
+                </label>
+                <input
+                  id="workspace-db-name"
+                  type="text"
+                  [(ngModel)]="createWsDbName"
+                  placeholder="e.g. sales_db"
+                  autocomplete="off"
+                  class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200" />
+              </div>
+
+              <!-- Username -->
+              <div>
+                <label
+                  for="workspace-username"
+                  class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+                  Username
+                </label>
+                <input
+                  id="workspace-username"
+                  type="text"
+                  [(ngModel)]="createWsUsername"
+                  placeholder="e.g. admin"
+                  autocomplete="off"
+                  class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Oracle -->
+          <div *ngIf="createWsProvider === 'Oracle'" class="space-y-4">
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Host -->
+              <div>
+                <label
+                  for="oracle-host"
+                  class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+                  Host Server
+                </label>
+                <input
+                  id="oracle-host"
+                  type="text"
+                  [(ngModel)]="createWsHost"
+                  placeholder="oracle.db.internal"
+                  autocomplete="off"
+                  class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200" />
+              </div>
+
+              <!-- Port -->
+              <div>
+                <label
+                  for="oracle-port"
+                  class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+                  Port
+                </label>
+                <input
+                  id="oracle-port"
+                  type="text"
+                  inputmode="numeric"
+                  [(ngModel)]="createWsPort"
+                  placeholder="1521"
+                  autocomplete="off"
+                  class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200" />
+              </div>
+            </div>
+
+            <!-- Oracle Service -->
+            <div>
+              <label
+                for="oracle-service"
+                class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+                SID / Service Name
+              </label>
+              <input
+                id="oracle-service"
+                type="text"
+                [(ngModel)]="createWsOracleService"
+                placeholder="ORCL"
+                autocomplete="off"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Database Name -->
+              <div>
+                <label
+                  for="oracle-db-name"
+                  class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+                  Database Name
+                </label>
+                <input
+                  id="oracle-db-name"
+                  type="text"
+                  [(ngModel)]="createWsDbName"
+                  placeholder="e.g. sales_db"
+                  autocomplete="off"
+                  class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200" />
+              </div>
+
+              <!-- Username -->
+              <div>
+                <label
+                  for="oracle-username"
+                  class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+                  Username
+                </label>
+                <input
+                  id="oracle-username"
+                  type="text"
+                  [(ngModel)]="createWsUsername"
+                  placeholder="e.g. admin"
+                  autocomplete="off"
+                  class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200" />
+              </div>
+            </div>
+          </div>
+
+          <!-- MongoDB -->
+          <div *ngIf="createWsProvider === 'MongoDB'" class="space-y-4">
+
+            <div>
+              <label
+                for="mongodb-uri"
+                class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+                Connection URI
+              </label>
+              <input
+                id="mongodb-uri"
+                type="text"
+                [(ngModel)]="createWsMongoUri"
+                placeholder="mongodb+srv://user:pass@cluster.mongodb.net/"
+                autocomplete="off"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200" />
+              <p class="mt-1.5 text-[9px] text-slate-400 leading-relaxed">
+                Enter the provider-specific connection URI required by the MongoDB cluster.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Database Name -->
+              <div>
+                <label
+                  for="mongodb-db-name"
+                  class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+                  Database Name
+                </label>
+                <input
+                  id="mongodb-db-name"
+                  type="text"
+                  [(ngModel)]="createWsDbName"
+                  placeholder="e.g. sales_db"
+                  autocomplete="off"
+                  class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200" />
+              </div>
+
+              <!-- Username -->
+              <div>
+                <label
+                  for="mongodb-username"
+                  class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+                  Username
+                </label>
+                <input
+                  id="mongodb-username"
+                  type="text"
+                  [(ngModel)]="createWsUsername"
+                  placeholder="e.g. admin"
+                  autocomplete="off"
+                  class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200" />
+              </div>
+            </div>
+          </div>
+
+          <!-- SQLite -->
+          <div *ngIf="createWsProvider === 'SQLite'" class="space-y-4">
+            <div>
+              <label
+                for="sqlite-path"
+                class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+                Database File Path
+              </label>
+              <input
+                id="sqlite-path"
+                type="text"
+                [(ngModel)]="createWsSqlitePath"
+                placeholder="C:/App/Data/cache.db"
+                autocomplete="off"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200" />
+              <p class="mt-1.5 text-[9px] text-slate-400 leading-relaxed">
+                Use an absolute path accessible by the database service.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+    <!-- Modal Footer -->
+    <footer class="shrink-0 px-6 py-4 border-t border-slate-100 bg-slate-50/60">
+      <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3">
+
+        <!-- Security Note -->
+        <div class="flex items-center gap-1.5 text-[9px] text-slate-400 font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+            class="text-emerald-500 shrink-0">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+          Configuration changes are recorded in the audit log
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-end gap-2.5">
+          <button
+            type="button"
+            (click)="closeAllModals(); resetCreateWsForm()"
+            class="px-4 py-2.5 border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-600 text-xs font-bold rounded-xl cursor-pointer transition-all duration-200">
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            (click)="saveWorkspace()"
+            class="group relative overflow-hidden px-5 py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] text-white text-xs font-bold rounded-xl cursor-pointer transition-all duration-200 flex items-center gap-2">
+            <span
+              class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none">
+            </span>
+
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>
+
+            <span>
+              {{ editingWorkspaceId ? 'Update Workspace' : 'Create Workspace' }}
+            </span>
+          </button>
+        </div>
+      </div>
+    </footer>
+
+  </section>
+</div>
+
+
+  <!-- Manage User Permissions Modal -->
+<div
+  *ngIf="showUserPermissionsModal && selectedUser"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4 py-6 animate-fade-in"
+  (click)="closeAllModals()">
+
+  <section
+    class="relative bg-white border border-slate-200 shadow-2xl rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="permissions-modal-title"
+    (click)="$event.stopPropagation()">
+
+    <!-- Top Gradient Accent -->
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 rounded-t-3xl"></div>
+
+    <!-- ── Modal Header ─────────────────────────────────────────── -->
+    <header class="shrink-0 px-6 py-5 border-b border-slate-100 bg-slate-50/60">
+      <div class="flex items-start justify-between gap-4">
+
+        <div class="flex items-start gap-3">
+          <!-- Icon -->
+          <div
+            class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center shadow-md shadow-blue-500/20 shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </div>
+
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <h3
+                id="permissions-modal-title"
+                class="text-base font-black text-slate-900 tracking-tight">
+                Manage Workspace Permissions
+              </h3>
+              <span
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-100">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                Access Control
+              </span>
+            </div>
+
+            <!-- User Identity Chip -->
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 bg-white border border-slate-200 rounded-lg shadow-sm">
+              <div
+                class="w-5 h-5 rounded-md bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-[9px] font-black shrink-0 select-none">
+                {{ selectedUser.name.slice(0, 2).toUpperCase() }}
+              </div>
+              <span class="text-[10px] font-bold text-slate-700 leading-none">{{ selectedUser.name }}</span>
+              <span class="w-px h-3 bg-slate-200 rounded-full"></span>
+              <span class="text-[9px] font-mono text-slate-400 leading-none truncate max-w-[180px]">{{ selectedUser.email }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Close Button -->
+        <button
+          type="button"
+          (click)="closeAllModals()"
+          aria-label="Close permissions dialog"
+          class="w-8 h-8 rounded-lg border border-slate-200 bg-white text-slate-400 hover:text-slate-700 hover:bg-slate-50 hover:border-slate-300 flex items-center justify-center transition-all duration-200 cursor-pointer shrink-0 mt-0.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ── Scrollable Body ──────────────────────────────────────── -->
+    <div class="flex-1 overflow-y-auto custom-scrollbar p-6 flex flex-col gap-6">
+
+      <!-- Section 01: Active Assigned Workspaces -->
+      <section>
+        <div class="flex items-center justify-between gap-3 mb-3">
+          <div class="flex items-center gap-2">
+            <span
+              class="w-6 h-6 rounded-lg bg-blue-50 border border-blue-100 text-blue-600 flex items-center justify-center text-[10px] font-black shrink-0">
+              01
+            </span>
+            <div>
+              <h4 class="text-[11px] font-black text-slate-700 uppercase tracking-wider leading-tight">
+                Active Assigned Workspaces
+              </h4>
+              <p class="text-[9px] text-slate-400 mt-0.5">
+                Current database environments mapped to this employee.
+              </p>
+            </div>
+          </div>
+
+          <span
+            class="shrink-0 inline-flex items-center justify-center h-5 px-2 rounded-full text-[8px] font-black bg-slate-100 text-slate-600 border border-slate-200 select-none">
+            {{ selectedUser.workspaces.length }} total
+          </span>
+        </div>
+
+        <!-- Assigned workspaces table -->
+        <div
+          *ngIf="selectedUser.workspaces.length > 0"
+          class="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
+          <div class="overflow-x-auto w-full">
+            <table class="w-full text-left border-collapse min-w-[480px]">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200">
+                  <th class="px-4 py-2.5 text-[9px] font-black tracking-wider text-slate-500 uppercase">
+                    Database
+                  </th>
+                  <th class="px-4 py-2.5 text-[9px] font-black tracking-wider text-slate-500 uppercase">
+                    Environment
+                  </th>
+                  <th class="px-4 py-2.5 text-[9px] font-black tracking-wider text-slate-500 uppercase">
+                    Access Role
+                  </th>
+                  <th class="px-4 py-2.5 text-[9px] font-black tracking-wider text-slate-500 uppercase text-right">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody class="divide-y divide-slate-100">
+                <tr
+                  *ngFor="let ws of selectedUser.workspaces"
+                  class="group bg-white hover:bg-slate-50/60 transition-colors duration-150">
+
+                  <!-- Database Name + Provider -->
+                  <td class="px-4 py-3">
+                    <div class="flex items-center gap-2.5">
+                      <!-- Color stripe indicator -->
+                      <div class="w-0.5 h-8 rounded-full shrink-0"
+                        [class.bg-emerald-400]="ws.env === 'Production'"
+                        [class.bg-amber-400]="ws.env === 'UAT'"
+                        [class.bg-blue-400]="ws.env === 'Development'">
+                      </div>
+                      <div>
+                        <div class="text-xs font-bold text-slate-800 leading-tight">{{ ws.name }}</div>
+                        <div class="text-[8.5px] text-slate-400 font-bold uppercase tracking-wide mt-0.5">
+                          {{ ws.provider }}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- Environment Badge -->
+                  <td class="px-4 py-3">
+                    <span
+                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8.5px] font-bold border uppercase tracking-wider leading-none"
+                      [ngClass]="{
+                        'bg-emerald-50 text-emerald-700 border-emerald-200': ws.env === 'Production',
+                        'bg-amber-50 text-amber-700 border-amber-200': ws.env === 'UAT',
+                        'bg-blue-50 text-blue-700 border-blue-200': ws.env === 'Development'
+                      }">
+                      <span class="w-1 h-1 rounded-full shrink-0"
+                        [class.bg-emerald-500]="ws.env === 'Production'"
+                        [class.bg-amber-500]="ws.env === 'UAT'"
+                        [class.bg-blue-500]="ws.env === 'Development'">
+                      </span>
+                      {{ ws.env }}
+                    </span>
+                  </td>
+
+                  <!-- Access Role Badge -->
+                  <td class="px-4 py-3">
+                    <span
+                      class="inline-block px-2 py-0.5 rounded-lg text-[8.5px] font-black font-mono tracking-wider border leading-none uppercase"
+                      [ngClass]="{
+                        'bg-red-50 text-red-700 border-red-200': ws.accessLevel === 'Admin',
+                        'bg-slate-100 text-slate-700 border-slate-200': ws.accessLevel === 'User'
+                      }">
+                      {{ ws.accessLevel }}
+                    </span>
+                  </td>
+
+                  <!-- Remove Action -->
+                  <td class="px-4 py-3 text-right">
+                    <button
+                      type="button"
+                      (click)="removeWorkspaceFromUser(ws.id)"
+                      [disabled]="isSavingUserPermissions"
+                      title="Remove workspace assignment"
+                      class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:border-red-300 text-[9px] font-bold transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path
+                          d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      </svg>
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- No workspaces assigned state -->
+        <div
+          *ngIf="selectedUser.workspaces.length === 0"
+          class="flex flex-col items-center justify-center text-center py-8 border border-dashed border-slate-200 rounded-2xl bg-slate-50/60">
+          <div
+            class="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-300 flex items-center justify-center mb-3 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <ellipse cx="12" cy="5" rx="9" ry="3" />
+              <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+              <path d="M3 12A9 3 0 0 0 21 12" />
+            </svg>
+          </div>
+          <p class="text-xs font-bold text-slate-600">No workspaces assigned</p>
+          <p class="text-[10px] text-slate-400 mt-1 max-w-[240px] leading-relaxed">
+            Use the assignment form below to map database environments to this employee.
+          </p>
+        </div>
+      </section>
+
+      <!-- Section 02: Assign Workspace Form -->
+      <section>
+        <div class="flex items-center gap-2 mb-3">
+          <span
+            class="w-6 h-6 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center text-[10px] font-black shrink-0">
+            02
+          </span>
+          <div>
+            <h4 class="text-[11px] font-black text-slate-700 uppercase tracking-wider leading-tight">
+              Assign Workspace &amp; Set Role
+            </h4>
+            <p class="text-[9px] text-slate-400 mt-0.5">
+              Select an available workspace and configure the access role.
+            </p>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-slate-50/60 p-4 space-y-4">
+
+          <!-- No available workspaces warning -->
+          <div
+            *ngIf="availableWorkspacesForSelectedUser.length === 0"
+            class="flex items-start gap-3 p-3.5 rounded-xl border border-amber-200 bg-amber-50/70">
+            <div
+              class="w-7 h-7 rounded-lg bg-amber-100 border border-amber-200 flex items-center justify-center shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                class="text-amber-600">
+                <path
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-[10px] font-black text-amber-800 uppercase tracking-wider mb-0.5">
+                No Workspaces Available
+              </p>
+              <p class="text-[10px] text-amber-700 font-medium leading-relaxed">
+                All registered workspaces are already assigned to this employee, or no global workspaces have been
+                created yet.
+              </p>
+            </div>
+          </div>
+
+          <!-- Assignment Error -->
+          <div
+            *ngIf="assignWsError"
+            class="flex items-start gap-3 p-3.5 rounded-xl border border-red-200 bg-red-50/70 animate-fade-in"
+            role="alert">
+            <div
+              class="w-7 h-7 rounded-lg bg-red-100 border border-red-200 flex items-center justify-center shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                class="text-red-600">
+                <circle cx="12" cy="12" r="9" />
+                <line x1="9" y1="9" x2="15" y2="15" />
+                <line x1="15" y1="9" x2="9" y2="15" />
+              </svg>
+            </div>
+            <p class="text-xs text-red-800 font-semibold leading-relaxed pt-0.5">{{ assignWsError }}</p>
+          </div>
+
+          <!-- Selects Row -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+            <!-- Workspace Selector -->
+            <div>
+              <label
+                for="assign-workspace-select"
+                class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+                Database Workspace
+              </label>
+              <div class="relative">
+                <select
+                  id="assign-workspace-select"
+                  [(ngModel)]="assignSelectedWsId"
+                  [disabled]="availableWorkspacesForSelectedUser.length === 0"
+                  class="appearance-none w-full px-3.5 py-2.5 pr-9 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                  <option value="" disabled selected>— Select a workspace —</option>
+                  <option *ngFor="let ws of availableWorkspacesForSelectedUser" [value]="ws.id">
+                    {{ ws.name }} ({{ ws.provider }} · {{ ws.env }})
+                  </option>
+                </select>
+                <svg
+                  class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"
+                  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
+                </svg>
+              </div>
+            </div>
+
+            <!-- Role Selector -->
+            <div>
+              <label
+                for="assign-role-select"
+                class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+                Access Role
+              </label>
+              <div class="relative">
+                <select
+                  id="assign-role-select"
+                  [(ngModel)]="assignAccessLevel"
+                  class="appearance-none w-full px-3.5 py-2.5 pr-9 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200 cursor-pointer">
+                  <option value="User">User — Read-only access</option>
+                  <option value="Admin">Admin — Full write access</option>
+                </select>
+                <svg
+                  class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"
+                  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
+                </svg>
+              </div>
+
+              <!-- Role description chips -->
+              <div class="flex items-center gap-2 mt-2">
+                <span class="inline-flex items-center gap-1 text-[8px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-full">
+                  <span class="w-1 h-1 rounded-full bg-slate-400"></span>
+                  User = Read-only
+                </span>
+                <span class="inline-flex items-center gap-1 text-[8px] font-bold text-red-600 bg-red-50 border border-red-100 px-1.5 py-0.5 rounded-full">
+                  <span class="w-1 h-1 rounded-full bg-red-500"></span>
+                  Admin = Full access
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Helper note -->
+          <div class="flex items-center gap-1.5 text-[9px] text-slate-400 font-medium pt-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              class="text-slate-300 shrink-0">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            The selected workspace assignment will be saved when you click <strong class="text-slate-500">Done</strong>.
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ── Modal Footer ─────────────────────────────────────────── -->
+    <footer class="shrink-0 px-6 py-4 border-t border-slate-100 bg-slate-50/60">
+      <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3">
+
+        <!-- Audit Note -->
+        <div class="flex items-center gap-1.5 text-[9px] text-slate-400 font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+            class="text-emerald-500 shrink-0">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+          Permission changes are recorded in the compliance audit log
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center justify-end gap-2.5">
+          <button
+            type="button"
+            (click)="closeAllModals()"
+            [disabled]="isSavingUserPermissions"
+            class="px-4 py-2.5 border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-600 text-xs font-bold rounded-xl cursor-pointer disabled:opacity-50 transition-all duration-200">
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            (click)="saveUserPermissions()"
+            [disabled]="isSavingUserPermissions"
+            class="group relative overflow-hidden flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 text-white text-xs font-bold rounded-xl cursor-pointer transition-all duration-200">
+            <!-- Shimmer -->
+            <span
+              class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none">
+            </span>
+
+            <!-- Spinner when saving -->
+            <svg
+              *ngIf="isSavingUserPermissions"
+              class="animate-spin h-3.5 w-3.5 text-white shrink-0"
+              fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+              </path>
+            </svg>
+
+            <!-- Save icon when idle -->
+            <svg
+              *ngIf="!isSavingUserPermissions"
+              xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              class="shrink-0">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>
+
+            <span>{{ isSavingUserPermissions ? 'Saving...' : 'Done' }}</span>
+          </button>
+        </div>
+      </div>
+    </footer>
+
+  </section>
+</div>
+
+<!-- ================================================================ -->
+<!-- Workspace Password Connect Modal                                 -->
+<!-- ================================================================ -->
+<div
+  *ngIf="showConnectModal"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm px-4 py-6 select-none animate-fade-in"
+  (click)="closeConnectModal()">
+
+  <section
+    class="relative bg-white border border-slate-200 shadow-2xl rounded-3xl max-w-md w-full max-h-[90vh] overflow-hidden flex flex-col"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="connect-modal-title"
+    (click)="$event.stopPropagation()">
+
+    <!-- Top Gradient Accent -->
+    <div
+      class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 rounded-t-3xl">
+    </div>
+
+    <!-- Modal Header -->
+    <header class="shrink-0 px-6 py-5 border-b border-slate-100 bg-slate-50/60">
+      <div class="flex items-start justify-between gap-4">
+
+        <div class="flex items-start gap-3">
+          <div
+            class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center shadow-md shadow-blue-500/20 shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </div>
+          <div>
+            <h3 id="connect-modal-title" class="text-base font-black text-slate-900 tracking-tight">
+              Connect to Workspace
+            </h3>
+            <p class="text-[10px] text-slate-500 mt-0.5 leading-relaxed">
+              Authenticate database handshake to open a secure analytical sandbox.
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          (click)="closeConnectModal()"
+          [disabled]="isVerifyingConnection"
+          aria-label="Close connect dialog"
+          class="w-8 h-8 rounded-lg border border-slate-200 bg-white text-slate-400 hover:text-slate-700 hover:bg-slate-50 hover:border-slate-300 flex items-center justify-center transition-all duration-200 cursor-pointer disabled:opacity-50 shrink-0 mt-0.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Modal Body -->
+    <div class="flex-1 overflow-y-auto custom-scrollbar p-6 flex flex-col gap-5">
+
+      <!-- Loading State -->
+      <div
+        *ngIf="isVerifyingConnection && !connectingWorkspace && !connectError"
+        class="flex flex-col items-center justify-center py-10">
+        <div
+          class="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center mb-4">
+          <svg class="animate-spin h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+            </circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+        </div>
+        <p class="text-xs font-bold text-slate-700">Retrieving credentials...</p>
+        <p class="text-[10px] text-slate-400 mt-1">Establishing secure channel</p>
+      </div>
+
+      <!-- Main Content -->
+      <ng-container *ngIf="connectingWorkspace || connectError">
+
+        <!-- Error Alert -->
+        <div
+          *ngIf="connectError"
+          class="flex items-start gap-3 p-3.5 rounded-xl border border-red-200 bg-red-50/70 animate-fade-in"
+          role="alert">
+          <div
+            class="w-7 h-7 rounded-lg bg-red-100 border border-red-200 flex items-center justify-center shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              class="text-red-600">
+              <circle cx="12" cy="12" r="9" />
+              <line x1="9" y1="9" x2="15" y2="15" />
+              <line x1="15" y1="9" x2="9" y2="15" />
+            </svg>
+          </div>
+          <p class="text-xs text-red-800 font-semibold leading-relaxed pt-0.5">{{ connectError }}</p>
+        </div>
+
+        <!-- Success Alert -->
+        <div
+          *ngIf="connectSuccess"
+          class="flex items-start gap-3 p-3.5 rounded-xl border border-emerald-200 bg-emerald-50/70 animate-fade-in">
+          <div
+            class="w-7 h-7 rounded-lg bg-emerald-100 border border-emerald-200 flex items-center justify-center shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              class="text-emerald-600">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-[10px] font-black text-emerald-800 uppercase tracking-wider mb-0.5">
+              Authenticated
+            </p>
+            <p class="text-xs text-emerald-700 font-semibold leading-relaxed">
+              Secure session established. Redirecting to workspace...
+            </p>
+          </div>
+        </div>
+
+        <ng-container *ngIf="connectingWorkspace">
+
+          <!-- Workspace Details Card -->
+          <div class="rounded-2xl border border-slate-200 bg-slate-50/60 overflow-hidden">
+
+            <!-- Card Header -->
+            <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-white/80">
+              <div>
+                <h4 class="text-xs font-black text-slate-900 leading-tight">
+                  {{ connectingWorkspace.name }}
+                </h4>
+                <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">
+                  {{ connectingWorkspace.provider }}
+                </span>
+              </div>
+              <span
+                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[8px] font-black border uppercase tracking-wider"
+                [ngClass]="{
+                  'bg-emerald-50 text-emerald-700 border-emerald-200': connectingWorkspace.env === 'Production',
+                  'bg-amber-50 text-amber-700 border-amber-200': connectingWorkspace.env === 'UAT',
+                  'bg-blue-50 text-blue-700 border-blue-200': connectingWorkspace.env === 'Development'
+                }">
+                <span class="w-1 h-1 rounded-full shrink-0"
+                  [class.bg-emerald-500]="connectingWorkspace.env === 'Production'"
+                  [class.bg-amber-500]="connectingWorkspace.env === 'UAT'"
+                  [class.bg-blue-500]="connectingWorkspace.env === 'Development'">
+                </span>
+                {{ connectingWorkspace.env }}
+              </span>
+            </div>
+
+            <!-- Connection Details Grid -->
+            <div class="grid grid-cols-3 gap-0 divide-x divide-slate-200 p-0">
+              <div class="px-4 py-3 flex flex-col">
+                <span class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-1">Engine</span>
+                <span class="text-[10px] text-slate-800 font-bold uppercase tracking-wide">
+                  {{ connectingWorkspace.provider }}
+                </span>
+              </div>
+              <div class="px-4 py-3 flex flex-col">
+                <span class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-1">Host</span>
+                <span class="text-[10px] text-slate-800 font-mono font-bold truncate">
+                  {{ connectingWorkspace.host || 'localhost' }}
+                </span>
+              </div>
+              <div class="px-4 py-3 flex flex-col">
+                <span class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-1">Port</span>
+                <span class="text-[10px] text-slate-800 font-mono font-bold">
+                  {{ connectingWorkspace.port || '1433' }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Password Entry -->
+          <div *ngIf="!connectSuccess" class="flex flex-col gap-3 mt-4">
+
+            <div>
+              <label
+                for="db-password-input"
+                class="flex items-center gap-1 text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                  stroke-linejoin="round" class="text-slate-400">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                Database Password
+              </label>
+
+              <div class="relative">
+                <input
+                  id="db-password-input"
+                  [type]="showPasswordText ? 'text' : 'password'"
+                  [(ngModel)]="dbPasswordInput"
+                  placeholder="Enter secure database credential"
+                  [disabled]="isVerifyingConnection"
+                  (keydown.enter)="submitConnect()"
+                  class="w-full pl-4 pr-11 py-3 rounded-xl text-xs font-semibold text-slate-900 placeholder-slate-400 outline-none border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-sm transition-all duration-200 disabled:opacity-60" />
+
+                <!-- Toggle visibility -->
+                <button
+                  type="button"
+                  (click)="showPasswordText = !showPasswordText"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-white/80 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-all duration-150 cursor-pointer focus:outline-none">
+                  <!-- Eye -->
+                  <svg *ngIf="!showPasswordText" xmlns="http://www.w3.org/2000/svg" width="13"
+                    height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                  <!-- Eye Off -->
+                  <svg *ngIf="showPasswordText" xmlns="http://www.w3.org/2000/svg" width="13"
+                    height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                      d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                    <line x1="1" y1="1" x2="23" y2="23" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Remember password checkbox -->
+            <label
+              class="flex items-center gap-2.5 cursor-pointer select-none group/check">
+              <div
+                class="relative w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-all duration-200"
+                [class.bg-blue-600]="rememberPassword"
+                [class.border-blue-600]="rememberPassword"
+                [class.border-slate-300]="!rememberPassword"
+                [class.bg-white]="!rememberPassword">
+                <input
+                  type="checkbox"
+                  id="rememberPassword"
+                  [(ngModel)]="rememberPassword"
+                  [disabled]="isVerifyingConnection"
+                  class="absolute inset-0 opacity-0 w-full h-full cursor-pointer" />
+                <svg *ngIf="rememberPassword" xmlns="http://www.w3.org/2000/svg" width="9" height="9"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"
+                  stroke-linecap="round" stroke-linejoin="round" class="text-white pointer-events-none">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <span
+                class="text-[10px] font-bold text-slate-500 uppercase tracking-wider group-hover/check:text-slate-700 transition-colors duration-150">
+                Remember for future sessions
+              </span>
+            </label>
+
+            <!-- Compliance note -->
+            <div class="flex items-start gap-1.5 pt-1">
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round" class="text-emerald-500 shrink-0 mt-0.5">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+              <p class="text-[9px] text-slate-400 font-medium leading-relaxed">
+                Passwords are validated via secure REST layers and never stored locally.
+              </p>
+            </div>
+          </div>
+
+        </ng-container>
+      </ng-container>
+    </div>
+
+    <!-- Modal Footer -->
+    <footer
+      *ngIf="!connectSuccess"
+      class="shrink-0 px-6 py-4 border-t border-slate-100 bg-slate-50/60">
+      <div class="flex items-center justify-end gap-2.5">
+
+        <button
+          type="button"
+          (click)="closeConnectModal()"
+          [disabled]="isVerifyingConnection"
+          class="px-4 py-2.5 border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-600 text-xs font-bold rounded-xl cursor-pointer disabled:opacity-50 transition-all duration-200">
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          (click)="submitConnect()"
+          [disabled]="isVerifyingConnection"
+          class="group/sub relative overflow-hidden flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 text-white text-xs font-bold rounded-xl cursor-pointer transition-all duration-200">
+          <span
+            class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/sub:translate-x-full transition-transform duration-700 pointer-events-none">
+          </span>
+
+          <svg *ngIf="isVerifyingConnection" class="animate-spin h-3.5 w-3.5 text-white shrink-0"
+            fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+            </circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+
+          <svg *ngIf="!isVerifyingConnection" xmlns="http://www.w3.org/2000/svg" width="13" height="13"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+
+          <span>{{ isVerifyingConnection ? 'Verifying...' : 'Establish Session' }}</span>
+        </button>
+      </div>
+    </footer>
+
+  </section>
+</div>
+
+<!-- ================================================================ -->
+<!-- Connection Toast                                                 -->
+<!-- ================================================================ -->
+<div
+  *ngIf="toastMessage !== null"
+  class="fixed bottom-6 right-6 z-50 max-w-sm w-full bg-white/95 backdrop-blur-md border shadow-2xl rounded-2xl p-4 flex items-center justify-between gap-4 animate-fade-in transition-all duration-300"
+  [ngClass]="{
+    'border-blue-200 shadow-blue-500/10': toastState === 'loading',
+    'border-emerald-200 shadow-emerald-500/10': toastState === 'success'
+  }">
+
+  <!-- Top stripe -->
+  <div class="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl"
+    [ngClass]="{
+      'bg-blue-500': toastState === 'loading',
+      'bg-emerald-500': toastState === 'success'
+    }">
+  </div>
+
+  <div class="flex items-center gap-3.5">
+
+    <!-- Icon -->
+    <div class="shrink-0">
+      <!-- Loading spinner -->
+      <div
+        *ngIf="toastState === 'loading'"
+        class="w-9 h-9 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+        <svg class="animate-spin h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+          </circle>
+          <path class="opacity-75" fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+          </path>
+        </svg>
+      </div>
+
+      <!-- Success check -->
+      <div
+        *ngIf="toastState === 'success'"
+        class="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+          class="text-emerald-600">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      </div>
+    </div>
+
+    <div>
+      <p class="text-xs font-black text-slate-900 leading-tight">
+        {{ toastState === 'loading' ? 'Session Handshake' : 'Secure Session Initiated' }}
+      </p>
+      <p class="text-[10px] text-slate-500 mt-1 font-semibold leading-snug">{{ toastMessage }}</p>
+    </div>
+  </div>
+
+  <!-- Dismiss -->
+  <button
+    (click)="toastMessage = null; toastState = null"
+    class="w-6 h-6 rounded-lg border border-slate-200 bg-white/80 hover:bg-slate-50 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-all duration-150 cursor-pointer shrink-0">
+    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  </button>
+</div>
+
+</div>
