@@ -335,6 +335,8 @@ export class AIChat implements OnInit, OnDestroy {
   // ── Messaging ──────────────────────────────────────────────────────────────
 
   sendMessage(): void {
+    if (this.isGeneratingSql) return;
+
     const text = this.newMessage.trim();
 
     // ✅ Guard: snapshot selectedWorkspace once — avoid null mid-flight
@@ -370,6 +372,13 @@ export class AIChat implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (aiMessage) => {
+          const hasOutput = !!aiMessage.sql?.trim() || (aiMessage.results?.length ?? 0) > 0;
+
+          if (!hasOutput) {
+            this.cdr.markForCheck();
+            return;
+          }
+
           // Fallback text
           if (aiMessage.input && !aiMessage.text) {
             aiMessage.text = aiMessage.input;

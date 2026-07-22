@@ -118,6 +118,16 @@ export class SqlValidatorService {
       intent: 'DELETE',
       severity: 'high'
     },
+    {
+      pattern: /\b(clean|cleaned|cleaning|clean\s+up|clean\s+out|sanitize|sanitized|sanitizing|reset|resetting|discard|discarded|discarding)\b.*\b(record|row|entry|data|user|table|database|all|every|old|existing|content|cache)\b/i,
+      intent: 'DELETE',
+      severity: 'high'
+    },
+    {
+      pattern: /\b(empty|emptied|emptying|blank|blanked|blanking)\b.*\b(record|row|entry|data|user|table|database|all|every|old|existing|content|cache)\b/i,
+      intent: 'DELETE',
+      severity: 'high'
+    },
     // UPDATE / MODIFY intent patterns
     {
       pattern: /\b(update|updated|updating)\b.*\b(record|row|entry|data|user|table|database|all|every|old|existing|customer|employee)\b/i,
@@ -163,6 +173,11 @@ export class SqlValidatorService {
       severity: 'high'
     },
     {
+      pattern: /\b(record|row|entry|data|user|table|database|all|every|old|existing|customer|employee|content|cache)\b.*\b(can be|should be|must be|needs to be|will be|has to be)\b.*\b(cleaned|cleaned\s+up|emptied|blanked|sanitized|reset|discarded)\b/i,
+      intent: 'DELETE',
+      severity: 'high'
+    },
+    {
       pattern: /\b(record|row|entry|data|user|table|database|all|every|old|existing|customer|employee)\b.*\b(can be|should be|must be|needs to be|will be|has to be)\b.*\b(updated|changed|modified|altered|edited)\b/i,
       intent: 'UPDATE',
       severity: 'high'
@@ -181,7 +196,7 @@ export class SqlValidatorService {
     },
     // Imperative instruction-style patterns (e.g., "erase old data", "remove all users")
     {
-      pattern: /^(remove|delete|erase|wipe|purge|clear|drop|destroy|truncate|modify|change|update|alter|edit|add|insert)\s+\w/i,
+      pattern: /^(remove|delete|erase|wipe|purge|clear|clean|empty|sanitize|reset|discard|drop|destroy|truncate|modify|change|update|alter|edit|add|insert)\s+\w/i,
       intent: 'MUTATION',
       severity: 'high'
     },
@@ -294,6 +309,11 @@ export class SqlValidatorService {
     input: string
   ): SqlValidationResult | null {
 
+    const lexicalResult = this.detectLexicalMutationIntent(input);
+    if (lexicalResult) {
+      return lexicalResult;
+    }
+
     const matchedIntents: Array<{
       intent: string;
       severity: 'low' | 'medium' | 'high' | 'critical';
@@ -344,6 +364,91 @@ export class SqlValidatorService {
       maxSeverity,
       message
     );
+  }
+
+  /**
+   * Detects mutation intent in longer, free-form text by checking for a
+   * destructive verb near a database-related noun, even when the prompt is not
+   * written as a short command.
+   */
+  private detectLexicalMutationIntent(input: string): SqlValidationResult | null {
+    const tokens = input.toLowerCase().match(/[a-z0-9_]+/g) ?? [];
+
+    if (tokens.length === 0) {
+      return null;
+    }
+
+    const contextWords = new Set([
+      'record', 'records', 'row', 'rows', 'entry', 'entries', 'data',
+      'user', 'users', 'table', 'tables', 'database', 'databases', 'db',
+      'schema', 'schemas', 'dataset', 'datasets', 'collection', 'collections',
+      'content', 'contents', 'cache', 'item', 'items'
+    ]);
+
+    const verbGroups: Array<{
+      intent: string;
+      severity: 'low' | 'medium' | 'high' | 'critical';
+      verbs: string[];
+    }> = [
+      {
+        intent: 'DELETE',
+        severity: 'high',
+        verbs: [
+          'delete', 'deleted', 'deleting', 'remove', 'removed', 'removing',
+          'erase', 'erased', 'erasing', 'wipe', 'wiped', 'wiping', 'purge',
+          'purged', 'purging', 'clear', 'cleared', 'clearing', 'clean',
+          'cleaned', 'cleaning', 'empty', 'emptied', 'emptying', 'sanitize',
+          'sanitized', 'sanitizing', 'reset', 'resetting', 'discard',
+          'discarded', 'discarding'
+        ]
+      },
+      {
+        intent: 'UPDATE',
+        severity: 'high',
+        verbs: [
+          'update', 'updated', 'updating', 'change', 'changed', 'changing',
+          'modify', 'modified', 'modifying', 'alter', 'altered', 'altering',
+          'edit', 'edited', 'editing'
+        ]
+      },
+      {
+        intent: 'INSERT',
+        severity: 'medium',
+        verbs: ['add', 'added', 'adding', 'insert', 'inserted', 'inserting']
+      },
+      {
+        intent: 'DROP',
+        severity: 'critical',
+        verbs: ['drop', 'dropped', 'dropping', 'destroy', 'destroyed', 'destroying', 'truncate', 'truncated', 'truncating']
+      }
+    ];
+
+    const windowSize = 6;
+
+    for (const group of verbGroups) {
+      for (let index = 0; index < tokens.length; index++) {
+        if (!group.verbs.includes(tokens[index])) {
+          continue;
+        }
+
+        const start = Math.max(0, index - windowSize);
+        const end = Math.min(tokens.length - 1, index + windowSize);
+
+        for (let windowIndex = start; windowIndex <= end; windowIndex++) {
+          if (windowIndex !== index && contextWords.has(tokens[windowIndex])) {
+            return this.buildResult(
+              false,
+              true,
+              [`NL:${group.intent}`],
+              group.severity,
+              `⛔ Restricted request detected — the phrase appears to request a ${group.intent.toLowerCase()}-style change to database content. Please rephrase to a read-only question.`
+            );
+          }
+        }
+      }
+    }
+
+    return null;
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────

@@ -479,28 +479,11 @@ export class ChatQueryService {
 
     // Default
     } else {
-      const formattedName = workspace.name
-        .replace(/\s+/g, '_')
-        .toLowerCase();
-
-      responseText  = `General preview scan for **${workspace.name}**.`;
-      generatedSql  =
-        `SELECT\n` +
-        `  id,\n` +
-        `  record_name,\n` +
-        `  status_flag,\n` +
-        `  updated_at\n` +
-        `FROM ${formattedName}_metadata\n` +
-        `ORDER BY updated_at DESC\n` +
-        `LIMIT 4;`;
-      cols = ['id', 'record_name', 'status_flag', 'updated_at'];
-      res  = [
-        { id: 104, record_name: 'Core System Profile',   status_flag: 'ACTIVE',    updated_at: '2026-06-08' },
-        { id: 103, record_name: 'API Handshake Logs',    status_flag: 'COMPLETED', updated_at: '2026-06-07' },
-        { id: 102, record_name: 'Auth Security Token',   status_flag: 'REVOKED',   updated_at: '2026-06-05' },
-        { id: 101, record_name: 'Cron Scheduler Config', status_flag: 'STANDBY',   updated_at: '2026-06-01' },
-      ];
-      explanationText = `This query retrieves the latest metadata records, ordered by their update timestamp, for diagnostic preview.`;
+      responseText    = '';
+      generatedSql    = '';
+      cols            = [];
+      res             = [];
+      explanationText = '';
     }
 
     const msg: ChatMessage = {
@@ -575,13 +558,8 @@ export class ChatQueryService {
       };
     } else {
       result = {
-        columns: ['id', 'record_name', 'status_flag', 'updated_at'],
-        results: [
-          { id: 104, record_name: 'Core System Profile',   status_flag: 'ACTIVE',    updated_at: '2026-06-08' },
-          { id: 103, record_name: 'API Handshake Logs',    status_flag: 'COMPLETED', updated_at: '2026-06-07' },
-          { id: 102, record_name: 'Auth Security Token',   status_flag: 'REVOKED',   updated_at: '2026-06-05' },
-          { id: 101, record_name: 'Cron Scheduler Config', status_flag: 'STANDBY',   updated_at: '2026-06-01' },
-        ],
+        columns: [],
+        results: [],
       };
     }
 

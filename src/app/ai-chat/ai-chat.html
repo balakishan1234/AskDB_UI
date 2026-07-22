@@ -1,19 +1,19 @@
-<div class="h-screen bg-gradient-to-tr from-slate-50 via-slate-100/70 to-blue-50/50 text-slate-900 flex overflow-hidden font-sans relative">
+<div class="h-screen bg-linear-to-tr from-slate-50 via-slate-100/70 to-blue-50/50 text-slate-900 flex overflow-hidden font-sans relative">
 
   <!-- Grid Background -->
   <div
-    class="absolute inset-0 bg-[linear-gradient(to_right,var(--grid-color)_1px,transparent_1px),linear-gradient(to_bottom,var(--grid-color)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30 pointer-events-none -z-10">
+    class="absolute inset-0 bg-[linear-gradient(to_right,var(--grid-color)_1px,transparent_1px),linear-gradient(to_bottom,var(--grid-color)_1px,transparent_1px)] bg-size-[4rem_4rem] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30 pointer-events-none -z-10">
   </div>
 
   <!-- Ambient Blobs -->
   <div
-    class="absolute top-[-20%] left-[-20%] w-[50rem] h-[50rem] rounded-full bg-blue-500/10 blur-[120px] pointer-events-none -z-10 animate-pulse-slow">
+    class="absolute top-[-20%] left-[-20%] w-200 h-200 rounded-full bg-blue-500/10 blur-[120px] pointer-events-none -z-10 animate-pulse-slow">
   </div>
   <div
-    class="absolute bottom-[-10%] right-[-10%] w-[40rem] h-[40rem] rounded-full bg-indigo-500/8 blur-[100px] pointer-events-none -z-10 animate-pulse-slow-reverse">
+    class="absolute bottom-[-10%] right-[-10%] w-160 h-160 rounded-full bg-indigo-500/8 blur-[100px] pointer-events-none -z-10 animate-pulse-slow-reverse">
   </div>
   <div
-    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[30rem] h-[30rem] rounded-full bg-cyan-500/5 blur-[80px] pointer-events-none -z-10">
+    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-120 h-120 rounded-full bg-cyan-500/5 blur-[80px] pointer-events-none -z-10">
   </div>
 
   <!-- Mobile Backdrop -->
@@ -32,7 +32,7 @@
       : 'fixed inset-y-0 left-0 z-50 w-72 border-r border-slate-200/50 bg-white/70 backdrop-blur-xl flex flex-col transition-transform duration-300 -translate-x-full md:relative md:translate-x-0 md:bg-white/30 md:shadow-none'">
 
     <!-- Gradient top accent -->
-    <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500"></div>
+    <div class="absolute top-0 left-0 right-0 h-0.5 bg-linear-to-r from-blue-600 via-indigo-600 to-cyan-500"></div>
 
     <!-- ── Sidebar Brand Header ──────────────────────────────── -->
     <div class="px-5 py-4 border-b border-slate-200/50 flex items-center justify-between shrink-0">
@@ -40,9 +40,9 @@
 
         <!-- Logo -->
         <div
-          class="relative overflow-hidden flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white shadow-md shadow-blue-500/25 group-hover:scale-105 transition-all duration-300">
+          class="relative overflow-hidden flex items-center justify-center w-9 h-9 rounded-xl bg-linear-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white shadow-md shadow-blue-500/25 group-hover:scale-105 transition-all duration-300">
           <span
-            class="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none">
+            class="absolute inset-0 bg-linear-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none">
           </span>
           <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
             fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
@@ -87,7 +87,7 @@
     </div>
 
     <!-- ── Workspace Details ──────────────────────────────────── -->
-    <div class="flex-grow overflow-y-auto px-4 py-4 light-scrollbar">
+    <div class="grow overflow-y-auto px-4 py-4 light-scrollbar">
       <div *ngIf="selectedWorkspace; else noWorkspaceTemplate" class="space-y-4">
 
         <!-- Section Label -->
@@ -145,7 +145,7 @@
               <div class="flex justify-between items-center gap-2">
                 <span class="text-[9px] text-slate-400 font-black uppercase tracking-wider shrink-0">Host</span>
                 <span
-                  class="font-mono font-bold text-[10px] text-slate-800 truncate max-w-[140px]"
+                  class="font-mono font-bold text-[10px] text-slate-800 truncate max-w-35"
                   [title]="selectedWorkspace.host || 'localhost'">
                   {{ selectedWorkspace.host || 'localhost' }}
                 </span>
@@ -216,7 +216,7 @@
         <!-- User info -->
         <div class="flex items-center gap-3">
           <div
-            class="relative w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center font-black text-xs text-white shadow-md shadow-blue-500/15 shrink-0 select-none">
+            class="relative w-9 h-9 rounded-xl bg-linear-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center font-black text-xs text-white shadow-md shadow-blue-500/15 shrink-0 select-none">
             {{ userInitials }}
             <span
               class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-white shadow-sm">
@@ -398,7 +398,7 @@
                 class="flex justify-center animate-fade-in px-4 py-2">
                 <div
                   class="relative w-full max-w-md rounded-2xl overflow-hidden
-                         bg-gradient-to-br from-blue-50 via-indigo-50 to-cyan-50
+                           bg-linear-to-br from-blue-50 via-indigo-50 to-cyan-50
                          border border-blue-100/80 shadow-sm p-5 text-center space-y-3">
 
                   <!-- Decorative blobs -->
@@ -477,7 +477,7 @@
 
                 <!-- AI Avatar -->
                 <div
-                  class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600
+                      class="w-8 h-8 rounded-xl bg-linear-to-tr from-blue-600 via-indigo-600
                          to-cyan-500 text-white flex items-center justify-center shrink-0
                          select-none shadow-md shadow-blue-500/15 ai-avatar-float mt-0.5">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
@@ -509,7 +509,7 @@
 
                   <!-- Message bubble -->
                   <div
-                    class="rounded-3xl rounded-tr-sm bg-gradient-to-r from-blue-600
+                    class="rounded-3xl rounded-tr-sm bg-linear-to-r from-blue-600
                            via-indigo-600 to-cyan-600 text-white px-5 py-3.5 text-sm
                            font-semibold shadow-lg shadow-blue-500/15 leading-relaxed">
                     {{ msg.text }}
@@ -517,7 +517,7 @@
 
                   <!-- User avatar -->
                   <div
-                    class="w-7 h-7 rounded-lg bg-gradient-to-tr from-blue-600
+                          class="w-7 h-7 rounded-lg bg-linear-to-tr from-blue-600
                            via-indigo-600 to-cyan-500 text-white flex items-center
                            justify-center text-[9px] font-black shrink-0 mb-0.5
                            shadow-sm select-none">
@@ -533,7 +533,7 @@
 
                 <!-- AI Avatar -->
                 <div
-                  class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600
+                      class="w-8 h-8 rounded-xl bg-linear-to-tr from-blue-600 via-indigo-600
                          to-cyan-500 text-white flex items-center justify-center shrink-0
                          select-none shadow-md shadow-blue-500/15 ai-avatar-float mt-0.5">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
@@ -627,7 +627,7 @@
                           (ngModelChange)="onMessageSqlChanged(msg, $event)"
                           rows="5"
                           placeholder="-- Type or edit SQL statements here..."
-                          class="w-full bg-transparent p-4 font-mono text-xs text-slate-200 focus:outline-none resize-y custom-scrollbar leading-relaxed outline-none min-h-[100px]">
+                          class="w-full bg-transparent p-4 font-mono text-xs text-slate-200 focus:outline-none resize-y custom-scrollbar leading-relaxed outline-none min-h-25">
                         </textarea>
                       </div>
 
@@ -664,9 +664,9 @@
                           <button
                             (click)="runQueryOnMessage(msg)"
                             [disabled]="msg.isExecuting || !msg.sql.trim()"
-                            class="group/exec relative overflow-hidden flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 text-white font-bold text-[10px] shadow-md shadow-blue-500/15 hover:shadow-blue-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:scale-100">
+                            class="group/exec relative overflow-hidden flex items-center gap-1.5 px-4 py-2 rounded-xl bg-linear-to-r from-blue-600 via-indigo-600 to-cyan-500 text-white font-bold text-[10px] shadow-md shadow-blue-500/15 hover:shadow-blue-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:scale-100">
                             <span
-                              class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/exec:translate-x-full transition-transform duration-700 pointer-events-none">
+                              class="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/exec:translate-x-full transition-transform duration-700 pointer-events-none">
                             </span>
                             <svg
                               *ngIf="msg.isExecuting"
@@ -772,7 +772,7 @@
 
     <!-- Hover Background Effect -->
     <div 
-      class="absolute inset-0 mx-1 my-1 rounded-md bg-slate-100 opacity-0 transition-opacity duration-200 group-hover:opacity-100 -z-0"
+      class="absolute inset-0 mx-1 my-1 rounded-md bg-slate-100 opacity-0 transition-opacity duration-200 group-hover:opacity-100 z-0"
       [class.hidden]="msg.visualizerTab === tab.key">
     </div>
   </button>
@@ -785,7 +785,7 @@
   <div
     *ngIf="msg.results.length > 10"
     class="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-3 py-2 
-           bg-gradient-to-b from-white via-white/90 to-transparent pointer-events-none">
+           bg-linear-to-b from-white via-white/90 to-transparent pointer-events-none">
     
     <!-- Left: Row count context -->
     <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">
@@ -807,7 +807,7 @@
 
   <!-- Scrollable Area -->
   <div 
-    class="overflow-auto max-h-[380px] scroll-smooth
+    class="overflow-auto max-h-95 scroll-smooth
            scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300
            hover:scrollbar-thumb-slate-400">
 
@@ -868,8 +868,8 @@
   <!-- Bottom Fade (Scroll Continuation Hint) -->
   <div
     *ngIf="msg.results.length > 8"
-    class="absolute bottom-0 left-0 right-0 h-10 pointer-events-none rounded-b-xl
-           bg-gradient-to-t from-white via-white/60 to-transparent">
+        class="absolute bottom-0 left-0 right-0 h-10 pointer-events-none rounded-b-xl
+          bg-linear-to-t from-white via-white/60 to-transparent">
     
     <!-- Subtle bottom center indicator -->
     <div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 flex gap-0.5">
@@ -904,7 +904,7 @@
               class="flex items-start gap-3 max-w-3xl animate-fade-in">
 
               <div
-                class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600
+                  class="w-8 h-8 rounded-xl bg-linear-to-tr from-blue-600 via-indigo-600
                        to-cyan-500 text-white flex items-center justify-center shrink-0
                        select-none shadow-md shadow-blue-500/15 ai-avatar-float mt-0.5">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
@@ -919,8 +919,8 @@
               </div>
 
               <div
-                class="flex items-center justify-between gap-4 rounded-3xl rounded-tl-sm
-                       bg-white border border-slate-200 px-5 py-3.5 shadow-sm min-w-[260px]">
+                  class="flex items-center justify-between gap-4 rounded-3xl rounded-tl-sm
+                    bg-white border border-slate-200 px-5 py-3.5 shadow-sm min-w-65">
                 <div class="flex items-center gap-3">
                   <div class="flex gap-1">
                     <span class="w-1.5 h-1.5 rounded-full bg-blue-600 bounce-dot"
@@ -958,7 +958,6 @@
           class="shrink-0 border-t border-slate-200/50 px-4 md:px-6 py-4
                  bg-white/50 backdrop-blur-md">
           <div class="max-w-4xl mx-auto">
-
             <div
               class="flex items-end gap-2.5 rounded-2xl border border-slate-200 bg-white shadow-lg p-2.5 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-500/8 transition-all duration-200">
 
@@ -981,18 +980,19 @@
               <textarea
                 [(ngModel)]="newMessage"
                 (keydown.enter)="$event.preventDefault(); sendMessage()"
+                [disabled]="isGeneratingSql"
                 rows="1"
                 placeholder="Ask in plain English (e.g. 'Show top customers by revenue')..."
-                class="flex-1 bg-transparent outline-none resize-none px-2 py-2 text-sm font-medium placeholder-slate-400 text-slate-800 min-h-[36px] max-h-[120px] light-scrollbar leading-relaxed">
+                class="flex-1 bg-transparent outline-none resize-none px-2 py-2 text-sm font-medium placeholder-slate-400 text-slate-800 min-h-9 max-h-30 light-scrollbar leading-relaxed disabled:cursor-not-allowed disabled:opacity-60">
               </textarea>
 
               <!-- Send Button -->
               <button
                 (click)="sendMessage()"
                 [disabled]="!newMessage.trim() || isGeneratingSql"
-                class="group/send w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center shadow-md shadow-blue-500/15 hover:shadow-blue-500/30 transition-all duration-300 hover:scale-105 active:scale-[0.96] disabled:opacity-30 disabled:scale-100 cursor-pointer shrink-0 relative overflow-hidden">
+                class="group/send w-10 h-10 rounded-xl bg-linear-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center shadow-md shadow-blue-500/15 hover:shadow-blue-500/30 transition-all duration-300 hover:scale-105 active:scale-[0.96] disabled:opacity-30 disabled:scale-100 cursor-pointer shrink-0 relative overflow-hidden">
                 <span
-                  class="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover/send:translate-x-full transition-transform duration-700 pointer-events-none">
+                  class="absolute inset-0 bg-linear-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover/send:translate-x-full transition-transform duration-700 pointer-events-none">
                 </span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13"
                   viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -1014,7 +1014,7 @@
               </svg>
               <p
                 class="text-[8.5px] text-slate-400 font-black uppercase tracking-widest select-none text-center">
-                All interactions are logged and validated for SQL safety & compliance
+                AI responses can make mistakes. Please verify important results before using them.
               </p>
             </div>
           </div>
