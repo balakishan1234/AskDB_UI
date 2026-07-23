@@ -12,7 +12,7 @@ export class SessionTimeoutService {
   onTimeout = new Subject<void>();
   onDismiss = new Subject<void>(); // ✅ NEW - force hide warning popup
 
-  private testMode = true; //true for testing , false for production
+  private testMode = false; //true for testing , false for production
 
   private productionTimeout = 30 * 60 * 1000; // 30 minutes
   private productionWarning = 60 * 1000;       // 60 seconds
