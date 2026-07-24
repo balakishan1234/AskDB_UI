@@ -27,8 +27,8 @@
 }
 
 .dark .glass-panel {
-  background: rgba(26, 21, 14, 0.75) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(27, 38, 53, 0.85) !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
 }
 
 /* Input custom focus glow effect matching the application */
@@ -36,7 +36,7 @@
   border: 1.5px solid rgba(226, 232, 240, 0.8);
   background: rgba(255, 255, 255, 0.6);
   outline: none;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.25s ease-out;
 }
 
 .modern-input:focus {
@@ -46,13 +46,13 @@
 }
 
 .dark .modern-input {
-  border: 1.5px solid rgba(212, 204, 167, 0.15);
-  background: rgba(26, 21, 14, 0.4);
-  color: #fff;
+  border: 1.5px solid #304255;
+  background: #182331;
+  color: #ffffff;
 }
 
 .dark .modern-input:focus {
-  border-color: #f97316;
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
-  background: rgba(26, 21, 14, 0.8);
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+  background: #182331;
 }

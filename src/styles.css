@@ -28,43 +28,43 @@ input, select, textarea {
 }
 
 .dark {
-  --grid-color: rgba(180, 83, 9, 0.08); /* Subtle bronze grid lines */
+  --grid-color: rgba(255, 255, 255, 0.04); /* Subtle grid lines */
   
-  /* Core backgrounds - Warm Champagne & Linen */
-  --color-slate-50: #f7f5f0;     /* Soft warm linen/sand background */
-  --color-slate-100: #eeebe0;    /* Soft beige container background */
-  --color-slate-150: #e2dcc9;    /* Subtle divider */
-  --color-slate-200: #d4cca7;    /* Soft border */
-  --color-slate-300: #c4ba94;    /* Active border */
-  --color-slate-400: #7c7259;    /* Muted text description */
-  --color-slate-550: #645a43;    /* Medium description text */
-  --color-slate-500: #645a43;    
-  --color-slate-600: #504732;    /* Secondary text */
-  --color-slate-700: #3b3320;    /* High contrast body text */
-  --color-slate-800: #241e10;    /* Heading text */
-  --color-slate-900: #140f05;    /* Absolute highlight text */
-  --color-slate-950: #1a150e;    /* Warm espresso dark background for SQL console */
+  /* Canvas & Core Backgrounds - Midnight Aurora */
+  --color-slate-50: #0a0e14;     /* Deep Midnight main app background (#0A0E14) */
+  --color-slate-100: #101722;    /* Secondary background (#101722) */
+  --color-slate-150: #131c29;    /* Content area (#131C29) */
+  --color-slate-200: #2b394c;    /* Default subtle border (#2B394C) */
+  --color-slate-300: #3a4a60;    /* Hover / Strong border (#3A4A60) */
+  --color-slate-400: #94a3b8;    /* Muted text description (#94A3B8) */
+  --color-slate-550: #e2e8f0;    /* Body text (#E2E8F0) */
+  --color-slate-500: #cbd5e1;    /* Secondary text (#CBD5E1) */
+  --color-slate-600: #e2e8f0;    /* Content body text */
+  --color-slate-700: #e2e8f0;    /* High contrast body text */
+  --color-slate-800: #ffffff;    /* Heading text (#FFFFFF) */
+  --color-slate-900: #ffffff;    /* Main heading text */
+  --color-slate-950: #070b10;    /* Deepest SQL editor console background (#070B10) */
   
-  /* Panel backgrounds - Warm white cards stand out against linen */
-  --color-white: #ffffff;        
+  /* Panel & Surface Backgrounds - Cool Neutral Cards (8-10% step increments) */
+  --color-white: #1b2635;        /* Primary Card (#1B2635) */
   
-  /* Accents - Sophisticated Bronze, Terracotta & Ochre Gold */
-  --color-blue-50: #fdf8eb;      /* Soft warm amber tint background */
-  --color-blue-100: #fbf0d0;     /* Soft gold border */
-  --color-blue-200: #f7e0a8;     
-  --color-blue-500: #d97706;     /* Warm golden amber highlight */
-  --color-blue-600: #b45309;     /* Rich deep bronze-gold primary action */
-  --color-blue-700: #92400e;     /* Deeper bronze-gold hover */
-  --color-blue-800: #78350f;     
+  /* Accents - Azure Blue, Indigo & Purple AI Ecosystem */
+  --color-blue-50: #182331;      /* Input background (#182331) */
+  --color-blue-100: #31445b;     /* Active background (#31445B) */
+  --color-blue-200: #28384b;     /* Hover state (#28384B) */
+  --color-blue-500: #3b82f6;     /* Primary Azure Blue (#3B82F6) */
+  --color-blue-600: #3b82f6;     /* Primary Action */
+  --color-blue-700: #2563eb;     /* Deeper Blue Hover */
+  --color-blue-800: #1d4ed8;     
   
-  --color-indigo-50: #fff7f5;    /* Soft terracotta tint background */
-  --color-indigo-100: #ffede8;   
-  --color-indigo-400: #f08775;   /* Peach/terracotta text highlight */
-  --color-indigo-500: #e25e46;   
-  --color-indigo-600: #c2412b;   /* Rich terracotta primary */
+  --color-indigo-50: #0d131c;    /* Sidebar background (#0D131C) */
+  --color-indigo-100: #202d3d;   /* Secondary Card (#202D3D) */
+  --color-indigo-400: #8b5cf6;   /* Purple AI Accent text (#8B5CF6) */
+  --color-indigo-500: #6366f1;   /* Indigo secondary accent (#6366F1) */
+  --color-indigo-600: #4f46e5;   /* Indigo Primary */
   
-  --color-cyan-500: #ca8a04;     /* Ochre yellow highlight */
-  --color-cyan-600: #a16207;     
+  --color-cyan-500: #0ea5e9;     /* Sky Info Accent (#0EA5E9) */
+  --color-cyan-600: #0284c7;     
 }
 
 /* Custom Scrollbar for Light Theme */
@@ -87,19 +87,19 @@ input, select, textarea {
   background: #94a3b8; /* slate-400 */
 }
 
-/* Custom Scrollbar for Dark Theme */
+/* Custom Scrollbar for Dark Theme (Midnight Aurora) */
 .dark ::-webkit-scrollbar-track {
-  background: #f7f5f0;
+  background: #101722;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: #d4cca7;
-  border: 2px solid #f7f5f0;
+  background: #28384b;
+  border: 2px solid #101722;
   border-radius: 9999px;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #bdae8f;
+  background: #31445b;
 }
 
 /* Smooth custom selection for Light Theme */
@@ -108,10 +108,10 @@ input, select, textarea {
   color: #1e3a8a; /* blue-900 */
 }
 
-/* Smooth custom selection for Dark Theme */
+/* Smooth custom selection for Dark Theme (Purple AI Tint) */
 .dark ::selection {
-  background: rgba(180, 83, 9, 0.15); /* bronze-600/15 */
-  color: #78350f;
+  background: rgba(139, 92, 246, 0.25);
+  color: #ffffff;
 }
 
 /* Glow effects & animation support */
@@ -214,11 +214,11 @@ input, select, textarea {
 }
 
 .dark .glass-panel {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 8px 32px 0 rgba(180, 83, 9, 0.04);
+  background: rgba(27, 38, 53, 0.75);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
 }
 
 .dark-glass-panel {
@@ -230,12 +230,13 @@ input, select, textarea {
 }
 
 .dark .dark-glass-panel {
-  background: rgba(253, 252, 251, 0.92);
-  border: 1px solid rgba(234, 229, 216, 0.6);
+  background: rgba(10, 14, 20, 0.95);
+  border: 1px solid rgba(43, 57, 76, 0.6);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.30);
 }
 
 .hover-lift {
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
 }
 
 .hover-lift:hover {
@@ -244,17 +245,18 @@ input, select, textarea {
 }
 
 .dark .hover-lift:hover {
-  box-shadow: 0 12px 24px -10px rgba(180, 83, 9, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.30);
 }
 
 .btn-gradient {
   background: linear-gradient(135deg, #2563eb 0%, #4f46e5 50%, #06b6d4 100%);
   background-size: 200% auto;
-  transition: background-position 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  transition: background-position 0.25s ease-out, transform 0.25s ease-out, box-shadow 0.25s ease-out;
 }
 
 .dark .btn-gradient {
-  background: linear-gradient(135deg, #b45309 0%, #c2412b 50%, #ca8a04 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 50%, #8b5cf6 100%);
   background-size: 200% auto;
 }
 
@@ -265,7 +267,8 @@ input, select, textarea {
 }
 
 .dark .btn-gradient:hover {
-  box-shadow: 0 6px 20px rgba(180, 83, 9, 0.25);
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 6px 24px rgba(139, 92, 246, 0.25);
 }
 
 .btn-gradient:active {
@@ -275,13 +278,13 @@ input, select, textarea {
 .modern-input {
   background-color: rgba(255, 255, 255, 0.8);
   border: 1px solid #e2e8f0;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  transition: border-color 0.25s ease-out, box-shadow 0.25s ease-out, background-color 0.25s ease-out;
 }
 
 .dark .modern-input {
-  background-color: rgba(255, 255, 255, 0.9);
-  border: 1px solid #cfc7b0;
-  color: #120d05;
+  background-color: #182331;
+  border: 1px solid #304255;
+  color: #ffffff;
 }
 
 .modern-input:focus {
@@ -291,10 +294,15 @@ input, select, textarea {
   outline: none;
 }
 
+.dark .modern-input:hover {
+  background-color: #202d3d;
+  border-color: #3a4a60;
+}
+
 .dark .modern-input:focus {
-  background-color: #ffffff;
-  border-color: #b45309;
-  box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.15);
+  background-color: #182331;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
 }
 
 .glow-text-gradient {
@@ -305,7 +313,7 @@ input, select, textarea {
 }
 
 .dark .glow-text-gradient {
-  background: linear-gradient(135deg, #b45309, #c2412b, #ca8a04);
+  background: linear-gradient(135deg, #ffffff 0%, #3b82f6 50%, #8b5cf6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -323,9 +331,9 @@ input, select, textarea {
   50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5), 0 0 35px rgba(59, 130, 246, 0.25); }
 }
 
-@keyframes pulse-halo-bronze {
-  0%, 100% { box-shadow: 0 0 10px rgba(180, 83, 9, 0.2), 0 0 20px rgba(180, 83, 9, 0.1); }
-  50% { box-shadow: 0 0 20px rgba(180, 83, 9, 0.5), 0 0 35px rgba(180, 83, 9, 0.25); }
+@keyframes pulse-halo-purple {
+  0%, 100% { box-shadow: 0 0 10px rgba(139, 92, 246, 0.2), 0 0 20px rgba(139, 92, 246, 0.12); }
+  50% { box-shadow: 0 0 24px rgba(139, 92, 246, 0.4), 0 0 40px rgba(139, 92, 246, 0.25); }
 }
 
 .ai-avatar-float {
@@ -334,7 +342,7 @@ input, select, textarea {
 }
 
 .dark .ai-avatar-float {
-  animation: float-avatar 2.8s ease-in-out infinite, pulse-halo-bronze 2.8s ease-in-out infinite;
+  animation: float-avatar 2.8s ease-in-out infinite, pulse-halo-purple 2.8s ease-in-out infinite;
 }
 
 .ai-avatar-float:hover {
