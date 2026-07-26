@@ -27,5 +27,5 @@ jobs:
       - name: Run Angular Build (Type & Template Checking)
         run: npm run build
 
-      - name: Run Linter (if configured)
-        run: npm run lint --if-present
+      - name: Run TypeScript & Code Quality Checks
+        run: npm run lint
