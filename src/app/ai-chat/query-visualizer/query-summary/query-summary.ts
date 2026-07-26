@@ -38,20 +38,60 @@ export class QuerySummary implements OnChanges {
 
   // ── Derived state ──────────────────────────────────────────────────────────
 
-  columnStats:    ColumnStat[] = [];
-  totalRows:      number       = 0;
-  totalColumns:   number       = 0;
-  numericColumns: ColumnStat[] = [];
-  stringColumns:  ColumnStat[] = [];
+  columnStats:         ColumnStat[] = [];
+  totalRows:           number       = 0;
+  totalColumns:        number       = 0;
+  numericColumns:      ColumnStat[] = [];
+  stringColumns:       ColumnStat[] = [];
+  explanationPoints:  string[]     = [];
+  overallDataHealth:   number       = 100;
 
   // ── Lifecycle ──────────────────────────────────────────────────────────────
 
   ngOnChanges(changes: SimpleChanges): void {
     if (
-      changes['results']  ||
-      changes['columns']
+      changes['results']     ||
+      changes['columns']     ||
+      changes['explanation']
     ) {
       this.computeStats();
+      this.computeExplanationPoints();
+    }
+  }
+
+  // ── Explanation Breakdown ─────────────────────────────────────────────────
+
+  private computeExplanationPoints(): void {
+    if (!this.explanation || !this.explanation.trim()) {
+      this.explanationPoints = [];
+      return;
+    }
+
+    const raw = this.explanation.trim();
+
+    // 1. If explanation has explicit newlines or list items
+    if (raw.includes('\n') || /[•\-\*\d+\.]/.test(raw)) {
+      const lines = raw
+        .split(/\r?\n/)
+        .map(line => line.replace(/^[•\-\*\d+\.\s]+/, '').trim())
+        .filter(line => line.length > 0);
+
+      if (lines.length > 1) {
+        this.explanationPoints = lines;
+        return;
+      }
+    }
+
+    // 2. If single paragraph, split by sentence ends (. , ; ) if paragraph is multi-sentence
+    const sentences = raw
+      .split(/(?<=\.|\;)\s+/)
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
+
+    if (sentences.length > 1) {
+      this.explanationPoints = sentences;
+    } else {
+      this.explanationPoints = [raw];
     }
   }
 
@@ -119,6 +159,14 @@ export class QuerySummary implements OnChanges {
 
     this.numericColumns = this.columnStats.filter(c => c.type === 'number');
     this.stringColumns  = this.columnStats.filter(c => c.type !== 'number');
+
+    const totalCells = this.totalRows * this.totalColumns;
+    if (totalCells > 0) {
+      const totalNulls = this.columnStats.reduce((sum, col) => sum + col.nullCount, 0);
+      this.overallDataHealth = Math.max(0, Math.round(((totalCells - totalNulls) / totalCells) * 100));
+    } else {
+      this.overallDataHealth = 100;
+    }
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────

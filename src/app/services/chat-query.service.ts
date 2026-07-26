@@ -140,8 +140,8 @@ export class ChatQueryService {
       userId:         this.getStoredUserId(),
       dbPassword:     workspace.dbPassword     ?? '',
       databaseType:   this.mapProviderToBackend(workspace.provider),
-      serverName:     workspace.host           ?? 'localhost',
-      port:           workspace.port           ?? '1433',
+      serverName:     (workspace.host || '').trim() || 'localhost',
+      port:           (workspace.port || '').toString().trim() || '1433',
       environmentType: this.mapEnvToBackend(workspace.env),
       databaseName:   workspace.databaseName   ?? '',
       databaseUserName: workspace.username     ?? '',
@@ -388,6 +388,62 @@ export class ChatQueryService {
       );
   }
 
+  // ── Mock Large Dataset Generators ──────────────────────────────────────────
+
+  private generateMockCustomerRows(count: number = 65): Array<Record<string, string | number>> {
+    const countries = ['United States', 'Canada', 'United Kingdom', 'Germany', 'Australia', 'Japan', 'France', 'Brazil', 'India', 'Singapore'];
+    const statuses = ['Active', 'Pending', 'Verified', 'VIP'];
+    const companyPrefixes = ['Acme', 'TechNova', 'FutureSoft', 'GlobalTrade', 'Apex', 'CyberPulse', 'CloudScale', 'OmniTech', 'DataFlex', 'Vanguard', 'Synergy', 'Zenith', 'Nexus', 'Starlight', 'Hyperion', 'InnoWave', 'Quantum', 'Aura', 'Velocity', 'Titan'];
+    const companySuffixes = ['Corp', 'Solutions', 'Group', 'Inc', 'Industries', 'Systems', 'Labs', 'Enterprises', 'Networks', 'Dynamics', 'Partners', 'Technologies'];
+
+    const rows: Array<Record<string, string | number>> = [];
+    for (let i = 1; i <= count; i++) {
+      const name = `${companyPrefixes[i % companyPrefixes.length]} ${companySuffixes[i % companySuffixes.length]}`;
+      const country = countries[i % countries.length];
+      const status = statuses[i % statuses.length];
+      const revenueVal = 25000 + (i * 3750) % 450000;
+      const revenue = `$${revenueVal.toLocaleString()}`;
+      const month = String((i % 12) + 1).padStart(2, '0');
+      const day = String((i % 28) + 1).padStart(2, '0');
+      const date = `2026-${month}-${day}`;
+
+      rows.push({
+        'ID': `CUST-${1000 + i}`,
+        'Customer': name,
+        'Country': country,
+        'Status': status,
+        'Revenue': revenue,
+        'Last Order Date': date
+      });
+    }
+    return rows;
+  }
+
+  private generateMockInventoryRows(count: number = 60): Array<Record<string, string | number>> {
+    const categories = ['Hardware', 'Peripherals', 'Accessories', 'Networking', 'Storage'];
+    const products = ['UltraMonitor 4K', 'Ergonomic Desk Chair', 'Wireless Mouse MX', 'USB-C Hub Multi', 'Mechanical Keyboard', 'NVMe SSD 2TB', 'HD WebCam 1080p', 'Smart Desk Lamp', 'Noise-Canceling Headset', 'Gigabit Router X', 'Power Bank 20k', 'Thunderbolt Dock', 'Portable Monitor 15"', 'Ergonomic Stand', 'Dual-Band Adapter'];
+
+    const rows: Array<Record<string, string | number>> = [];
+    for (let i = 1; i <= count; i++) {
+      const pName = `${products[i % products.length]} Pro v${(i % 3) + 1}`;
+      const category = categories[i % categories.length];
+      const stock = (i * 3 + 1) % 45;
+      const reorder = 10 + (i % 15);
+      const priceVal = 29.99 + (i * 14.5) % 850;
+      const price = `$${priceVal.toFixed(2)}`;
+
+      rows.push({
+        'ID': `PROD-${2000 + i}`,
+        'Product Name': pName,
+        'Category': category,
+        'In Stock': stock,
+        'Reorder Level': reorder,
+        'Unit Price': price
+      });
+    }
+    return rows;
+  }
+
   // ── Mock: Generate SQL ────────────────────────────────────────────────────
 
   private resolveMockGenerateSql(
@@ -401,57 +457,22 @@ export class ChatQueryService {
     let res: Array<Record<string, string | number>> = [];
     let explanationText = '';
 
-    // Customer / Revenue
-    if (
-      textLower.includes('customer') ||
-      textLower.includes('revenue')  ||
-      textLower.includes('top sales')
-    ) {
-      responseText  = `Compiled top-performing customers by revenue query for **${workspace.name}**.`;
-      generatedSql  =
-        `SELECT TOP 10\n` +
-        `  c.CustomerName,\n` +
-        `  c.Country,\n` +
-        `  SUM(o.TotalAmount) AS Revenue\n` +
-        `FROM Customers c\n` +
-        `JOIN Orders o ON c.CustomerID = o.CustomerID\n` +
-        `WHERE o.OrderDate >= '2026-01-01'\n` +
-        `GROUP BY c.CustomerName, c.Country\n` +
-        `ORDER BY Revenue DESC;`;
-      cols = ['Customer', 'Country', 'Revenue'];
-      res  = [
-        { Customer: 'Acme Corp',          Country: 'United States', Revenue: '$245,000' },
-        { Customer: 'TechNova Solutions', Country: 'Canada',        Revenue: '$190,000' },
-        { Customer: 'FutureSoft Group',   Country: 'United Kingdom',Revenue: '$175,000' },
-        { Customer: 'GlobalTrade Inc',    Country: 'Germany',       Revenue: '$162,300' },
-        { Customer: 'Apex Industries',    Country: 'Australia',     Revenue: '$148,900' },
-      ];
-      explanationText = `This query aggregates the total sales amount by customer and country to show the top-performing customers by revenue.`;
-
     // Stock / Inventory
-    } else if (
+    if (
       textLower.includes('stock')    ||
       textLower.includes('product')  ||
       textLower.includes('inventory')
     ) {
-      responseText  = `Compiled inventory query filtered by reorder thresholds for **${workspace.name}**.`;
+      responseText  = `Compiled inventory query returning 60 active records for **${workspace.name}**.`;
       generatedSql  =
-        `SELECT\n` +
-        `  ProductName,\n` +
-        `  UnitsInStock,\n` +
-        `  ReorderLevel\n` +
+        `SELECT TOP 60\n` +
+        `  ProductID, ProductName, Category, UnitsInStock, ReorderLevel, UnitPrice\n` +
         `FROM Products\n` +
-        `WHERE UnitsInStock < 15\n` +
-        `  AND Discontinued = 0\n` +
+        `WHERE Discontinued = 0\n` +
         `ORDER BY UnitsInStock ASC;`;
-      cols = ['Product Name', 'In Stock', 'Reorder Level'];
-      res  = [
-        { 'Product Name': 'UltraMonitor 4K',     'In Stock': 3,  'Reorder Level': 10 },
-        { 'Product Name': 'Ergonomic Desk Chair', 'In Stock': 5,  'Reorder Level': 15 },
-        { 'Product Name': 'Wireless Mouse MX',    'In Stock': 12, 'Reorder Level': 20 },
-        { 'Product Name': 'USB-C Hub Multi',      'In Stock': 14, 'Reorder Level': 15 },
-      ];
-      explanationText = `This query filters products in stock that are below their reorder threshold and are not discontinued, sorted by inventory count in ascending order.`;
+      cols = ['ID', 'Product Name', 'Category', 'In Stock', 'Reorder Level', 'Unit Price'];
+      res  = this.generateMockInventoryRows(60);
+      explanationText = `Identifies 60 active product stock items across hardware categories. Highlights unit inventory levels relative to reorder thresholds. Sorts results in ascending order to surface low-inventory items first.`;
 
     // Performance / Monthly
     } else if (
@@ -475,15 +496,20 @@ export class ChatQueryService {
         { Month: 'March',    OrdersCount: 195, SalesAmount: '$128,600' },
         { Month: 'April',    OrdersCount: 220, SalesAmount: '$145,800' },
       ];
-      explanationText = `This query aggregates orders count and total sales amount grouped by month to evaluate business performance trends.`;
+      explanationText = `Groups total completed orders and gross revenue by calendar month. Formats sales dates into human-readable month labels. Sorts chronologically by month to track revenue growth trends over time.`;
 
-    // Default
+    // Customer / Revenue / Default (Returns 65 Records for Pagination Testing)
     } else {
-      responseText    = '';
-      generatedSql    = '';
-      cols            = [];
-      res             = [];
-      explanationText = '';
+      responseText  = `Compiled high-volume accounts query returning 65 records for **${workspace.name}**.`;
+      generatedSql  =
+        `SELECT TOP 65\n` +
+        `  CustomerID, CustomerName, Country, AccountStatus, AnnualRevenue, LastOrderDate\n` +
+        `FROM Customers\n` +
+        `WHERE OrderDate >= '2026-01-01'\n` +
+        `ORDER BY AnnualRevenue DESC;`;
+      cols = ['ID', 'Customer', 'Country', 'Status', 'Revenue', 'Last Order Date'];
+      res  = this.generateMockCustomerRows(65);
+      explanationText = `Aggregates 65 customer accounts across international enterprise markets. Filters for active order logs recorded in the current fiscal year. Sorts client accounts by revenue performance in descending order.`;
     }
 
     const msg: ChatMessage = {
@@ -514,33 +540,13 @@ export class ChatQueryService {
     let result: QueryResult;
 
     if (
-      sqlLower.includes('customer') ||
-      sqlLower.includes('revenue')  ||
-      sqlLower.includes('country')
-    ) {
-      result = {
-        columns: ['Customer', 'Country', 'Revenue'],
-        results: [
-          { Customer: 'Acme Corp',          Country: 'United States', Revenue: '$245,000' },
-          { Customer: 'TechNova Solutions', Country: 'Canada',        Revenue: '$190,000' },
-          { Customer: 'FutureSoft Group',   Country: 'United Kingdom',Revenue: '$175,000' },
-          { Customer: 'GlobalTrade Inc',    Country: 'Germany',       Revenue: '$162,300' },
-          { Customer: 'Apex Industries',    Country: 'Australia',     Revenue: '$148,900' },
-        ],
-      };
-    } else if (
       sqlLower.includes('stock')    ||
       sqlLower.includes('product')  ||
       sqlLower.includes('inventory')
     ) {
       result = {
-        columns: ['Product Name', 'In Stock', 'Reorder Level'],
-        results: [
-          { 'Product Name': 'UltraMonitor 4K',     'In Stock': 3,  'Reorder Level': 10 },
-          { 'Product Name': 'Ergonomic Desk Chair', 'In Stock': 5,  'Reorder Level': 15 },
-          { 'Product Name': 'Wireless Mouse MX',    'In Stock': 12, 'Reorder Level': 20 },
-          { 'Product Name': 'USB-C Hub Multi',      'In Stock': 14, 'Reorder Level': 15 },
-        ],
+        columns: ['ID', 'Product Name', 'Category', 'In Stock', 'Reorder Level', 'Unit Price'],
+        results: this.generateMockInventoryRows(60),
       };
     } else if (
       sqlLower.includes('performance') ||
@@ -558,8 +564,8 @@ export class ChatQueryService {
       };
     } else {
       result = {
-        columns: [],
-        results: [],
+        columns: ['ID', 'Customer', 'Country', 'Status', 'Revenue', 'Last Order Date'],
+        results: this.generateMockCustomerRows(65),
       };
     }
 

@@ -18,6 +18,9 @@ export interface Workspace {
   databaseName?: string;
   username?: string;
   dbPassword?: string;
+  mongoUri?: string;
+  oracleService?: string;
+  sqlitePath?: string;
 }
 
 export interface UserWorkspace {
@@ -325,12 +328,15 @@ export class WorkspaceService {
       provider: mappedProvider,
       env: mappedEnv,
       lastAccessed: 'Recently',
-      host: item.ServerName ?? item.serverName ?? item.host ?? 'localhost',
-      port: item.Port?.toString() ?? item.port?.toString() ?? '1433',
+      host: (item.ServerName || item.serverName || item.host || '').trim() || 'localhost',
+      port: (item.Port || item.port || '').toString().trim() || (mappedProvider === 'MySQL' ? '3306' : mappedProvider === 'PostgreSQL' ? '5432' : mappedProvider === 'Oracle' ? '1521' : '1433'),
       databaseName: item.DatabaseName ?? item.databaseName ?? '',
       username: item.DatabaseUserName ?? item.databaseUserName
         ?? item.username ?? 'admin',
       dbPassword: item.dbPassword ?? item.password ?? 'admin',
+      mongoUri: item.mongoUri ?? item.MongoUri ?? '',
+      oracleService: item.oracleService ?? item.OracleService ?? '',
+      sqlitePath: item.sqlitePath ?? item.SqlitePath ?? '',
     };
   }
 
@@ -879,8 +885,8 @@ export class WorkspaceService {
           accessLevel: (w.accessLevel || 'User') as 'Admin' | 'User',
           tables: w.tables,
           schemas: w.schemas,
-          host: w.serverName ?? w.ServerName ?? w.host ?? '',
-          port: w.port?.toString() ?? w.Port?.toString() ?? '',
+          host: (w.serverName || w.ServerName || w.host || '').trim() || 'localhost',
+          port: (w.port || w.Port || '').toString().trim() || '1433',
           databaseName: w.databaseName ?? w.DatabaseName ?? '',
           username: w.databaseUserName ?? w.DatabaseUserName ?? w.username ?? '',
         }));

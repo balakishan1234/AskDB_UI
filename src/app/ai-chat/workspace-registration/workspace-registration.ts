@@ -85,11 +85,20 @@ export class WorkspaceRegistration {
     if (this.selectedDb === 'oracle') provider = 'Oracle';
     if (this.selectedDb === 'sqlite') provider = 'SQLite';
 
+    const hostValue = (this.host.trim() || this.serverName.trim()) || 'localhost';
+    const defaultPort = this.selectedDb === 'mysql' ? '3306' : this.selectedDb === 'postgres' ? '5432' : this.selectedDb === 'oracle' ? '1521' : '1433';
+    const portValue = this.port.trim() || defaultPort;
+
     const newWorkspace = {
       id: 'w_' + Date.now(),
       name: this.workspaceName.trim(),
       provider: provider,
       env: this.environment,
+      host: hostValue,
+      port: portValue,
+      databaseName: this.databaseName.trim(),
+      username: this.username.trim(),
+      dbPassword: this.password,
       tables: Math.floor(Math.random() * 100) + 15,
       schemas: Math.floor(Math.random() * 10) + 2,
       lastAccessed: 'Just now'

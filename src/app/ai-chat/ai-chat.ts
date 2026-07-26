@@ -268,6 +268,23 @@ export class AIChat implements OnInit, OnDestroy {
     this.workspaceService.setLastAccessed(normalized.id);
     this.restoreOrInitWorkspaceState(normalized);
 
+    // ✅ Fetch full details (host, port, databaseName, username, mongoUri, oracleService, etc.)
+    this.workspaceService.getWorkspaceDetails(normalized.id).subscribe({
+      next: details => {
+        const fullWs: Workspace = {
+          ...normalized,
+          ...details,
+          env:      this.workspaceService.mapEnvToFrontend(details.env)       || details.env || normalized.env,
+          provider: this.workspaceService.mapProviderToFrontend(details.provider) || details.provider || normalized.provider,
+        };
+        this.workspaceService.setSelectedWorkspace(fullWs);
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        console.warn('[AIChat] Failed to load full details for workspace:', err);
+      }
+    });
+
     // ✅ markForCheck ensures OnPush-compatible zones also update
     this.cdr.markForCheck();
   }

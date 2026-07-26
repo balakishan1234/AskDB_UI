@@ -597,7 +597,7 @@ export class AdminWorkspace implements OnInit {
       tables: this.createWsTables || 10,
       schemas: this.createWsSchemas || 1,
       host: this.createWsHost.trim() || 'localhost',
-      port: this.createWsPort.trim(),
+      port: this.createWsPort.trim() || (this.createWsProvider === 'MySQL' ? '3306' : this.createWsProvider === 'PostgreSQL' ? '5432' : this.createWsProvider === 'Oracle' ? '1521' : '1433'),
       databaseName:
         this.createWsDbName.trim() ||
         this.createWsName.toLowerCase().replace(/\s+/g, '_') + '_db',
@@ -696,7 +696,7 @@ export class AdminWorkspace implements OnInit {
       tables: this.createWsTables || 10,
       schemas: this.createWsSchemas || 1,
       host: this.createWsHost.trim() || 'localhost',
-      port: this.createWsPort.trim() || '1433',
+      port: this.createWsPort.trim() || (this.createWsProvider === 'MySQL' ? '3306' : this.createWsProvider === 'PostgreSQL' ? '5432' : this.createWsProvider === 'Oracle' ? '1521' : '1433'),
       databaseName:
         this.createWsDbName.trim() ||
         this.createWsName.toLowerCase().replace(/\s+/g, '_') + '_db',
@@ -892,6 +892,9 @@ export class AdminWorkspace implements OnInit {
             this.isVerifyingConnection = false;
             this.connectSuccess = true;
             this.showConnectModal = false;
+            if (this.connectingWorkspace) {
+              this.workspaceService.setSelectedWorkspace(this.connectingWorkspace);
+            }
             this.router.navigate(['/ai-chat'], {
               queryParams: { id: this.connectingWorkspace?.id }
             });
@@ -901,6 +904,9 @@ export class AdminWorkspace implements OnInit {
             this.isVerifyingConnection = false;
             this.connectSuccess = true;
             this.showConnectModal = false;
+            if (this.connectingWorkspace) {
+              this.workspaceService.setSelectedWorkspace(this.connectingWorkspace);
+            }
             this.router.navigate(['/ai-chat'], {
               queryParams: { id: this.connectingWorkspace?.id }
             });

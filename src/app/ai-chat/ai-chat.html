@@ -143,18 +143,22 @@
             <!-- Connection Details -->
             <div class="space-y-2 pt-3 border-t border-slate-100">
               <div class="flex justify-between items-center gap-2">
-                <span class="text-[9px] text-slate-400 font-black uppercase tracking-wider shrink-0">Host</span>
+                <span class="text-[9px] text-slate-400 font-black uppercase tracking-wider shrink-0">
+                  {{ selectedWorkspace.provider === 'MongoDB' ? 'URI' : selectedWorkspace.provider === 'SQLite' ? 'Path' : 'Host' }}
+                </span>
                 <span
                   class="font-mono font-bold text-[10px] text-slate-800 truncate max-w-35"
-                  [title]="selectedWorkspace.host || 'localhost'">
-                  {{ selectedWorkspace.host || 'localhost' }}
+                  [title]="selectedWorkspace.mongoUri || selectedWorkspace.sqlitePath || selectedWorkspace.host || 'localhost'">
+                  {{ selectedWorkspace.mongoUri || selectedWorkspace.sqlitePath || selectedWorkspace.host || 'localhost' }}
                 </span>
               </div>
               <div class="h-px bg-slate-100"></div>
               <div class="flex justify-between items-center gap-2">
-                <span class="text-[9px] text-slate-400 font-black uppercase tracking-wider shrink-0">Port</span>
-                <span class="font-mono font-bold text-[10px] text-slate-800">
-                  {{ selectedWorkspace.port || '—' }}
+                <span class="text-[9px] text-slate-400 font-black uppercase tracking-wider shrink-0">
+                  {{ selectedWorkspace.provider === 'Oracle' ? 'Service' : 'Port' }}
+                </span>
+                <span class="font-mono font-bold text-[10px] text-slate-800 truncate max-w-35" [title]="selectedWorkspace.oracleService || selectedWorkspace.port || '—'">
+                  {{ selectedWorkspace.oracleService || selectedWorkspace.port || '—' }}
                 </span>
               </div>
               <div class="h-px bg-slate-100"></div>
@@ -778,36 +782,12 @@
   </button>
 </div>
 
-                       <!-- Scrollable Content Wrapper -->
-<div class="relative rounded-xl border border-slate-200/70 bg-white shadow-sm overflow-hidden ring-1 ring-slate-100/50">
-
-  <!-- Top Gradient Overlay (Scroll Hint) -->
-  <div
-    *ngIf="msg.results.length > 10"
-    class="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-3 py-2 
-           bg-linear-to-b from-white via-white/90 to-transparent pointer-events-none">
-    
-    <!-- Left: Row count context -->
-    <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">
-      Showing {{ msg.results.length }} rows
-    </span>
-
-    <!-- Right: Scroll hint pill -->
-    <div class="flex items-center gap-1 bg-slate-800/75 backdrop-blur-md text-white 
-                text-[8px] font-bold px-2.5 py-1 rounded-full shadow-lg pointer-events-none">
-      <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"
-        viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-        class="animate-bounce">
-        <path d="M12 5v14M5 12l7 7 7-7"/>
-      </svg>
-      Scroll for more
-    </div>
-  </div>
+<!-- Scrollable Content Wrapper -->
+<div class="relative rounded-xl border border-slate-200/80 bg-white shadow-sm overflow-hidden p-3 space-y-3">
 
   <!-- Scrollable Area -->
   <div 
-    class="overflow-auto max-h-95 scroll-smooth
+    class="overflow-auto max-h-120 scroll-smooth
            scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300
            hover:scrollbar-thumb-slate-400">
 
@@ -863,20 +843,6 @@
       </div>
     </ng-container>
 
-  </div>
-
-  <!-- Bottom Fade (Scroll Continuation Hint) -->
-  <div
-    *ngIf="msg.results.length > 8"
-        class="absolute bottom-0 left-0 right-0 h-10 pointer-events-none rounded-b-xl
-          bg-linear-to-t from-white via-white/60 to-transparent">
-    
-    <!-- Subtle bottom center indicator -->
-    <div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 flex gap-0.5">
-      <span class="w-1 h-1 rounded-full bg-slate-300"></span>
-      <span class="w-1 h-1 rounded-full bg-slate-300"></span>
-      <span class="w-1 h-1 rounded-full bg-slate-300"></span>
-    </div>
   </div>
 
 </div>

@@ -809,23 +809,33 @@
               </div>
 
               <!-- Connection Details Grid -->
-              <div class="grid grid-cols-3 gap-0 divide-x divide-slate-200 p-0">
-                <div class="px-4 py-3 flex flex-col">
-                  <span class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-1">Engine</span>
-                  <span class="text-[10px] text-slate-800 font-bold uppercase tracking-wide">
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-0 divide-x divide-y sm:divide-y-0 divide-slate-200 p-0 border border-slate-200/80 rounded-xl bg-slate-50/50">
+                <div class="px-3.5 py-2.5 flex flex-col">
+                  <span class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-0.5">Engine</span>
+                  <span class="text-[10px] text-slate-800 font-bold uppercase tracking-wide truncate" [title]="connectingWorkspace.provider">
                     {{ connectingWorkspace.provider }}
                   </span>
                 </div>
-                <div class="px-4 py-3 flex flex-col">
-                  <span class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-1">Host</span>
-                  <span class="text-[10px] text-slate-800 font-mono font-bold truncate">
-                    {{ connectingWorkspace.host || 'localhost' }}
+                <div class="px-3.5 py-2.5 flex flex-col">
+                  <span class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-0.5">
+                    {{ connectingWorkspace.provider === 'MongoDB' ? 'URI' : connectingWorkspace.provider === 'SQLite' ? 'Path' : 'Host' }}
+                  </span>
+                  <span class="text-[10px] text-slate-800 font-mono font-bold truncate" [title]="connectingWorkspace.mongoUri || connectingWorkspace.sqlitePath || connectingWorkspace.host || 'localhost'">
+                    {{ connectingWorkspace.mongoUri || connectingWorkspace.sqlitePath || connectingWorkspace.host || 'localhost' }}
                   </span>
                 </div>
-                <div class="px-4 py-3 flex flex-col">
-                  <span class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-1">Port</span>
-                  <span class="text-[10px] text-slate-800 font-mono font-bold">
-                    {{ connectingWorkspace.port || '1433' }}
+                <div class="px-3.5 py-2.5 flex flex-col">
+                  <span class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-0.5">
+                    {{ connectingWorkspace.provider === 'Oracle' ? 'Service / Port' : 'Port' }}
+                  </span>
+                  <span class="text-[10px] text-slate-800 font-mono font-bold truncate" [title]="connectingWorkspace.oracleService || connectingWorkspace.port || '1433'">
+                    {{ connectingWorkspace.oracleService ? (connectingWorkspace.oracleService + ' (' + (connectingWorkspace.port || '1521') + ')') : (connectingWorkspace.port || '1433') }}
+                  </span>
+                </div>
+                <div class="px-3.5 py-2.5 flex flex-col">
+                  <span class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-0.5">Database / User</span>
+                  <span class="text-[10px] text-slate-800 font-mono font-bold truncate" [title]="(connectingWorkspace.databaseName || 'default_db') + ' (' + (connectingWorkspace.username || 'admin') + ')'">
+                    {{ connectingWorkspace.databaseName || 'default_db' }} ({{ connectingWorkspace.username || 'admin' }})
                   </span>
                 </div>
               </div>

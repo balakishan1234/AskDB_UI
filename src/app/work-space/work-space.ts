@@ -214,6 +214,9 @@ export class WorkSpace implements OnInit, OnDestroy { // ✅ Add OnDestroy
             this.isVerifyingConnection = false;
             this.connectSuccess = true;
             this.showConnectModal = false;
+            if (this.connectingWorkspace) {
+              this.workspaceService.setSelectedWorkspace(this.connectingWorkspace);
+            }
             this.router.navigate(['/ai-chat'], {
               queryParams: { id: this.connectingWorkspace?.id }
             });
@@ -223,6 +226,9 @@ export class WorkSpace implements OnInit, OnDestroy { // ✅ Add OnDestroy
             this.isVerifyingConnection = false;
             this.connectSuccess = true;
             this.showConnectModal = false;
+            if (this.connectingWorkspace) {
+              this.workspaceService.setSelectedWorkspace(this.connectingWorkspace);
+            }
             this.router.navigate(['/ai-chat'], {
               queryParams: { id: this.connectingWorkspace?.id }
             });
