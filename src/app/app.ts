@@ -7,15 +7,31 @@ import { SessionWarningComponent } from './session-warning/session-warning';
 import { SessionTimeoutService } from './services/session-timeout.service';
 import { filter, Subscription } from 'rxjs';
 
+import { NavbarComponent } from './public/components/navbar/navbar';
+import { FooterComponent } from './public/components/footer/footer';
+import { ChatbotComponent } from './public/components/chatbot/chatbot';
+import { CommandPaletteComponent } from './public/components/command-palette/command-palette';
+
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, MockConsole, SessionWarningComponent],
+  imports: [
+    RouterOutlet,
+    CommonModule,
+    MockConsole,
+    SessionWarningComponent,
+    NavbarComponent,
+    FooterComponent,
+    ChatbotComponent,
+    CommandPaletteComponent
+  ],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App implements OnInit, OnDestroy {
-  private isLoginPage = false;
+  isPublicPage = true;
+  isCommandPaletteOpen = false;
+  scrollProgress = 0;
   private routerSub!: Subscription;
 
   constructor(
@@ -28,17 +44,35 @@ export class App implements OnInit, OnDestroy {
     this.routerSub = this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
-      this.isLoginPage = event.urlAfterRedirects === '/login' || event.urlAfterRedirects === '/';
+      const url = event.urlAfterRedirects || event.url || '/';
+      const internalRoutes = ['/work-space', '/ai-chat', '/login'];
+      this.isPublicPage = !internalRoutes.some(r => url.startsWith(r));
     });
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll() {
+    const totalHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    if (totalHeight > 0) {
+      this.scrollProgress = Math.min(100, Math.max(0, (window.scrollY / totalHeight) * 100));
+    }
   }
 
   @HostListener('document:mousemove')
   @HostListener('document:keypress')
   @HostListener('document:click')
   onUserActivity() {
-    if (!this.isLoginPage) {
+    if (!this.isPublicPage) {
       this.sessionService.resetTimer();
     }
+  }
+
+  openCommandPalette(): void {
+    this.isCommandPaletteOpen = true;
+  }
+
+  closeCommandPalette(): void {
+    this.isCommandPaletteOpen = false;
   }
 
   ngOnDestroy() {

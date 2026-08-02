@@ -8,7 +8,8 @@ import { API_CONFIG } from '../config/api.config';
 import { ThemeService } from '../services/theme.service';
 import { SessionService } from '../services/session.service';
 import { MockConsoleService } from '../services/mock-console.service';
-import { SessionTimeoutService } from '../services/session-timeout.service'; // ✅ Add this
+import { SessionTimeoutService } from '../services/session-timeout.service';
+import { AccessRequestService, AccessRequest } from '../services/access-request.service';
 
 @Component({
   selector: 'app-admin-workspace',
@@ -30,8 +31,19 @@ export class AdminWorkspace implements OnInit {
   users: AppUser[] = [];
   selectedUser: AppUser | null = null;
   adminUserSearch: string = '';
-  activeAdminView: 'users' | 'workspaces' | 'my-workspaces' = 'workspaces';
+  activeAdminView: 'users' | 'workspaces' | 'my-workspaces' | 'requests' = 'workspaces';
   globalWorkspaces: any[] = [];
+
+  // Access Requests Tab Variables
+  requestSearchQuery: string = '';
+  requestTabFilter: 'Pending' | 'Approved' | 'Rejected' | 'Expired' | 'All' = 'Pending';
+  selectedAccessRequest: AccessRequest | null = null;
+  showRequestDetailsModal: boolean = false;
+  showRejectModal: boolean = false;
+  rejectionReasonInput: string = '';
+  showEmailTemplateModal: boolean = false;
+  previewEmailType: 'request_received' | 'new_admin_notification' | 'approved' | 'rejected' | 'welcome' | 'password_reset' = 'approved';
+  previewEmailHtml: string = '';
 
   // My Workspaces Tab Variables
   myWorkspaces: Workspace[] = [];
@@ -117,7 +129,8 @@ export class AdminWorkspace implements OnInit {
     public themeService: ThemeService,
     private mockConsoleService: MockConsoleService,
     private cdr: ChangeDetectorRef,
-    private sessionTimeoutService: SessionTimeoutService // ✅ Add this
+    private sessionTimeoutService: SessionTimeoutService,
+    public accessRequestService: AccessRequestService
   ) {}
 
   ngOnInit(): void {
@@ -147,7 +160,7 @@ export class AdminWorkspace implements OnInit {
     });
   }
 
-  setActiveAdminView(view: 'users' | 'workspaces' | 'my-workspaces'): void {
+  setActiveAdminView(view: 'users' | 'workspaces' | 'my-workspaces' | 'requests'): void {
     this.activeAdminView = view;
     if (view === 'workspaces') {
       this.loadWorkspaceRegistry();
@@ -968,5 +981,100 @@ export class AdminWorkspace implements OnInit {
 
   goToHome(): void {
     this.router.navigate(['/']);
+  }
+
+  // --- Access Requests Handlers ---
+  get filteredAccessRequests(): AccessRequest[] {
+    let list = this.accessRequestService.getRequests();
+    if (this.requestTabFilter !== 'All') {
+      list = list.filter(r => r.status === this.requestTabFilter);
+    }
+    if (this.requestSearchQuery.trim()) {
+      const q = this.requestSearchQuery.toLowerCase();
+      list = list.filter(r =>
+        r.name.toLowerCase().includes(q) ||
+        r.email.toLowerCase().includes(q) ||
+        r.company.toLowerCase().includes(q) ||
+        r.id.toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }
+
+  get pendingAccessRequestsCount(): number {
+    return this.accessRequestService.getStats().pending;
+  }
+
+  viewAccessRequestDetails(req: AccessRequest): void {
+    this.selectedAccessRequest = req;
+    this.showRequestDetailsModal = true;
+  }
+
+  closeAccessRequestDetails(): void {
+    this.showRequestDetailsModal = false;
+    this.selectedAccessRequest = null;
+  }
+
+  approveAccessRequest(req: AccessRequest): void {
+    const updated = this.accessRequestService.updateStatus(req.id, 'Approved', undefined, `${this.userName} (${this.userEmail})`);
+    if (updated) {
+      const existingUser = this.users.find(u => u.email.toLowerCase() === req.email.toLowerCase());
+      if (!existingUser) {
+        const newUser: AppUser = {
+          id: `usr-${Date.now()}`,
+          name: req.name,
+          email: req.email,
+          workspaces: []
+        };
+        this.users.unshift(newUser);
+      }
+
+      this.toastMessage = `Approved access for ${req.name}. Credentials generated!`;
+      this.toastState = 'success';
+      setTimeout(() => {
+        this.toastMessage = null;
+        this.toastState = null;
+      }, 3000);
+
+      this.previewEmailTemplate('approved', updated);
+    }
+  }
+
+  promptRejectAccessRequest(req: AccessRequest): void {
+    this.selectedAccessRequest = req;
+    this.rejectionReasonInput = '';
+    this.showRejectModal = true;
+  }
+
+  confirmRejectAccessRequest(): void {
+    if (!this.selectedAccessRequest) return;
+    const reason = this.rejectionReasonInput.trim() || 'Could not verify employment or security clearance.';
+    const updated = this.accessRequestService.updateStatus(this.selectedAccessRequest.id, 'Rejected', reason, `${this.userName} (${this.userEmail})`);
+    
+    this.showRejectModal = false;
+    this.toastMessage = `Rejected request ${this.selectedAccessRequest.id}`;
+    this.toastState = 'success';
+    setTimeout(() => {
+      this.toastMessage = null;
+      this.toastState = null;
+    }, 2500);
+
+    if (updated) {
+      this.previewEmailTemplate('rejected', updated);
+    }
+  }
+
+  previewEmailTemplate(type: 'request_received' | 'new_admin_notification' | 'approved' | 'rejected' | 'welcome' | 'password_reset', req?: AccessRequest): void {
+    const targetData = req || this.selectedAccessRequest || {
+      name: 'Sarah Jenkins',
+      email: 'sarah.jenkins@acmeenterprise.com',
+      company: 'Acme Enterprise',
+      department: 'Data Analytics',
+      whyAccess: 'Quarterly Q3 audit reporting access required.'
+    };
+
+    this.previewEmailType = type;
+    this.previewEmailHtml = this.accessRequestService.getEmailTemplateHtml(type, targetData);
+    this.showEmailTemplateModal = true;
   }
 }

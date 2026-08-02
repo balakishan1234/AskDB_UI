@@ -1,0 +1,74 @@
+<footer class="bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800 transition-colors">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
+
+      <!-- Brand & Mission -->
+      <div class="lg:col-span-2 space-y-4">
+        <div class="flex items-center gap-2">
+          <div
+            class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-md">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+            </svg>
+          </div>
+          <span class="text-xl font-bold text-slate-900 dark:text-white font-display">Ask<span class="text-blue-600 dark:text-blue-500">DB</span></span>
+          <span
+            class="text-[10px] font-bold text-cyan-700 dark:text-cyan-400 bg-cyan-100 dark:bg-cyan-950/80 border border-cyan-300 dark:border-cyan-800 px-2 py-0.5 rounded-full">v2.0.0</span>
+        </div>
+        <p class="text-sm text-slate-600 dark:text-slate-400 max-w-sm leading-relaxed">
+          The enterprise-grade natural language database intelligence platform. Security-first architecture with manual
+          administrator approval workflows.
+        </p>
+        <div class="flex items-center gap-3 pt-1">
+          <a routerLink="/status"
+            class="inline-flex items-center gap-2 text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100/80 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 px-3 py-1.5 rounded-full hover:bg-emerald-200/80 dark:hover:bg-emerald-900/60 transition-colors">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
+            <span>All Systems Operational</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Navigation Columns -->
+      <div>
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200 mb-4">Product</h3>
+        <ul class="space-y-2.5 text-sm">
+          <li><a routerLink="/features" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Features</a></li>
+          <li><a routerLink="/pricing" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Pricing & Plans</a></li>
+          <li><a routerLink="/request-access" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Request Access</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200 mb-4">Governance</h3>
+        <ul class="space-y-2.5 text-sm">
+          <li><a routerLink="/security" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Security Architecture</a></li>
+          <li><a routerLink="/privacy" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy Policy</a></li>
+          <li><a routerLink="/terms" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms of Service</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200 mb-4">Company</h3>
+        <ul class="space-y-2.5 text-sm">
+          <li><a routerLink="/about" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About AskDB</a></li>
+          <li><a routerLink="/contact" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Contact Enterprise</a></li>
+          <li><a routerLink="/status" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">System Status</a></li>
+          <li><a routerLink="/login" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Admin Sign In</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Bottom Bar -->
+    <div
+      class="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800/80 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
+      <p>© {{ currentYear }} AskDB Inc. All rights reserved. Zero Self-Registration Policy Enforced.</p>
+      <div class="flex items-center gap-6">
+        <a routerLink="/privacy" class="hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Privacy</a>
+        <a routerLink="/terms" class="hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Terms</a>
+        <a routerLink="/contact" class="hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>

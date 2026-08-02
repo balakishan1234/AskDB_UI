@@ -281,6 +281,32 @@
         {{ myWorkspaces.length }}
       </span>
     </button>
+
+    <!-- Access Requests Tab -->
+    <button (click)="setActiveAdminView('requests')"
+      class="relative group flex items-center gap-2 py-3 px-5 text-xs font-bold cursor-pointer transition-all duration-200 rounded-t-xl"
+      [class.text-blue-600]="activeAdminView === 'requests'"
+      [class.bg-white]="activeAdminView === 'requests'"
+      [class.border]="activeAdminView === 'requests'"
+      [class.border-b-white]="activeAdminView === 'requests'"
+      [class.border-slate-200]="activeAdminView === 'requests'"
+      [class.-mb-px]="activeAdminView === 'requests'"
+      [class.shadow-sm]="activeAdminView === 'requests'"
+      [class.text-slate-500]="activeAdminView !== 'requests'"
+      [class.hover:text-slate-700]="activeAdminView !== 'requests'"
+      [class.hover:bg-slate-50]="activeAdminView !== 'requests'">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="8.5" cy="7" r="4" />
+        <polyline points="17 11 19 13 23 9" />
+      </svg>
+      Access Requests
+      <span *ngIf="pendingAccessRequestsCount > 0"
+        class="ml-1 inline-flex items-center justify-center h-4 px-1.5 rounded-full text-[8px] font-black bg-amber-500 text-white animate-pulse">
+        {{ pendingAccessRequestsCount }}
+      </span>
+    </button>
   </div>
 
   <!-- ================================================================ -->
@@ -1506,7 +1532,289 @@
     </div>
   </div>
 
-<!-- Create / Update Global Workspace Modal -->
+  <!-- ================================================================ -->
+  <!-- ACCESS REQUESTS VIEW                                             -->
+  <!-- ================================================================ -->
+  <div class="flex flex-col gap-6" *ngIf="activeAdminView === 'requests'">
+    
+    <!-- Top Filter & Search Control Header -->
+    <div class="bg-white border border-slate-200/80 shadow-md rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      
+      <!-- Sub-Tabs: Pending, Approved, Rejected, Expired, All -->
+      <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+        <button
+          *ngFor="let tab of ['Pending', 'Approved', 'Rejected', 'Expired', 'All']"
+          (click)="requestTabFilter = $any(tab)"
+          type="button"
+          [class.bg-white]="requestTabFilter === tab"
+          [class.text-blue-600]="requestTabFilter === tab"
+          [class.shadow-xs]="requestTabFilter === tab"
+          [class.text-slate-600]="requestTabFilter !== tab"
+          class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+        >
+          <span>{{ tab }}</span>
+          <span 
+            *ngIf="tab === 'Pending' && pendingAccessRequestsCount > 0"
+            class="px-1.5 py-0.2 rounded-full text-[9px] bg-amber-500 text-white font-extrabold"
+          >
+            {{ pendingAccessRequestsCount }}
+          </span>
+        </button>
+      </div>
+
+      <!-- Search & Quick Action -->
+      <div class="flex items-center gap-3">
+        <div class="relative min-w-[240px]">
+          <input
+            [(ngModel)]="requestSearchQuery"
+            placeholder="Search by name, email, company..."
+            class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-medium"
+          />
+          <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+
+        <button
+          (click)="previewEmailTemplate('request_received')"
+          type="button"
+          class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold border border-slate-200 transition-colors flex items-center gap-1.5 cursor-pointer"
+        >
+          <span>✉️ Preview Branded Email Templates</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Requests Table List -->
+    <div class="bg-white border border-slate-200/80 shadow-md rounded-2xl overflow-hidden">
+      
+      <div *ngIf="filteredAccessRequests.length === 0" class="p-12 text-center text-slate-400 space-y-2">
+        <p class="text-sm font-bold text-slate-600">No {{ requestTabFilter }} Access Requests Found</p>
+        <p class="text-xs text-slate-400">All incoming employee requests will appear here for manual administrator review.</p>
+      </div>
+
+      <div *ngIf="filteredAccessRequests.length > 0" class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-50/80 border-b border-slate-200 text-[10px] uppercase tracking-wider text-slate-400 font-extrabold">
+              <th class="py-3.5 px-5">Ref ID & Requester</th>
+              <th class="py-3.5 px-5">Organization & Role</th>
+              <th class="py-3.5 px-5">Requested Purposes</th>
+              <th class="py-3.5 px-5">Status</th>
+              <th class="py-3.5 px-5">Requested Date</th>
+              <th class="py-3.5 px-5 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-xs">
+            <tr *ngFor="let req of filteredAccessRequests" class="hover:bg-slate-50/60 transition-colors">
+              
+              <!-- Ref ID & Requester -->
+              <td class="py-4 px-5">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 font-bold flex items-center justify-center border border-blue-100 text-xs shrink-0">
+                    {{ req.name.slice(0, 2).toUpperCase() }}
+                  </div>
+                  <div>
+                    <span class="font-bold text-slate-900 block">{{ req.name }}</span>
+                    <span class="text-[11px] text-blue-600 font-mono">{{ req.email }}</span>
+                    <span class="block text-[9px] text-slate-400 font-mono">Ref: {{ req.id }}</span>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Organization & Role -->
+              <td class="py-4 px-5">
+                <span class="font-semibold text-slate-800 block">{{ req.company }}</span>
+                <span class="text-[11px] text-slate-500 block">{{ req.department }} ({{ req.jobRole }})</span>
+                <span *ngIf="req.employeeId" class="text-[10px] text-slate-400">ID: {{ req.employeeId }}</span>
+              </td>
+
+              <!-- Requested Purposes -->
+              <td class="py-4 px-5 max-w-xs">
+                <div class="flex flex-wrap gap-1 mb-1">
+                  <span *ngFor="let p of req.purposes" class="px-2 py-0.5 text-[9px] font-bold bg-slate-100 text-slate-700 rounded border border-slate-200">
+                    {{ p }}
+                  </span>
+                </div>
+                <p class="text-[11px] text-slate-500 italic truncate" [title]="req.whyAccess">"{{ req.whyAccess }}"</p>
+              </td>
+
+              <!-- Status -->
+              <td class="py-4 px-5">
+                <span
+                  [class.bg-amber-50]="req.status === 'Pending'"
+                  [class.text-amber-700]="req.status === 'Pending'"
+                  [class.border-amber-200]="req.status === 'Pending'"
+                  [class.bg-emerald-50]="req.status === 'Approved'"
+                  [class.text-emerald-700]="req.status === 'Approved'"
+                  [class.border-emerald-200]="req.status === 'Approved'"
+                  [class.bg-red-50]="req.status === 'Rejected'"
+                  [class.text-red-700]="req.status === 'Rejected'"
+                  [class.border-red-200]="req.status === 'Rejected'"
+                  class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider border"
+                >
+                  <span 
+                    [class.bg-amber-500]="req.status === 'Pending'"
+                    [class.bg-emerald-500]="req.status === 'Approved'"
+                    [class.bg-red-500]="req.status === 'Rejected'"
+                    class="w-1.5 h-1.5 rounded-full"
+                  ></span>
+                  {{ req.status }}
+                </span>
+              </td>
+
+              <!-- Requested Date -->
+              <td class="py-4 px-5 text-[11px] text-slate-500">
+                <span>{{ req.requestedOn | date:'short' }}</span>
+                <span *ngIf="req.approvedBy" class="block text-[9px] text-slate-400 truncate">By: {{ req.approvedBy }}</span>
+              </td>
+
+              <!-- Actions -->
+              <td class="py-4 px-5 text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <button
+                    (click)="viewAccessRequestDetails(req)"
+                    type="button"
+                    class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-[11px] transition-colors cursor-pointer"
+                  >
+                    Details
+                  </button>
+
+                  <button
+                    *ngIf="req.status === 'Pending'"
+                    (click)="approveAccessRequest(req)"
+                    type="button"
+                    class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-sm transition-colors cursor-pointer"
+                  >
+                    ✓ Approve
+                  </button>
+
+                  <button
+                    *ngIf="req.status === 'Pending'"
+                    (click)="promptRejectAccessRequest(req)"
+                    type="button"
+                    class="px-2.5 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 font-bold text-[11px] transition-colors cursor-pointer"
+                  >
+                    ✕ Reject
+                  </button>
+                </div>
+              </td>
+
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Access Request Details Modal -->
+  <div *ngIf="showRequestDetailsModal && selectedAccessRequest" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fade-in">
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-xl w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+          <h3 class="font-bold text-base text-slate-900">Access Request Details</h3>
+          <p class="text-xs text-slate-400 font-mono">Ref: {{ selectedAccessRequest.id }}</p>
+        </div>
+        <button (click)="closeAccessRequestDetails()" class="p-1 text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl">
+          <div><span class="text-slate-400">Requester:</span> <strong class="text-slate-900 block">{{ selectedAccessRequest.name }}</strong></div>
+          <div><span class="text-slate-400">Corporate Email:</span> <strong class="text-blue-600 block">{{ selectedAccessRequest.email }}</strong></div>
+          <div><span class="text-slate-400">Company:</span> <strong class="text-slate-900 block">{{ selectedAccessRequest.company }}</strong></div>
+          <div><span class="text-slate-400">Department:</span> <strong class="text-slate-900 block">{{ selectedAccessRequest.department }}</strong></div>
+        </div>
+
+        <div>
+          <span class="text-slate-400 font-semibold block mb-1">Business Justification:</span>
+          <p class="p-3 bg-slate-50 rounded-xl text-slate-700 italic">"{{ selectedAccessRequest.whyAccess }}"</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 text-[11px] text-slate-500">
+          <div>IP Address: <code class="bg-slate-100 px-1.5 py-0.5 rounded font-mono">{{ selectedAccessRequest.ipAddress || '198.51.100.42' }}</code></div>
+          <div>Browser: <code class="bg-slate-100 px-1.5 py-0.5 rounded font-mono">{{ selectedAccessRequest.browser || 'Chrome' }}</code></div>
+        </div>
+
+        <div *ngIf="selectedAccessRequest.rejectedReason" class="p-3 bg-red-50 rounded-xl text-red-600 text-xs">
+          <strong>Rejection Reason:</strong> {{ selectedAccessRequest.rejectedReason }}
+        </div>
+      </div>
+
+      <div class="pt-2 flex justify-end gap-2">
+        <button (click)="closeAccessRequestDetails()" class="px-4 py-2 bg-slate-100 text-slate-700 font-bold rounded-xl text-xs">Close</button>
+        <button *ngIf="selectedAccessRequest.status === 'Pending'" (click)="approveAccessRequest(selectedAccessRequest); closeAccessRequestDetails();" class="px-4 py-2 bg-emerald-600 text-white font-bold rounded-xl text-xs">✓ Approve Access</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rejection Reason Modal -->
+  <div *ngIf="showRejectModal && selectedAccessRequest" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fade-in">
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full p-6 space-y-4">
+      <h3 class="font-bold text-base text-slate-900">Reject Access Request</h3>
+      <p class="text-xs text-slate-500">Specify why request {{ selectedAccessRequest.id }} for <strong>{{ selectedAccessRequest.name }}</strong> is being rejected.</p>
+
+      <textarea [(ngModel)]="rejectionReasonInput" rows="3" placeholder="Enter rejection reason (sent to user)..." class="w-full modern-input rounded-xl p-3 text-xs"></textarea>
+
+      <div class="flex justify-end gap-2">
+        <button (click)="showRejectModal = false" class="px-4 py-2 bg-slate-100 text-slate-700 font-bold rounded-xl text-xs">Cancel</button>
+        <button (click)="confirmRejectAccessRequest()" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl text-xs">Confirm Rejection</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Template Preview Modal -->
+  <div *ngIf="showEmailTemplateModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur-md p-4 animate-fade-in">
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+      
+      <!-- Template Selector Header -->
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-bold font-display">Branded HTML Email Template Previewer</span>
+        </div>
+        <button (click)="showEmailTemplateModal = false" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <!-- Template Selector Pills -->
+      <div class="px-6 py-3 bg-slate-800 border-b border-slate-700 flex items-center gap-2 overflow-x-auto text-xs">
+        <button
+          *ngFor="let t of [
+            { type: 'request_received', label: '1. Request Received' },
+            { type: 'new_admin_notification', label: '2. Admin Alert' },
+            { type: 'approved', label: '3. Approved' },
+            { type: 'rejected', label: '4. Rejected' },
+            { type: 'welcome', label: '5. Welcome' },
+            { type: 'password_reset', label: '6. Password Reset' }
+          ]"
+          (click)="previewEmailTemplate($any(t.type))"
+          type="button"
+          [class.bg-blue-600]="previewEmailType === t.type"
+          [class.text-white]="previewEmailType === t.type"
+          [class.bg-slate-700]="previewEmailType !== t.type"
+          [class.text-slate-300]="previewEmailType !== t.type"
+          class="px-3 py-1 rounded-lg font-medium whitespace-nowrap transition-colors cursor-pointer"
+        >
+          {{ t.label }}
+        </button>
+      </div>
+
+      <!-- Live Email HTML Preview Container -->
+      <div class="flex-1 p-6 overflow-y-auto bg-slate-950">
+        <div [innerHTML]="previewEmailHtml"></div>
+      </div>
+
+      <div class="px-6 py-3 bg-slate-100 border-t border-slate-200 flex justify-between items-center text-xs">
+        <span class="text-slate-500">All email templates feature responsive inline HTML/CSS styling.</span>
+        <button (click)="showEmailTemplateModal = false" class="px-4 py-2 bg-slate-900 text-white font-bold rounded-xl">Done</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Create / Update Global Workspace Modal -->
 <div
   *ngIf="showCreateWsModal"
   class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4 py-6 animate-fade-in"

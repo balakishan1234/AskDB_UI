@@ -1,10 +1,31 @@
-<!-- ✅ Router outlet first -->
-<router-outlet></router-outlet>
+<!-- Scroll Progress Indicator Bar -->
+<div *ngIf="isPublicPage" class="fixed top-0 left-0 right-0 h-1 bg-transparent z-50 pointer-events-none">
+  <div class="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 transition-all duration-150 ease-out" [style.width.%]="scrollProgress"></div>
+</div>
 
-<!-- ✅ Mock console -->
+<!-- Global Public Header Navbar -->
+<app-navbar *ngIf="isPublicPage" (openCommandPalette)="openCommandPalette()"></app-navbar>
+
+<!-- Main Router Outlet -->
+<div class="min-h-screen flex flex-col justify-between">
+  <main class="flex-grow">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Global Public Footer -->
+  <app-footer *ngIf="isPublicPage"></app-footer>
+</div>
+
+<!-- Frontend AI Assistant Chatbot -->
+<app-chatbot *ngIf="isPublicPage"></app-chatbot>
+
+<!-- Command Palette (Ctrl+K) Modal -->
+<app-command-palette [isOpen]="isCommandPaletteOpen" (close)="closeCommandPalette()"></app-command-palette>
+
+<!-- Mock Console -->
 @if (mockConsoleService.isOpen()) {
   <app-mock-console></app-mock-console>
 }
 
-<!-- ✅ Session warning LAST - renders above everything -->
+<!-- Session Warning (Internal Workspaces) -->
 <app-session-warning></app-session-warning>
