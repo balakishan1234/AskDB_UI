@@ -19,6 +19,8 @@ export interface ChatMessage {
   isEdited?: boolean;
   isExecuting?: boolean;
   explanation?: string;
+  keyFinding?: string;
+  summary?: string;
 
   // Result fields
   columns?: string[];
@@ -336,6 +338,8 @@ export class ChatQueryService {
             isExecuting: false,
             isEdited:    false,
             explanation: response.explanation ?? response.Explanation ?? '',
+            keyFinding:  response.keyFinding  ?? response.key_finding ?? response.KeyFinding ?? '',
+            summary:     response.summary     ?? response.Summary     ?? response.explanation ?? response.Explanation ?? '',
             input:       response.input       ?? text,
           };
 
@@ -456,6 +460,8 @@ export class ChatQueryService {
     let cols: string[] = [];
     let res: Array<Record<string, string | number>> = [];
     let explanationText = '';
+    let keyFindingText = '';
+    let summaryText = '';
 
     // Stock / Inventory
     if (
@@ -472,7 +478,9 @@ export class ChatQueryService {
         `ORDER BY UnitsInStock ASC;`;
       cols = ['ID', 'Product Name', 'Category', 'In Stock', 'Reorder Level', 'Unit Price'];
       res  = this.generateMockInventoryRows(60);
-      explanationText = `Identifies 60 active product stock items across hardware categories. Highlights unit inventory levels relative to reorder thresholds. Sorts results in ascending order to surface low-inventory items first.`;
+      keyFindingText = `14 out of 60 hardware inventory items fall below their minimum reorder thresholds, with UltraMonitor 4K Pro having the lowest available inventory at 4 units.`;
+      summaryText = `This query evaluates 60 active product stock items across five core hardware categories, automatically filtering out discontinued products. Results are sorted in ascending order of unit inventory to surface critical low-stock items at the top of the dataset. This operational breakdown enables inventory teams to rapidly identify reorder requirements and avoid supply shortages.`;
+      explanationText = summaryText;
 
     // Performance / Monthly
     } else if (
@@ -496,7 +504,9 @@ export class ChatQueryService {
         { Month: 'March',    OrdersCount: 195, SalesAmount: '$128,600' },
         { Month: 'April',    OrdersCount: 220, SalesAmount: '$145,800' },
       ];
-      explanationText = `Groups total completed orders and gross revenue by calendar month. Formats sales dates into human-readable month labels. Sorts chronologically by month to track revenue growth trends over time.`;
+      keyFindingText = `Monthly sales revenue demonstrated strong upward growth of 63%, scaling from $89,450 in January to $145,800 in April across 725 total completed orders.`;
+      summaryText = `This performance aggregation calculates total completed orders and gross sales revenue grouped by calendar month. Transaction dates are formatted into human-readable monthly labels and sorted chronologically to track quarterly growth trajectories and customer purchase trends over time.`;
+      explanationText = summaryText;
 
     // Customer / Revenue / Default (Returns 65 Records for Pagination Testing)
     } else {
@@ -509,7 +519,9 @@ export class ChatQueryService {
         `ORDER BY AnnualRevenue DESC;`;
       cols = ['ID', 'Customer', 'Country', 'Status', 'Revenue', 'Last Order Date'];
       res  = this.generateMockCustomerRows(65);
-      explanationText = `Aggregates 65 customer accounts across international enterprise markets. Filters for active order logs recorded in the current fiscal year. Sorts client accounts by revenue performance in descending order.`;
+      keyFindingText = `Enterprise revenue is concentrated heavily among top-tier client accounts, led by Acme Corp ($447,500) and TechNova Industries ($422,000).`;
+      summaryText = `This dataset aggregates 65 active customer accounts across international enterprise markets recorded in the current fiscal year. Client records are filtered for active account status and sorted in descending order by annual revenue performance to surface primary enterprise relationships and account performance metrics.`;
+      explanationText = summaryText;
     }
 
     const msg: ChatMessage = {
@@ -524,6 +536,8 @@ export class ChatQueryService {
       isExecuting: false,
       isEdited:    false,
       explanation: explanationText,
+      keyFinding:  keyFindingText,
+      summary:     summaryText,
       input:       text,
     };
 
