@@ -835,6 +835,8 @@
             [columns]="msg.columns || []"
             [results]="msg.results || []"
             [explanation]="msg.explanation || ''"
+            [summary]="msg.summary || msg.explanation || ''"
+            [keyFinding]="msg.keyFinding || ''"
             [userQuestion]="msg.input || msg.text || ''">
           </app-query-summary>
 

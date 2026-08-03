@@ -27,7 +27,13 @@ export class QuerySummary implements OnChanges {
   /** The user's original natural-language question */
   @Input() userQuestion?: string;
 
-  /** AI-generated explanation of the query */
+  /** Key analytical finding / takeaway */
+  @Input() keyFinding?: string;
+
+  /** Detailed AI summary text in paragraph format */
+  @Input() summary?: string;
+
+  /** AI-generated explanation of the query (fallback for summary) */
   @Input() explanation?: string;
 
   /** Column names from the result set */
@@ -38,13 +44,13 @@ export class QuerySummary implements OnChanges {
 
   // ── Derived state ──────────────────────────────────────────────────────────
 
-  columnStats:         ColumnStat[] = [];
-  totalRows:           number       = 0;
-  totalColumns:        number       = 0;
-  numericColumns:      ColumnStat[] = [];
-  stringColumns:       ColumnStat[] = [];
-  explanationPoints:  string[]     = [];
-  overallDataHealth:   number       = 100;
+  columnStats:       ColumnStat[] = [];
+  totalRows:         number       = 0;
+  totalColumns:      number       = 0;
+  numericColumns:    ColumnStat[] = [];
+  stringColumns:     ColumnStat[] = [];
+  summaryParagraphs: string[]     = [];
+  overallDataHealth: number       = 100;
 
   // ── Lifecycle ──────────────────────────────────────────────────────────────
 
@@ -52,47 +58,67 @@ export class QuerySummary implements OnChanges {
     if (
       changes['results']     ||
       changes['columns']     ||
-      changes['explanation']
+      changes['explanation'] ||
+      changes['summary']     ||
+      changes['keyFinding']
     ) {
       this.computeStats();
-      this.computeExplanationPoints();
+      this.computeSummaryParagraphs();
     }
   }
 
-  // ── Explanation Breakdown ─────────────────────────────────────────────────
+  // ── Key Finding Getter ──────────────────────────────────────────────────────
 
-  private computeExplanationPoints(): void {
-    if (!this.explanation || !this.explanation.trim()) {
-      this.explanationPoints = [];
+  get effectiveKeyFinding(): string {
+    if (this.keyFinding && this.keyFinding.trim()) {
+      return this.keyFinding.trim();
+    }
+    // Dynamic fallback key finding if results exist
+    if (this.results?.length && this.columns?.length) {
+      return `Identified ${this.totalRows} record${this.totalRows === 1 ? '' : 's'} across ${this.totalColumns} database field${this.totalColumns === 1 ? '' : 's'}.`;
+    }
+    return '';
+  }
+
+  // ── Paragraph Format Breakdown (NO BULLETS) ───────────────────────────────
+
+  private computeSummaryParagraphs(): void {
+    const raw = (this.summary || this.explanation || '').trim();
+    if (!raw) {
+      this.summaryParagraphs = [];
       return;
     }
 
-    const raw = this.explanation.trim();
+    // Strip bullet point markers (1., -, *, •) from lines if present
+    const cleanedText = raw
+      .split(/\r?\n/)
+      .map(line => line.replace(/^[•\-\*\d+\.\s]+/, '').trim())
+      .filter(line => line.length > 0)
+      .join(' ');
 
-    // 1. If explanation has explicit newlines or list items
-    if (raw.includes('\n') || /[•\-\*\d+\.]/.test(raw)) {
-      const lines = raw
-        .split(/\r?\n/)
-        .map(line => line.replace(/^[•\-\*\d+\.\s]+/, '').trim())
-        .filter(line => line.length > 0);
-
-      if (lines.length > 1) {
-        this.explanationPoints = lines;
-        return;
-      }
-    }
-
-    // 2. If single paragraph, split by sentence ends (. , ; ) if paragraph is multi-sentence
-    const sentences = raw
-      .split(/(?<=\.|\;)\s+/)
+    // Group into readable paragraphs (split on double spaces, clear stops or multi-sentence blocks)
+    const sentences = cleanedText
+      .split(/(?<=\.)\s+/)
       .map(s => s.trim())
       .filter(s => s.length > 0);
 
-    if (sentences.length > 1) {
-      this.explanationPoints = sentences;
-    } else {
-      this.explanationPoints = [raw];
+    if (sentences.length <= 2) {
+      this.summaryParagraphs = [cleanedText];
+      return;
     }
+
+    // Combine 2-3 sentences into readable paragraphs
+    const paragraphs: string[] = [];
+    let currentPara = '';
+    sentences.forEach((s, idx) => {
+      currentPara = currentPara ? `${currentPara} ${s}` : s;
+      if ((idx + 1) % 2 === 0 || idx === sentences.length - 1) {
+        paragraphs.push(currentPara);
+        currentPara = '';
+      }
+    });
+
+    this.summaryParagraphs = paragraphs.length > 0 ? paragraphs : [cleanedText];
   }
 
   // ── Stats computation ──────────────────────────────────────────────────────
