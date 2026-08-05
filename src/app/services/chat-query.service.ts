@@ -325,6 +325,8 @@ export class ChatQueryService {
             response.query        ??
             '';
 
+          const mapped = this.mapQueryResponse(response);
+
           let rawExplanation = response.explanation ?? response.Explanation;
           let execSummary = '';
           let keyFindingsList: string[] = [];
