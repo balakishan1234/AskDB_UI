@@ -24,17 +24,28 @@ export class QuerySummary implements OnChanges {
 
   // ── Inputs ─────────────────────────────────────────────────────────────────
 
+  // ── Inputs ─────────────────────────────────────────────────────────────────
+
   /** The user's original natural-language question */
   @Input() userQuestion?: string;
 
-  /** Key analytical finding / takeaway */
+  /** Executive summary text */
+  @Input() executiveSummary?: string;
+
+  /** Key findings list (array of strings or single string) */
+  @Input() keyFindings?: string[] | string;
+
+  /** Final analytical conclusion text */
+  @Input() conclusion?: string;
+
+  /** Key analytical finding / takeaway (legacy fallback) */
   @Input() keyFinding?: string;
 
   /** Detailed AI summary text in paragraph format */
   @Input() summary?: string;
 
-  /** AI-generated explanation of the query (fallback for summary) */
-  @Input() explanation?: string;
+  /** AI-generated explanation of the query (object or string) */
+  @Input() explanation?: any;
 
   /** Column names from the result set */
   @Input() columns: string[] = [];
@@ -44,38 +55,115 @@ export class QuerySummary implements OnChanges {
 
   // ── Derived state ──────────────────────────────────────────────────────────
 
-  columnStats:       ColumnStat[] = [];
-  totalRows:         number       = 0;
-  totalColumns:      number       = 0;
-  numericColumns:    ColumnStat[] = [];
-  stringColumns:     ColumnStat[] = [];
-  summaryParagraphs: string[]     = [];
-  overallDataHealth: number       = 100;
+  columnStats:            ColumnStat[] = [];
+  totalRows:              number       = 0;
+  totalColumns:           number       = 0;
+  numericColumns:         ColumnStat[] = [];
+  stringColumns:          ColumnStat[] = [];
+  summaryParagraphs:      string[]     = [];
+  overallDataHealth:      number       = 100;
+
+  parsedExecutiveSummary: string       = '';
+  parsedKeyFindings:      string[]     = [];
+  parsedConclusion:       string       = '';
 
   // ── Lifecycle ──────────────────────────────────────────────────────────────
 
   ngOnChanges(changes: SimpleChanges): void {
     if (
-      changes['results']     ||
-      changes['columns']     ||
-      changes['explanation'] ||
-      changes['summary']     ||
-      changes['keyFinding']
+      changes['results']          ||
+      changes['columns']          ||
+      changes['explanation']      ||
+      changes['summary']          ||
+      changes['keyFinding']       ||
+      changes['executiveSummary'] ||
+      changes['keyFindings']      ||
+      changes['conclusion']       ||
+      changes['userQuestion']
     ) {
       this.computeStats();
+      this.parseExplanationData();
       this.computeSummaryParagraphs();
     }
   }
 
-  // ── Key Finding Getter ──────────────────────────────────────────────────────
+  // ── Structured Explanation Parsers & Getters ──────────────────────────────
 
-  get effectiveKeyFinding(): string {
-    if (this.keyFinding && this.keyFinding.trim()) {
-      return this.keyFinding.trim();
+  private parseExplanationData(): void {
+    let exec = this.executiveSummary || '';
+    let findings: string[] = [];
+    let conc = this.conclusion || '';
+
+    if (Array.isArray(this.keyFindings)) {
+      findings = this.keyFindings.map(f => String(f));
+    } else if (typeof this.keyFindings === 'string' && this.keyFindings.trim()) {
+      findings = [this.keyFindings.trim()];
+    }
+
+    let expObj: any = this.explanation;
+    if (typeof expObj === 'string') {
+      try {
+        const parsed = JSON.parse(expObj);
+        if (parsed && typeof parsed === 'object') {
+          expObj = parsed;
+        }
+      } catch {
+        /* plain string */
+      }
+    }
+
+    if (expObj && typeof expObj === 'object') {
+      if (!exec) {
+        exec = expObj.executiveSummary ?? expObj.ExecutiveSummary ?? '';
+      }
+      if (findings.length === 0) {
+        const kf = expObj.keyFindings ?? expObj.KeyFindings ?? expObj.key_findings;
+        if (Array.isArray(kf)) {
+          findings = kf.map((item: any) => String(item));
+        } else if (typeof kf === 'string' && kf.trim()) {
+          findings = [kf.trim()];
+        }
+      }
+      if (!conc) {
+        conc = expObj.conclusion ?? expObj.Conclusion ?? '';
+      }
+    }
+
+    // Legacy single keyFinding fallback
+    if (findings.length === 0 && this.keyFinding && this.keyFinding.trim()) {
+      findings = [this.keyFinding.trim()];
+    }
+
+    this.parsedExecutiveSummary = exec.trim();
+    this.parsedKeyFindings      = findings;
+    this.parsedConclusion       = conc.trim();
+  }
+
+  get effectiveExecutiveSummary(): string {
+    if (this.parsedExecutiveSummary) return this.parsedExecutiveSummary;
+    if (this.summary && this.summary.trim()) return this.summary.trim();
+    if (typeof this.explanation === 'string' && this.explanation.trim()) return this.explanation.trim();
+    return '';
+  }
+
+  get effectiveKeyFindingsList(): string[] {
+    if (this.parsedKeyFindings.length > 0) {
+      return this.parsedKeyFindings;
     }
     // Dynamic fallback key finding if results exist
     if (this.results?.length && this.columns?.length) {
-      return `Identified ${this.totalRows} record${this.totalRows === 1 ? '' : 's'} across ${this.totalColumns} database field${this.totalColumns === 1 ? '' : 's'}.`;
+      return [`Identified ${this.totalRows} record${this.totalRows === 1 ? '' : 's'} across ${this.totalColumns} database field${this.totalColumns === 1 ? '' : 's'}.`];
+    }
+    return [];
+  }
+
+  get effectiveConclusion(): string {
+    return this.parsedConclusion;
+  }
+
+  get effectiveKeyFinding(): string {
+    if (this.effectiveKeyFindingsList.length > 0) {
+      return this.effectiveKeyFindingsList[0];
     }
     return '';
   }
@@ -92,15 +180,15 @@ export class QuerySummary implements OnChanges {
     // Strip bullet point markers (1., -, *, •) from lines if present
     const cleanedText = raw
       .split(/\r?\n/)
-      .map(line => line.replace(/^[•\-\*\d+\.\s]+/, '').trim())
-      .filter(line => line.length > 0)
+      .map((line: string) => line.replace(/^[•\-\*\d+\.\s]+/, '').trim())
+      .filter((line: string) => line.length > 0)
       .join(' ');
 
     // Group into readable paragraphs (split on double spaces, clear stops or multi-sentence blocks)
     const sentences = cleanedText
       .split(/(?<=\.)\s+/)
-      .map(s => s.trim())
-      .filter(s => s.length > 0);
+      .map((s: string) => s.trim())
+      .filter((s: string) => s.length > 0);
 
     if (sentences.length <= 2) {
       this.summaryParagraphs = [cleanedText];
@@ -110,7 +198,7 @@ export class QuerySummary implements OnChanges {
     // Combine 2-3 sentences into readable paragraphs
     const paragraphs: string[] = [];
     let currentPara = '';
-    sentences.forEach((s, idx) => {
+    sentences.forEach((s: string, idx: number) => {
       currentPara = currentPara ? `${currentPara} ${s}` : s;
       if ((idx + 1) % 2 === 0 || idx === sentences.length - 1) {
         paragraphs.push(currentPara);
