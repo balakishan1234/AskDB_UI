@@ -1,130 +1,61 @@
 <!-- query-summary.html -->
-<div class="space-y-4.5 p-4 md:p-6 bg-slate-50/60 rounded-2xl">
+<div class="space-y-4 p-4 md:p-5 bg-white rounded-xl border border-slate-200/80 shadow-xs">
 
-  <!-- ── 1. Input Question Card ─────────────────────────────────────────── -->
-  <div
-    *ngIf="userQuestion"
-    class="rounded-2xl border border-indigo-100 bg-gradient-to-r
-           from-indigo-50/90 via-blue-50/60 to-indigo-50/40 p-4.5 flex items-start gap-4 shadow-xs">
-
-    <!-- Icon -->
-    <div
-      class="shrink-0 w-10 h-10 rounded-xl bg-indigo-600 border border-indigo-500
-             flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-        viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-      </svg>
-    </div>
-
-    <div class="min-w-0 flex-1">
-      <div class="flex items-center gap-2 mb-1">
-        <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Input Question</span>
-        <span class="w-1 h-1 rounded-full bg-indigo-300"></span>
-        <span class="text-[11px] text-indigo-400 font-semibold">User Query</span>
-      </div>
-      <p class="text-sm font-bold text-indigo-950 leading-relaxed italic">
-        "{{ userQuestion }}"
-      </p>
-    </div>
+  <!-- ── 1. User Input Question ─────────────────────────────────────────── -->
+  <div *ngIf="userQuestion" class="pb-3 border-b border-slate-100">
+    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">User Question</div>
+    <p class="text-sm font-semibold text-slate-800 italic">"{{ userQuestion }}"</p>
   </div>
 
-  <!-- ── 2. Key Finding Card ────────────────────────────────────────────── -->
-  <div
-    *ngIf="effectiveKeyFinding"
-    class="rounded-2xl border border-amber-200/90 bg-gradient-to-r
-           from-amber-50/90 via-orange-50/50 to-amber-50/30 p-4.5 flex items-start gap-4 shadow-xs">
-
-    <!-- Key Finding Icon -->
-    <div
-      class="shrink-0 w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-500
-             border border-amber-400 flex items-center justify-center text-white shadow-md shadow-amber-500/20">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-        viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-        <circle cx="12" cy="12" r="4"/>
-      </svg>
+  <!-- ── 2. Executive Summary ───────────────────────────────────────────── -->
+  <div *ngIf="effectiveExecutiveSummary" class="space-y-1.5">
+    <div class="flex items-center gap-1.5 text-xs font-bold text-slate-700">
+      <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+      <span>Executive Summary</span>
     </div>
-
-    <div class="min-w-0 flex-1">
-      <div class="flex items-center gap-2 mb-1">
-        <span class="text-[10px] font-black text-amber-800 uppercase tracking-widest">Key Finding</span>
-        <span class="w-1 h-1 rounded-full bg-amber-400"></span>
-        <span class="text-[11px] text-amber-700/80 font-semibold">Core Insight</span>
-      </div>
-      <p class="text-sm font-bold text-amber-950 leading-relaxed">
-        {{ effectiveKeyFinding }}
-      </p>
-    </div>
+    <p class="text-xs text-slate-600 leading-relaxed pl-3.5 border-l-2 border-blue-500">
+      {{ effectiveExecutiveSummary }}
+    </p>
   </div>
 
-  <!-- ── 3. Summary Card (Paragraph Format - NO BULLETS) ───────────────── -->
-  <div
-    *ngIf="summaryParagraphs.length > 0"
-    class="rounded-2xl border border-slate-200/80 bg-white p-5
-           shadow-sm space-y-3.5">
-
-    <!-- Header -->
-    <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
-      <div
-        class="shrink-0 w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600
-               via-indigo-600 to-cyan-500 flex items-center justify-center
-               text-white shadow-md shadow-blue-500/20">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-          viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/>
-          <line x1="16" y1="13" x2="8" y2="13"/>
-          <line x1="16" y1="17" x2="8" y2="17"/>
-          <polyline points="10 9 9 9 8 9"/>
-        </svg>
-      </div>
-
-      <div>
-        <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">
-          AI Query Summary
-        </h3>
-        <p class="text-[10px] text-slate-400 font-medium mt-0.5">
-          Detailed operational summary presented in clear paragraph format
-        </p>
-      </div>
+  <!-- ── 3. Key Findings ────────────────────────────────────────────────── -->
+  <div *ngIf="effectiveKeyFindingsList.length > 0" class="space-y-2 pt-1">
+    <div class="flex items-center gap-1.5 text-xs font-bold text-slate-700">
+      <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+      <span>Key Findings</span>
     </div>
+    <ul class="space-y-2 pl-3.5 border-l-2 border-amber-400">
+      <li *ngFor="let item of effectiveKeyFindingsList" class="text-xs text-slate-600 leading-relaxed flex items-start gap-2">
+        <span class="text-amber-500 font-bold shrink-0">•</span>
+        <span>{{ item }}</span>
+      </li>
+    </ul>
+  </div>
 
-    <!-- Paragraphs (NO BULLET POINTS) -->
-    <div class="space-y-3 pt-1">
-      <p
-        *ngFor="let para of summaryParagraphs"
-        class="text-xs text-slate-700 font-medium leading-relaxed bg-slate-50/80 p-4 rounded-xl border border-slate-100/90 shadow-2xs">
-        {{ para }}
-      </p>
+  <!-- ── 4. Conclusion ──────────────────────────────────────────────────── -->
+  <div *ngIf="effectiveConclusion" class="space-y-1.5 pt-1">
+    <div class="flex items-center gap-1.5 text-xs font-bold text-slate-700">
+      <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+      <span>Conclusion</span>
     </div>
+    <p class="text-xs font-medium text-slate-700 leading-relaxed pl-3.5 border-l-2 border-emerald-500 bg-emerald-50/50 p-2.5 rounded-r-lg">
+      {{ effectiveConclusion }}
+    </p>
+  </div>
+
+  <!-- ── 5. Detailed Summary Fallback ──────────────────────────────────── -->
+  <div *ngIf="!effectiveExecutiveSummary && summaryParagraphs.length > 0" class="space-y-2">
+    <div class="text-xs font-bold text-slate-700">Summary</div>
+    <p *ngFor="let para of summaryParagraphs" class="text-xs text-slate-600 leading-relaxed">
+      {{ para }}
+    </p>
   </div>
 
   <!-- ── Empty State ────────────────────────────────────────────────────── -->
   <div
-    *ngIf="summaryParagraphs.length === 0 && !userQuestion && !effectiveKeyFinding"
-    class="flex flex-col items-center justify-center py-12 text-center
-           text-slate-400 select-none bg-white rounded-2xl border border-slate-200/80 shadow-xs">
-    <div
-      class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100
-             flex items-center justify-center mb-3 text-indigo-500">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-        viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14 2 14 8 20 8"/>
-        <line x1="16" y1="13" x2="8" y2="13"/>
-        <line x1="16" y1="17" x2="8" y2="17"/>
-        <polyline points="10 9 9 9 8 9"/>
-      </svg>
-    </div>
-    <p class="text-xs font-bold text-slate-700">No Summary Available</p>
-    <p class="text-[11px] text-slate-400 mt-1 max-w-xs leading-relaxed">
-      Run a natural language query in the chat panel to generate a structured AI summary.
-    </p>
+    *ngIf="!userQuestion && !effectiveExecutiveSummary && effectiveKeyFindingsList.length === 0 && !effectiveConclusion && summaryParagraphs.length === 0"
+    class="py-8 text-center text-slate-400">
+    <p class="text-xs font-medium">No summary available for this query.</p>
   </div>
 
 </div>

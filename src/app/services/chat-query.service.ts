@@ -18,9 +18,12 @@ export interface ChatMessage {
   originalSql?: string;
   isEdited?: boolean;
   isExecuting?: boolean;
-  explanation?: string;
+  explanation?: any;
   keyFinding?: string;
   summary?: string;
+  executiveSummary?: string;
+  keyFindings?: string[];
+  conclusion?: string;
 
   // Result fields
   columns?: string[];
@@ -324,23 +327,70 @@ export class ChatQueryService {
 
           const mapped = this.mapQueryResponse(response);
 
+          let rawExplanation = response.explanation ?? response.Explanation;
+          let execSummary = '';
+          let keyFindingsList: string[] = [];
+          let conclusionText = '';
+
+          if (typeof rawExplanation === 'string') {
+            try {
+              const parsed = JSON.parse(rawExplanation);
+              if (parsed && typeof parsed === 'object') {
+                rawExplanation = parsed;
+              }
+            } catch {
+              // plain string explanation
+            }
+          }
+
+          if (rawExplanation && typeof rawExplanation === 'object') {
+            execSummary = rawExplanation.executiveSummary ?? rawExplanation.ExecutiveSummary ?? '';
+            const kf = rawExplanation.keyFindings ?? rawExplanation.KeyFindings ?? rawExplanation.key_findings;
+            if (Array.isArray(kf)) {
+              keyFindingsList = kf.map((item: any) => String(item));
+            } else if (typeof kf === 'string' && kf.trim()) {
+              keyFindingsList = [kf.trim()];
+            }
+            conclusionText = rawExplanation.conclusion ?? rawExplanation.Conclusion ?? '';
+          }
+
+          if (!execSummary && response.executiveSummary) {
+            execSummary = String(response.executiveSummary);
+          }
+          if (keyFindingsList.length === 0 && response.keyFindings) {
+            if (Array.isArray(response.keyFindings)) {
+              keyFindingsList = response.keyFindings.map((i: any) => String(i));
+            } else if (typeof response.keyFindings === 'string') {
+              keyFindingsList = [response.keyFindings];
+            }
+          }
+          if (!conclusionText && response.conclusion) {
+            conclusionText = String(response.conclusion);
+          }
+
+          const legacyKeyFinding = response.keyFinding ?? response.key_finding ?? response.KeyFinding ?? (keyFindingsList.length > 0 ? keyFindingsList[0] : '');
+          const legacySummary = typeof response.summary === 'string' ? response.summary : (execSummary || (typeof rawExplanation === 'string' ? rawExplanation : ''));
+
           const aiMessage: ChatMessage = {
-            sender:      'ai',
-            type:        'query',
+            sender:           'ai',
+            type:             'query',
             text:
               'I have compiled and executed a query on the active database nodes. ' +
               'Review and run it below.',
-            sql:         generatedSql,
-            originalSql: generatedSql,
-            columns:     mapped.columns,
-            results:     mapped.results,
-            showResults: false,
-            isExecuting: false,
-            isEdited:    false,
-            explanation: response.explanation ?? response.Explanation ?? '',
-            keyFinding:  response.keyFinding  ?? response.key_finding ?? response.KeyFinding ?? '',
-            summary:     response.summary     ?? response.Summary     ?? response.explanation ?? response.Explanation ?? '',
-            input:       response.input       ?? text,
+            sql:              generatedSql,
+            originalSql:      generatedSql,
+            columns:          mapped.columns,
+            results:          mapped.results,
+            showResults:      false,
+            isExecuting:      false,
+            isEdited:         false,
+            explanation:      rawExplanation ?? response.explanation ?? response.Explanation ?? '',
+            executiveSummary: execSummary,
+            keyFindings:      keyFindingsList,
+            conclusion:       conclusionText,
+            keyFinding:       legacyKeyFinding,
+            summary:          legacySummary,
+            input:            response.input ?? text,
           };
 
           return aiMessage;
@@ -524,21 +574,36 @@ export class ChatQueryService {
       explanationText = summaryText;
     }
 
+    const mockExecSummary = summaryText;
+    const mockKeyFindings = [
+      keyFindingText,
+      `Dataset includes ${res.length} total rows across ${cols.length} column fields.`,
+      `Target database environment: ${workspace.name}`
+    ].filter(Boolean);
+    const mockConclusion = `All ${res.length} records are active and validated against the workspace schema.`;
+
     const msg: ChatMessage = {
-      sender:      'ai',
-      type:        'query',
-      text:        responseText,
-      sql:         generatedSql,
-      originalSql: generatedSql,
-      columns:     cols,
-      results:     res,
-      showResults: false,
-      isExecuting: false,
-      isEdited:    false,
-      explanation: explanationText,
-      keyFinding:  keyFindingText,
-      summary:     summaryText,
-      input:       text,
+      sender:           'ai',
+      type:             'query',
+      text:             responseText,
+      sql:              generatedSql,
+      originalSql:      generatedSql,
+      columns:          cols,
+      results:          res,
+      showResults:      false,
+      isExecuting:      false,
+      isEdited:         false,
+      executiveSummary: mockExecSummary,
+      keyFindings:      mockKeyFindings,
+      conclusion:       mockConclusion,
+      explanation: {
+        executiveSummary: mockExecSummary,
+        keyFindings:      mockKeyFindings,
+        conclusion:       mockConclusion,
+      },
+      keyFinding:       keyFindingText,
+      summary:          summaryText,
+      input:            text,
     };
 
     return of(msg).pipe(delay(50));

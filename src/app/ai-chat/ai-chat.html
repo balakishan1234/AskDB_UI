@@ -834,8 +834,11 @@
             *ngSwitchCase="'Summary'"
             [columns]="msg.columns || []"
             [results]="msg.results || []"
-            [explanation]="msg.explanation || ''"
-            [summary]="msg.summary || msg.explanation || ''"
+            [explanation]="msg.explanation"
+            [executiveSummary]="msg.executiveSummary || ''"
+            [keyFindings]="msg.keyFindings || []"
+            [conclusion]="msg.conclusion || ''"
+            [summary]="msg.summary || ''"
             [keyFinding]="msg.keyFinding || ''"
             [userQuestion]="msg.input || msg.text || ''">
           </app-query-summary>
