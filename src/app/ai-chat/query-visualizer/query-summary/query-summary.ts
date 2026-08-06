@@ -95,7 +95,7 @@ export class QuerySummary implements OnChanges {
     let conc = this.conclusion || '';
 
     if (Array.isArray(this.keyFindings)) {
-      findings = this.keyFindings.map(f => String(f));
+      findings = this.keyFindings.map(f => String(f)).filter(f => f.trim().length > 0);
     } else if (typeof this.keyFindings === 'string' && this.keyFindings.trim()) {
       findings = [this.keyFindings.trim()];
     }
@@ -114,18 +114,34 @@ export class QuerySummary implements OnChanges {
 
     if (expObj && typeof expObj === 'object') {
       if (!exec) {
-        exec = expObj.executiveSummary ?? expObj.ExecutiveSummary ?? '';
+        exec = expObj.executiveSummary ?? expObj.ExecutiveSummary ?? expObj.executive_summary ?? '';
       }
       if (findings.length === 0) {
-        const kf = expObj.keyFindings ?? expObj.KeyFindings ?? expObj.key_findings;
+        const kf = expObj.keyFindings ?? expObj.KeyFindings ?? expObj.key_findings ?? expObj.keyFinding;
         if (Array.isArray(kf)) {
-          findings = kf.map((item: any) => String(item));
+          findings = kf.map((item: any) => String(item)).filter(f => f.trim().length > 0);
         } else if (typeof kf === 'string' && kf.trim()) {
           findings = [kf.trim()];
         }
       }
       if (!conc) {
-        conc = expObj.conclusion ?? expObj.Conclusion ?? '';
+        conc = expObj.conclusion ?? expObj.Conclusion ?? expObj.conclusion_text ?? '';
+      }
+    }
+
+    // Fallback: parse plain string text if parameters are empty (e.g. Live Mode API responses)
+    if (!exec || findings.length === 0 || !conc) {
+      const rawText = (
+        this.summary ||
+        (typeof this.explanation === 'string' ? this.explanation : '') ||
+        (typeof expObj === 'string' ? expObj : '')
+      ).trim();
+
+      if (rawText) {
+        const parsed = this.parseTextSummary(rawText);
+        if (!exec && parsed.executiveSummary) exec = parsed.executiveSummary;
+        if (findings.length === 0 && parsed.keyFindings.length > 0) findings = parsed.keyFindings;
+        if (!conc && parsed.conclusion) conc = parsed.conclusion;
       }
     }
 
@@ -137,6 +153,98 @@ export class QuerySummary implements OnChanges {
     this.parsedExecutiveSummary = exec.trim();
     this.parsedKeyFindings      = findings;
     this.parsedConclusion       = conc.trim();
+  }
+
+  /**
+   * Parses plain string AI responses into Executive Summary, Key Findings, and Conclusion parameters.
+   */
+  private parseTextSummary(text: string): { executiveSummary: string; keyFindings: string[]; conclusion: string } {
+    if (!text || !text.trim()) {
+      return { executiveSummary: '', keyFindings: [], conclusion: '' };
+    }
+
+    const cleanText = text.trim();
+    let exec = '';
+    let findings: string[] = [];
+    let conc = '';
+
+    const execRegex = /(?:#{1,6}\s*|\*{1,2}|\d+[\.\)]\s*)?Executive\s+Summary(?::|\*{1,2})?/i;
+    const kfRegex   = /(?:#{1,6}\s*|\*{1,2}|\d+[\.\)]\s*)?Key\s+Findings(?::|\*{1,2})?/i;
+    const concRegex = /(?:#{1,6}\s*|\*{1,2}|\d+[\.\)]\s*)?Conclusion(?::|\*{1,2})?/i;
+
+    const execMatch = cleanText.match(execRegex);
+    const kfMatch   = cleanText.match(kfRegex);
+    const concMatch = cleanText.match(concRegex);
+
+    const execIdx = execMatch ? cleanText.indexOf(execMatch[0]) : -1;
+    const kfIdx   = kfMatch   ? cleanText.indexOf(kfMatch[0])   : -1;
+    const concIdx = concMatch ? cleanText.indexOf(concMatch[0]) : -1;
+
+    if (execIdx !== -1 || kfIdx !== -1 || concIdx !== -1) {
+      const sections: { type: 'exec' | 'kf' | 'conc'; start: number; headerLen: number }[] = [];
+      if (execIdx !== -1 && execMatch) sections.push({ type: 'exec', start: execIdx, headerLen: execMatch[0].length });
+      if (kfIdx   !== -1 && kfMatch)   sections.push({ type: 'kf',   start: kfIdx,   headerLen: kfMatch[0].length });
+      if (concIdx !== -1 && concMatch) sections.push({ type: 'conc', start: concIdx, headerLen: concMatch[0].length });
+
+      sections.sort((a, b) => a.start - b.start);
+
+      let execChunk = '';
+      let kfChunk   = '';
+      let concChunk = '';
+
+      for (let i = 0; i < sections.length; i++) {
+        const sec = sections[i];
+        const nextSec = sections[i + 1];
+        const contentStart = sec.start + sec.headerLen;
+        const contentEnd = nextSec ? nextSec.start : cleanText.length;
+        const rawContent = cleanText.substring(contentStart, contentEnd).trim();
+
+        if (sec.type === 'exec') execChunk = rawContent;
+        else if (sec.type === 'kf') kfChunk = rawContent;
+        else if (sec.type === 'conc') concChunk = rawContent;
+      }
+
+      exec = execChunk;
+      conc = concChunk;
+
+      if (kfChunk) {
+        const rawLines = kfChunk.split(/\r?\n/).map(l => l.replace(/^[•\-\*\d+\.\s]+/, '').trim()).filter(l => l.length > 0);
+        if (rawLines.length > 1) {
+          findings = rawLines;
+        } else {
+          const sentences = kfChunk.split(/(?<=\.)\s+/).map(s => s.trim()).filter(s => s.length > 0);
+          findings = sentences.length > 0 ? sentences : [kfChunk];
+        }
+      }
+    } else {
+      const sentences = cleanText
+        .split(/(?<=\.)\s+/)
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+
+      if (sentences.length === 1) {
+        exec = sentences[0];
+      } else if (sentences.length === 2) {
+        exec = sentences[0];
+        findings = [sentences[1]];
+      } else {
+        exec = sentences[0];
+        findings = sentences.slice(1, sentences.length - 1);
+        conc = sentences[sentences.length - 1];
+      }
+    }
+
+    const stripHeader = (s: string) =>
+      s
+        .replace(/^(?:Executive\s+Summary|Key\s+Findings|Conclusion)[\s:]*/i, '')
+        .replace(/^[•\-\*\d+\.\s]+/, '')
+        .trim();
+
+    exec = stripHeader(exec);
+    conc = stripHeader(conc);
+    findings = findings.map(f => stripHeader(f)).filter(f => f.length > 0);
+
+    return { executiveSummary: exec, keyFindings: findings, conclusion: conc };
   }
 
   get effectiveExecutiveSummary(): string {
