@@ -289,7 +289,6 @@ export class ChatQueryService {
 
   return { columns, results };
 }
-
   // ── Generate SQL ──────────────────────────────────────────────────────────
 
   /**
@@ -327,10 +326,10 @@ export class ChatQueryService {
 
           const mapped = this.mapQueryResponse(response);
 
-          let rawExplanation = response.explanation ?? response.Explanation;
-          let execSummary = '';
+          let rawExplanation = response.explanation ?? response.Explanation ?? response.summary ?? response.Summary ?? response.aiSummary ?? response.AiSummary;
+          let execSummary = response.executiveSummary ?? response.ExecutiveSummary ?? response.executive_summary ?? '';
           let keyFindingsList: string[] = [];
-          let conclusionText = '';
+          let conclusionText = response.conclusion ?? response.Conclusion ?? response.conclusion_text ?? '';
 
           if (typeof rawExplanation === 'string') {
             try {
@@ -344,14 +343,14 @@ export class ChatQueryService {
           }
 
           if (rawExplanation && typeof rawExplanation === 'object') {
-            execSummary = rawExplanation.executiveSummary ?? rawExplanation.ExecutiveSummary ?? '';
-            const kf = rawExplanation.keyFindings ?? rawExplanation.KeyFindings ?? rawExplanation.key_findings;
+            if (!execSummary) execSummary = rawExplanation.executiveSummary ?? rawExplanation.ExecutiveSummary ?? rawExplanation.executive_summary ?? '';
+            const kf = rawExplanation.keyFindings ?? rawExplanation.KeyFindings ?? rawExplanation.key_findings ?? rawExplanation.keyFinding;
             if (Array.isArray(kf)) {
-              keyFindingsList = kf.map((item: any) => String(item));
+              keyFindingsList = kf.map((item: any) => String(item)).filter((f: string) => f.trim().length > 0);
             } else if (typeof kf === 'string' && kf.trim()) {
               keyFindingsList = [kf.trim()];
             }
-            conclusionText = rawExplanation.conclusion ?? rawExplanation.Conclusion ?? '';
+            if (!conclusionText) conclusionText = rawExplanation.conclusion ?? rawExplanation.Conclusion ?? rawExplanation.conclusion_text ?? '';
           }
 
           if (!execSummary && response.executiveSummary) {
@@ -359,9 +358,9 @@ export class ChatQueryService {
           }
           if (keyFindingsList.length === 0 && response.keyFindings) {
             if (Array.isArray(response.keyFindings)) {
-              keyFindingsList = response.keyFindings.map((i: any) => String(i));
-            } else if (typeof response.keyFindings === 'string') {
-              keyFindingsList = [response.keyFindings];
+              keyFindingsList = response.keyFindings.map((i: any) => String(i)).filter((f: string) => f.trim().length > 0);
+            } else if (typeof response.keyFindings === 'string' && response.keyFindings.trim()) {
+              keyFindingsList = [response.keyFindings.trim()];
             }
           }
           if (!conclusionText && response.conclusion) {
